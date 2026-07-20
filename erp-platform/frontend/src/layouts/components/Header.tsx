@@ -48,7 +48,7 @@ export default function Header({ collapsed, onCollapse }: HeaderProps) {
   };
 
   return (
-    <AntHeader className="flex items-center justify-between px-6 bg-white shadow-sm h-16">
+    <AntHeader className="flex items-center justify-between px-6 bg-white dark:bg-slate-800 shadow-sm dark:border-b dark:border-slate-700 h-16">
       <Space>
         <Button
           type="text"

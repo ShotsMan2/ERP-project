@@ -48,7 +48,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-erp_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-erp_secret_2024}
     ports:
-      - "5432:5432"
+      - "5435:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -96,8 +96,8 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-erp_rabbit_secret}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-/}
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5673:5672"
+      - "15673:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -116,7 +116,7 @@ services:
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ports:
-      - "9200:9200"
+      - "9201:9200"
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
@@ -134,8 +134,8 @@ services:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin_secret}
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9002:9000"
+      - "9003:9001"
     volumes:
       - minio_data:/data
     healthcheck:
@@ -155,7 +155,7 @@ services:
              --bind 0.0.0.0:8000 --workers 4 --timeout 120
              --access-logfile - --error-logfile -"
     ports:
-      - "8000:8000"
+      - "8005:8000"
     depends_on:
       postgres:
         condition: service_healthy
@@ -205,7 +205,7 @@ services:
     container_name: erp-flower
     command: celery flower --broker=amqp://${RABBITMQ_USER:-erp_user}:${RABBITMQ_PASSWORD:-erp_rabbit_secret}@rabbitmq:5672//
     ports:
-      - "5555:5555"
+      - "5556:5555"
     depends_on:
       - rabbitmq
       - celery-worker
@@ -219,9 +219,9 @@ services:
     image: ${REGISTRY:-ghcr.io}/${IMAGE_NAMESPACE:-erp-platform}/frontend:${IMAGE_TAG:-latest}
     container_name: erp-frontend
     ports:
-      - "3000:3000"
+      - "3005:3000"
     environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000/api/v1}
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8005/api/v1}
     depends_on:
       - backend
     networks:
@@ -237,8 +237,8 @@ services:
     image: nginx:1.27-alpine
     container_name: erp-nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
+      - "8443:443"
     volumes:
       - ./infrastructure/docker/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -267,7 +267,7 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-lifecycle'
     ports:
-      - "9090:9090"
+      - "9095:9090"
     networks:
       - erp-network
 
@@ -283,7 +283,7 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
       GF_INSTALL_PLUGINS: grafana-piechart-panel
     ports:
-      - "3001:3000"
+      - "3006:3000"
     networks:
       - erp-network
 
@@ -295,7 +295,7 @@ services:
       - loki_data:/loki
     command: -config.file=/etc/loki/loki-config.yaml
     ports:
-      - "3100:3100"
+      - "3101:3100"
     networks:
       - erp-network
 

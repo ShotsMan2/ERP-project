@@ -160,10 +160,10 @@ export default function Sidebar({ collapsed, onCollapse }: SidebarProps) {
       collapsible
       collapsed={collapsed}
       onCollapse={onCollapse}
-      className="border-r border-gray-200"
+      className="border-r border-gray-200 dark:border-slate-700"
       width={240}
     >
-      <div className="h-16 flex items-center justify-center border-b border-gray-200">
+      <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
         <img src="/logo.svg" alt="ERP" className="h-8" />
         {!collapsed && <span className="ml-2 text-lg font-bold">ERP Platform</span>}
       </div>
