@@ -30,11 +30,13 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     const loadLocale = async () => {
       try {
         const resources = await import(`../../public/locales/${language}/translation.json`);
-        i18n.addResourceBundle(language, 'translation', resources, true, true);
+        const translations = resources.default || resources;
+        i18n.addResourceBundle(language, 'translation', translations, true, true);
         await i18n.changeLanguage(language);
       } catch {
         const fallback = await import(`../../public/locales/en/translation.json`);
-        i18n.addResourceBundle('en', 'translation', fallback, true, true);
+        const fallbackTranslations = fallback.default || fallback;
+        i18n.addResourceBundle('en', 'translation', fallbackTranslations, true, true);
         await i18n.changeLanguage('en');
       }
     };

@@ -16,26 +16,29 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { useUIStore } from '@/store/uiStore';
+import { useTranslation } from 'react-i18next';
 
 const { Header: AntHeader } = Layout;
 
 interface HeaderProps {
   collapsed: boolean;
   onCollapse: (collapsed: boolean) => void;
+  className?: string;
 }
 
-export default function Header({ collapsed, onCollapse }: HeaderProps) {
+export default function Header({ collapsed, onCollapse, className = '' }: HeaderProps) {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { toggleTheme } = useTheme();
   const { theme, language, setLanguage } = useUIStore();
   const [searchOpen, setSearchOpen] = useState(false);
+  const { t } = useTranslation();
 
   const userMenuItems = [
-    { key: 'profile', icon: <ProfileOutlined />, label: 'My Profile' },
-    { key: 'settings', icon: <SettingOutlined />, label: 'Account Settings' },
+    { key: 'profile', icon: <ProfileOutlined />, label: t('nav.myProfile') },
+    { key: 'settings', icon: <SettingOutlined />, label: t('nav.accountSettings') },
     { type: 'divider' as const },
-    { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
+    { key: 'logout', icon: <LogoutOutlined />, label: t('auth.logout'), danger: true },
   ];
 
   const handleUserMenu = ({ key }: { key: string }) => {
@@ -48,7 +51,7 @@ export default function Header({ collapsed, onCollapse }: HeaderProps) {
   };
 
   return (
-    <AntHeader className="flex items-center justify-between px-6 bg-white dark:bg-slate-800 shadow-sm dark:border-b dark:border-slate-700 h-16">
+    <AntHeader className={`flex items-center justify-between px-6 shadow-sm h-16 !bg-transparent border-b border-gray-200/50 dark:border-slate-700/50 ${className}`}>
       <Space>
         <Button
           type="text"
@@ -57,7 +60,7 @@ export default function Header({ collapsed, onCollapse }: HeaderProps) {
         />
         <Input
           prefix={<SearchOutlined />}
-          placeholder="Search... (Cmd+K)"
+          placeholder={`${t('common.search')}... (${t('common.cmdK')})`}
           className="w-64 hidden md:inline-flex"
           onFocus={() => setSearchOpen(true)}
           onBlur={() => setSearchOpen(false)}

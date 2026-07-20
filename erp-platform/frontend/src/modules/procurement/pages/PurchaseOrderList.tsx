@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Tag, Button, Space, Select, Typography, message } from 'antd';
 import { PlusOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -29,19 +30,20 @@ const statusColors: Record<string, string> = { draft: 'default', pending: 'orang
 
 const PurchaseOrderList: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState<string>('');
 
   const filtered = statusFilter ? mockPOs.filter((po) => po.status === statusFilter) : mockPOs;
 
   const columns = [
-    { title: 'PO Number', dataIndex: 'orderNumber', key: 'orderNumber', render: (v: string) => <a onClick={() => navigate('/procurement/purchase-orders/' + v)}>{v}</a> },
-    { title: 'Supplier', dataIndex: 'supplier', key: 'supplier', sorter: (a: PurchaseOrder, b: PurchaseOrder) => a.supplier.localeCompare(b.supplier) },
-    { title: 'Order Date', dataIndex: 'orderDate', key: 'orderDate' },
-    { title: 'Expected', dataIndex: 'expectedDate', key: 'expectedDate' },
-    { title: 'Items', dataIndex: 'items', key: 'items' },
-    { title: 'Total', dataIndex: 'totalAmount', key: 'totalAmount', render: (v: number) => '$' + v.toLocaleString(), sorter: (a: PurchaseOrder, b: PurchaseOrder) => a.totalAmount - b.totalAmount },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag> },
-    { title: 'Actions', key: 'actions', render: (_: unknown, record: PurchaseOrder) => (
+    { title: t('procurement.poNumber'), dataIndex: 'orderNumber', key: 'orderNumber', render: (v: string) => <a onClick={() => navigate('/procurement/purchase-orders/' + v)}>{v}</a> },
+    { title: t('procurement.supplier'), dataIndex: 'supplier', key: 'supplier', sorter: (a: PurchaseOrder, b: PurchaseOrder) => a.supplier.localeCompare(b.supplier) },
+    { title: t('procurement.orderDate'), dataIndex: 'orderDate', key: 'orderDate' },
+    { title: t('procurement.expectedDate'), dataIndex: 'expectedDate', key: 'expectedDate' },
+    { title: t('common.items'), dataIndex: 'items', key: 'items' },
+    { title: t('procurement.totalAmount'), dataIndex: 'totalAmount', key: 'totalAmount', render: (v: number) => '$' + v.toLocaleString(), sorter: (a: PurchaseOrder, b: PurchaseOrder) => a.totalAmount - b.totalAmount },
+    { title: t('procurement.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{t(`procurement.${s}`).toUpperCase()}</Tag> },
+    { title: t('common.actions'), key: 'actions', render: (_: unknown, record: PurchaseOrder) => (
       <Space>
         <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate('/procurement/purchase-orders/' + record.orderNumber)} />
         {record.status === 'draft' && <Button type="link" size="small" icon={<EditOutlined />} onClick={() => navigate('/procurement/purchase-orders/' + record.orderNumber + '/edit')} />}
@@ -51,11 +53,11 @@ const PurchaseOrderList: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Purchase Orders" subtitle="Manage procurement orders">
+      <PageHeader title={t('procurement.purchaseOrderList')} subtitle={t('procurement.purchaseOrderList')}>
         <Space>
-          <Select placeholder="Filter by status" value={statusFilter || undefined} onChange={(v) => setStatusFilter(v || '')} allowClear className="w-40"
-            options={[{ value: 'draft', label: 'Draft' }, { value: 'pending', label: 'Pending' }, { value: 'approved', label: 'Approved' }, { value: 'received', label: 'Received' }, { value: 'closed', label: 'Closed' }, { value: 'cancelled', label: 'Cancelled' }]} />
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/procurement/purchase-orders/new')}>Create PO</Button>
+          <Select placeholder={t('common.filter')} value={statusFilter || undefined} onChange={(v) => setStatusFilter(v || '')} allowClear className="w-40"
+            options={[{ value: 'draft', label: t('procurement.draft') }, { value: 'pending', label: t('procurement.pending') }, { value: 'approved', label: t('procurement.approved') }, { value: 'received', label: t('procurement.received') }, { value: 'closed', label: t('common.closed') || 'Closed' }, { value: 'cancelled', label: t('procurement.cancelled') }]} />
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/procurement/purchase-orders/new')}>{t('common.create')}</Button>
         </Space>
       </PageHeader>
       <Card>
