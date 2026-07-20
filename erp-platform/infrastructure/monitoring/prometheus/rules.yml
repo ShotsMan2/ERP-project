@@ -1,0 +1,200 @@
+groups:
+  - name: erp-api
+    interval: 30s
+    rules:
+      - alert: HighAPILatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job="erp-api"}[5m])) by (le, endpoint)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "API p95 latency > 500ms on {{ $labels.endpoint }}"
+          description: "API endpoint {{ $labels.endpoint }} has p95 latency {{ $value }}s for 5 minutes."
+
+      - alert: CriticalAPILatency
+        expr: |
+          histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job="erp-api"}[5m])) by (le, endpoint)) > 1.0
+        for: 3m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "API p99 latency > 1s on {{ $labels.endpoint }}"
+          description: "API endpoint {{ $labels.endpoint }} has p99 latency {{ $value }}s for 3 minutes."
+
+      - alert: HighAPIErrorRate
+        expr: |
+          sum(rate(http_requests_total{job="erp-api", status=~"5.."}[5m])) / sum(rate(http_requests_total{job="erp-api"}[5m])) > 0.01
+        for: 3m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "API error rate > 1%"
+          description: "API 5xx error rate is {{ $value | humanizePercentage }} for the last 5 minutes."
+
+      - alert: HighAPI4xxRate
+        expr: |
+          sum(rate(http_requests_total{job="erp-api", status=~"4.."}[5m])) / sum(rate(http_requests_total{job="erp-api"}[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "API 4xx rate > 5%"
+          description: "API 4xx error rate is {{ $value | humanizePercentage }} for the last 5 minutes."
+
+  - name: erp-infrastructure
+    interval: 30s
+    rules:
+      - alert: HighCPUUsage
+        expr: |
+          sum(rate(container_cpu_usage_seconds_total{namespace="erp-system"}[5m])) by (pod) / sum(kube_pod_container_resource_limits{namespace="erp-system", resource="cpu"}) by (pod) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: devops
+        annotations:
+          summary: "High CPU usage on {{ $labels.pod }}"
+          description: "Pod {{ $labels.pod }} CPU usage is {{ $value | humanizePercentage }} for 5 minutes."
+
+      - alert: HighMemoryUsage
+        expr: |
+          sum(container_memory_working_set_bytes{namespace="erp-system"}) by (pod) / sum(kube_pod_container_resource_limits{namespace="erp-system", resource="memory"}) by (pod) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          team: devops
+        annotations:
+          summary: "High memory usage on {{ $labels.pod }}"
+          description: "Pod {{ $labels.pod }} memory usage is {{ $value | humanizePercentage }} for 5 minutes."
+
+      - alert: PodRestarts
+        expr: |
+          increase(kube_pod_container_status_restarts_total{namespace="erp-system"}[10m]) > 3
+        for: 2m
+        labels:
+          severity: warning
+          team: devops
+        annotations:
+          summary: "Pod {{ $labels.pod }} restarting frequently"
+          description: "Pod {{ $labels.pod }} has restarted {{ $value }} times in the last 10 minutes."
+
+      - alert: PodDown
+        expr: |
+          kube_pod_status_phase{namespace="erp-system", phase=~"Pending|Failed|Unknown"} > 0
+        for: 1m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Pod {{ $labels.pod }} is {{ $labels.phase }}"
+          description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is in {{ $labels.phase }} state."
+
+  - name: erp-database
+    interval: 30s
+    rules:
+      - alert: PostgresDown
+        expr: pg_up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL instance {{ $labels.instance }} is unreachable."
+
+      - alert: PostgresHighConnections
+        expr: |
+          pg_stat_activity_count{job="postgres"} / pg_settings_max_connections{job="postgres"} > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: devops
+        annotations:
+          summary: "PostgreSQL connections > 80%"
+          description: "PostgreSQL connection usage is {{ $value | humanizePercentage }}."
+
+      - alert: PostgresSlowQueries
+        expr: |
+          rate(pg_stat_activity_max_tx_duration{job="postgres"}[2m]) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "PostgreSQL slow queries detected"
+          description: "PostgreSQL is experiencing queries running longer than expected."
+
+      - alert: RedisDown
+        expr: redis_up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance {{ $labels.instance }} is unreachable."
+
+      - alert: RedisHighMemory
+        expr: |
+          (redis_memory_used_bytes{job="redis"} / redis_memory_max_bytes{job="redis"}) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: devops
+        annotations:
+          summary: "Redis memory > 80%"
+          description: "Redis memory usage is {{ $value | humanizePercentage }}."
+
+  - name: erp-queue
+    interval: 30s
+    rules:
+      - alert: QueueBacklog
+        expr: |
+          rabbitmq_queue_messages_ready{job="rabbitmq"} > 10000
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "Queue backlog > 10k messages"
+          description: "Queue {{ $labels.queue }} has {{ $value }} ready messages."
+
+      - alert: QueueConsumerDown
+        expr: |
+          rabbitmq_queue_consumers{job="rabbitmq"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "No consumers for queue {{ $labels.queue }}"
+          description: "Queue {{ $labels.queue }} has no active consumers."
+
+  - name: erp-storage
+    interval: 30s
+    rules:
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{job="node-exporter", mountpoint="/"} / node_filesystem_size_bytes{job="node-exporter", mountpoint="/"}) < 0.2
+        for: 5m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Disk space < 20% on {{ $labels.instance }}"
+          description: "Disk space on {{ $labels.instance }} is {{ $value | humanizePercentage }} available."
+
+      - alert: DiskSpaceCriticallyLow
+        expr: |
+          (node_filesystem_avail_bytes{job="node-exporter", mountpoint="/"} / node_filesystem_size_bytes{job="node-exporter", mountpoint="/"}) < 0.1
+        for: 2m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: "Disk space < 10% on {{ $labels.instance }}"
+          description: "Disk space on {{ $labels.instance }} is critically low at {{ $value | humanizePercentage }}."

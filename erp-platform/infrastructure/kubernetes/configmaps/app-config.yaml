@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: erp-system
+  labels:
+    app.kubernetes.io/name: erp-platform
+    app.kubernetes.io/component: config
+data:
+  APP_NAME: "ERP Platform"
+  APP_ENV: "production"
+  APP_DEBUG: "false"
+  PROJECT_NAME: "ERP Platform"
+  VERSION: "1.0.0"
+  ALLOWED_HOSTS: "localhost,erp-platform.com,*.erp-platform.com"
+  CORS_ORIGINS: "https://erp-platform.com,https://*.erp-platform.com"
+
+  POSTGRES_SERVER: "postgres.erp-storage.svc.cluster.local"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "erp_db"
+  POSTGRES_USER: "erp_user"
+
+  REDIS_HOST: "redis.erp-storage.svc.cluster.local"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  REDIS_CACHE_TTL: "300"
+
+  RABBITMQ_HOST: "rabbitmq.erp-storage.svc.cluster.local"
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USER: "erp_user"
+  RABBITMQ_VHOST: "/"
+
+  ELASTICSEARCH_HOST: "elasticsearch.erp-storage.svc.cluster.local"
+  ELASTICSEARCH_PORT: "9200"
+  ELASTICSEARCH_INDEX_PREFIX: "erp"
+
+  MINIO_ENDPOINT: "minio.erp-storage.svc.cluster.local:9000"
+  MINIO_BUCKET: "erp-files"
+  MINIO_REGION: "us-east-1"
+  MINIO_SECURE: "true"
+
+  JWT_ALGORITHM: "RS256"
+  JWT_ACCESS_TOKEN_EXPIRE_MINUTES: "15"
+  JWT_REFRESH_TOKEN_EXPIRE_DAYS: "7"
+
+  CELERY_TASK_TRACK_STARTED: "true"
+  CELERY_TASK_SOFT_TIME_LIMIT: "300"
+  CELERY_TASK_TIME_LIMIT: "600"
+  CELERY_MAX_RETRIES: "3"
+  CELERY_TASK_ACKS_LATE: "true"
+  CELERYD_CONCURRENCY: "4"
+
+  BCRYPT_ROUNDS: "12"
+  PASSWORD_MIN_LENGTH: "12"
+  PASSWORD_MAX_LENGTH: "128"
+  SESSION_TIMEOUT_MINUTES: "15"
+  MAX_LOGIN_ATTEMPTS: "5"
+  LOGIN_LOCKOUT_MINUTES: "15"
+
+  SMTP_HOST: ""
+  SMTP_PORT: "587"
+  SMTP_FROM: "noreply@erp-platform.com"
+  SMTP_USE_TLS: "true"
+
+  LOG_LEVEL: "INFO"
+  LOKI_ENABLED: "true"
+  LOKI_URL: "http://loki.erp-monitoring.svc.cluster.local:3100"
+
+  SENTRY_DSN: ""
+
+  BACKUP_S3_BUCKET: "erp-backups"
+  BACKUP_S3_PREFIX: "postgres"
+  BACKUP_RETENTION_DAYS: "30"
+
+  DATABASE_POOL_SIZE: "20"
+  DATABASE_MAX_OVERFLOW: "10"
+
+  FEATURE_AI_ASSISTANT: "false"
+  FEATURE_WORKFLOW_AUTOMATION: "true"
+  FEATURE_MOBILE_PWA: "true"
+  FEATURE_EINVOICE: "true"
+
+  RATE_LIMIT_DEFAULT: "1000/minute"
+  RATE_LIMIT_LOGIN: "10/minute"
+  RATE_LIMIT_PASSWORD_RESET: "3/minute"

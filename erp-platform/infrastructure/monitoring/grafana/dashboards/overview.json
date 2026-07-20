@@ -1,0 +1,429 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "ERP System Overview",
+    "description": "Comprehensive system overview dashboard for the ERP platform",
+    "tags": ["erp", "production", "overview"],
+    "timezone": "browser",
+    "editable": false,
+    "hideControls": false,
+    "sharedCrosshair": true,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "API Requests",
+        "type": "graph",
+        "span": 6,
+        "height": "250px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{job=\"erp-api\"}[5m]))",
+            "legendFormat": "Requests/sec",
+            "refId": "A"
+          }
+        ],
+        "grid": {
+          "thresholdLine": false
+        },
+        "yaxes": [
+          { "format": "reqps", "label": "Requests per second" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true,
+          "max": true
+        }
+      },
+      {
+        "id": 2,
+        "title": "API Latency (p95)",
+        "type": "graph",
+        "span": 6,
+        "height": "250px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"erp-api\"}[5m])) by (le))",
+            "legendFormat": "p95",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"erp-api\"}[5m])) by (le))",
+            "legendFormat": "p99",
+            "refId": "B"
+          }
+        ],
+        "grid": {
+          "thresholdLine": true,
+          "thresholds": [
+            {
+              "value": 0.5,
+              "color": "warning"
+            },
+            {
+              "value": 1.0,
+              "color": "critical"
+            }
+          ]
+        },
+        "yaxes": [
+          { "format": "s", "label": "Latency" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true
+        }
+      },
+      {
+        "id": 3,
+        "title": "API Error Rate",
+        "type": "graph",
+        "span": 4,
+        "height": "200px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{job=\"erp-api\", status=~\"5..\"}[5m])) / sum(rate(http_requests_total{job=\"erp-api\"}[5m])) * 100",
+            "legendFormat": "5xx %",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{job=\"erp-api\", status=~\"4..\"}[5m])) / sum(rate(http_requests_total{job=\"erp-api\"}[5m])) * 100",
+            "legendFormat": "4xx %",
+            "refId": "B"
+          }
+        ],
+        "grid": {
+          "thresholdLine": true,
+          "thresholds": [
+            {
+              "value": 1,
+              "color": "warning"
+            },
+            {
+              "value": 5,
+              "color": "critical"
+            }
+          ]
+        },
+        "yaxes": [
+          { "format": "percent", "label": "Error rate" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true
+        }
+      },
+      {
+        "id": 4,
+        "title": "Active API Endpoints",
+        "type": "table",
+        "span": 4,
+        "height": "200px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "topk(10, sum(rate(http_requests_total{job=\"erp-api\"}[5m])) by (endpoint, method))",
+            "legendFormat": "",
+            "refId": "A",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "columns": [
+          { "value": "endpoint", "text": "Endpoint" },
+          { "value": "method", "text": "Method" },
+          { "value": "Value", "text": "Requests/sec" }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "HTTP Status Codes",
+        "type": "graph",
+        "span": 4,
+        "height": "200px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{job=\"erp-api\", status=~\"2..\"}[5m]))",
+            "legendFormat": "2xx",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{job=\"erp-api\", status=~\"3..\"}[5m]))",
+            "legendFormat": "3xx",
+            "refId": "B"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{job=\"erp-api\", status=~\"4..\"}[5m]))",
+            "legendFormat": "4xx",
+            "refId": "C"
+          },
+          {
+            "expr": "sum(rate(http_requests_total{job=\"erp-api\", status=~\"5..\"}[5m]))",
+            "legendFormat": "5xx",
+            "refId": "D"
+          }
+        ],
+        "yaxes": [
+          { "format": "reqps", "label": "Requests per second" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true
+        }
+      },
+      {
+        "id": 6,
+        "title": "Database Connections",
+        "type": "graph",
+        "span": 6,
+        "height": "200px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "pg_stat_activity_count{job=\"postgres\"}",
+            "legendFormat": "Active connections",
+            "refId": "A"
+          },
+          {
+            "expr": "pg_stat_activity_max_tx_duration{job=\"postgres\"}",
+            "legendFormat": "Max transaction duration (s)",
+            "refId": "B"
+          }
+        ],
+        "grid": {
+          "thresholdLine": true,
+          "thresholds": [
+            {
+              "value": 80,
+              "color": "warning"
+            }
+          ]
+        },
+        "yaxes": [
+          { "format": "short", "label": "Connections" },
+          { "format": "s", "label": "Duration" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true
+        }
+      },
+      {
+        "id": 7,
+        "title": "Queue Depth",
+        "type": "graph",
+        "span": 6,
+        "height": "200px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rabbitmq_queue_messages_ready{job=\"rabbitmq\"}",
+            "legendFormat": "{{queue}}",
+            "refId": "A"
+          }
+        ],
+        "grid": {
+          "thresholdLine": true,
+          "thresholds": [
+            {
+              "value": 10000,
+              "color": "warning"
+            }
+          ]
+        },
+        "yaxes": [
+          { "format": "short", "label": "Messages" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true,
+          "max": true
+        }
+      },
+      {
+        "id": 8,
+        "title": "CPU Usage by Pod",
+        "type": "graph",
+        "span": 6,
+        "height": "200px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"erp-system\"}[5m])) by (pod)",
+            "legendFormat": "{{pod}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "percentunit", "label": "CPU usage" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true,
+          "max": true
+        }
+      },
+      {
+        "id": 9,
+        "title": "Memory Usage by Pod",
+        "type": "graph",
+        "span": 6,
+        "height": "200px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "sum(container_memory_working_set_bytes{namespace=\"erp-system\"}) by (pod)",
+            "legendFormat": "{{pod}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "bytes", "label": "Memory" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true
+        }
+      },
+      {
+        "id": 10,
+        "title": "Redis Cache Hit Ratio",
+        "type": "graph",
+        "span": 4,
+        "height": "150px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(redis_keyspace_hits_total{job=\"redis\"}[5m]) / (rate(redis_keyspace_hits_total{job=\"redis\"}[5m]) + rate(redis_keyspace_misses_total{job=\"redis\"}[5m])) * 100",
+            "legendFormat": "Hit ratio",
+            "refId": "A"
+          }
+        ],
+        "grid": {
+          "thresholdLine": true,
+          "thresholds": [
+            {
+              "value": 80,
+              "color": "warning"
+            }
+          ]
+        },
+        "yaxes": [
+          { "format": "percent", "label": "Hit ratio" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true
+        }
+      },
+      {
+        "id": 11,
+        "title": "Redis Memory Usage",
+        "type": "graph",
+        "span": 4,
+        "height": "150px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "redis_memory_used_bytes{job=\"redis\"}",
+            "legendFormat": "Used",
+            "refId": "A"
+          },
+          {
+            "expr": "redis_memory_max_bytes{job=\"redis\"}",
+            "legendFormat": "Max",
+            "refId": "B"
+          }
+        ],
+        "grid": {
+          "thresholdLine": true,
+          "thresholds": [
+            {
+              "value": 0.8,
+              "color": "warning"
+            }
+          ]
+        },
+        "yaxes": [
+          { "format": "bytes", "label": "Memory" },
+          { "format": "short" }
+        ],
+        "legend": {
+          "show": true,
+          "values": true,
+          "avg": true,
+          "current": true
+        }
+      },
+      {
+        "id": 12,
+        "title": "Pod Status",
+        "type": "stat",
+        "span": 4,
+        "height": "150px",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "count(kube_pod_status_phase{namespace=\"erp-system\", phase=\"Running\"})",
+            "legendFormat": "Running",
+            "refId": "A"
+          },
+          {
+            "expr": "count(kube_pod_status_phase{namespace=\"erp-system\", phase=\"Pending\"})",
+            "legendFormat": "Pending",
+            "refId": "B"
+          }
+        ],
+        "stat": {
+          "values": true,
+          "total": {
+            "field": "running",
+            "type": "sum"
+          }
+        }
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h"],
+      "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+    },
+    "schemaVersion": 14,
+    "version": 1,
+    "links": [],
+    "gnetId": null
+  }
+}

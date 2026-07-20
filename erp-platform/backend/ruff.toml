@@ -1,0 +1,67 @@
+target-version = "py312"
+
+line-length = 120
+
+indent-width = 4
+
+[lint]
+select = [
+    "F",   # pyflakes
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "YTT", # flake8-2020
+    "ANN", # annotations
+    "ASYNC", # flake8-async
+    "S",   # flake8-bandit
+    "BLE", # flake8-blind-except
+    "COM", # flake8-commas
+    "C4",  # flake8-comprehensions
+    "T10", # flake8-debugger
+    "SIM", # flake8-simplify
+    "PIE", # flake8-pie
+    "T20", # flake8-print
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SLF", # flake8-self
+    "TCH", # flake8-type-checking
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "G",   # flake8-logging-format
+    "LOG", # flake8-logging
+    "NPY", # numpy-specific
+    "PD",  # pandas-vet
+    "PGH", # pygrep-hooks
+    "PTH", # flake8-use-pathlib
+    "PL",  # pylint
+    "PT",  # flake8-pytest-style
+    "Q",   # flake8-quotes
+    "RUF", # Ruff-specific
+]
+
+ignore = [
+    "ANN101",  # missing-type-self
+    "ANN102",  # missing-type-cls
+    "ANN401",  # any-type
+    "S101",    # assert allowed
+    "COM812",  # trailing comma
+    "ISC001",  # implicit concat
+]
+
+[lint.per-file-ignores]
+"__init__.py" = ["F401", "E402", "F403"]
+"tests/**/*.py" = ["S101", "ANN", "PLR2004"]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.isort]
+known-first-party = ["app"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = true
+line-ending = "auto"

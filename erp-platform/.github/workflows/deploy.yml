@@ -1,0 +1,257 @@
+name: Deploy Pipeline
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Deployment environment"
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAMESPACE: ${{ github.repository_owner }}
+  IMAGE_TAG: ${{ github.sha }}
+  AWS_REGION: us-east-1
+  TF_STATE_BUCKET: erp-terraform-state
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      backend_image: ${{ steps.meta-backend.outputs.tags }}
+      worker_image: ${{ steps.meta-worker.outputs.tags }}
+      frontend_image: ${{ steps.meta-frontend.outputs.tags }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for backend
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/backend
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infrastructure/docker/backend.Dockerfile
+          target: runner
+          push: true
+          tags: ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Extract metadata for worker
+        id: meta-worker
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/worker
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push worker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: infrastructure/docker/worker.Dockerfile
+          target: runner
+          push: true
+          tags: ${{ steps.meta-worker.outputs.tags }}
+          labels: ${{ steps.meta-worker.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Extract metadata for frontend
+        id: meta-frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAMESPACE }}/frontend
+          tags: |
+            type=sha
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: frontend
+          file: frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta-frontend.outputs.tags }}
+          labels: ${{ steps.meta-frontend.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  terraform:
+    name: Terraform Apply
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    defaults:
+      run:
+        working-directory: infrastructure/terraform/environments/${{ github.event.inputs.environment || 'staging' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.8.0"
+
+      - name: Terraform Init
+        run: terraform init -backend-config="bucket=${{ env.TF_STATE_BUCKET }}" -backend-config="key=environments/${{ github.event.inputs.environment || 'staging' }}/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}"
+
+      - name: Terraform Plan
+        run: terraform plan -var="db_password=${{ secrets.DB_PASSWORD }}" -out=tfplan
+        env:
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+
+  deploy-kubernetes:
+    name: Deploy to Kubernetes
+    needs: terraform
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name erp-platform-${{ github.event.inputs.environment || 'staging' }} --region ${{ env.AWS_REGION }}
+
+      - name: Apply namespace
+        run: kubectl apply -f infrastructure/kubernetes/namespaces/
+
+      - name: Apply configmaps
+        run: kubectl apply -f infrastructure/kubernetes/configmaps/
+
+      - name: Apply services
+        run: kubectl apply -f infrastructure/kubernetes/services/
+
+      - name: Update deployment image tags
+        run: |
+          sed -i "s|image: ghcr.io/erp-platform/backend:.*|image: ${{ needs.build-and-push.outputs.backend_image }}|g" infrastructure/kubernetes/deployments/api.yaml
+          sed -i "s|image: ghcr.io/erp-platform/worker:.*|image: ${{ needs.build-and-push.outputs.worker_image }}|g" infrastructure/kubernetes/deployments/worker.yaml
+          sed -i "s|image: ghcr.io/erp-platform/frontend:.*|image: ${{ needs.build-and-push.outputs.frontend_image }}|g" infrastructure/kubernetes/deployments/frontend.yaml
+
+      - name: Apply deployments
+        run: kubectl apply -f infrastructure/kubernetes/deployments/
+
+      - name: Apply HPA
+        run: kubectl apply -f infrastructure/kubernetes/hpa/
+
+      - name: Apply ingress
+        run: kubectl apply -f infrastructure/kubernetes/ingress/
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/api -n erp-system --timeout=5m
+          kubectl rollout status deployment/worker -n erp-system --timeout=5m
+          kubectl rollout status deployment/frontend -n erp-system --timeout=5m
+
+  smoke-tests:
+    name: Smoke Tests
+    needs: deploy-kubernetes
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    steps:
+      - name: Check API health
+        run: |
+          API_URL="https://api.erp-platform.com"
+          if [ "${{ github.event.inputs.environment }}" = "staging" ]; then
+            API_URL="https://api.staging.erp-platform.com"
+          fi
+          curl -f --retry 5 --retry-delay 10 --retry-max-time 60 "$API_URL/api/v1/monitoring/health"
+
+      - name: Check frontend
+        run: |
+          FRONTEND_URL="https://erp-platform.com"
+          if [ "${{ github.event.inputs.environment }}" = "staging" ]; then
+            FRONTEND_URL="https://staging.erp-platform.com"
+          fi
+          curl -f --retry 5 --retry-delay 10 "$FRONTEND_URL"
+
+      - name: Run smoke test suite
+        run: |
+          echo "Running smoke tests..."
+          # Placeholder for smoke test execution
+          # Example: npx newman run tests/smoke/erp-smoke.postman_collection.json
+
+  notify:
+    name: Notify Deployment
+    needs: [smoke-tests]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify Slack
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "Deployment to ${{ github.event.inputs.environment || 'staging' }} ${{ needs.smoke-tests.result == 'success' && 'succeeded' || needs.smoke-tests.result == 'failure' && 'failed' || 'incomplete' }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Deployment to *${{ github.event.inputs.environment || 'staging' }}* ${{ needs.smoke-tests.result == 'success' && ':white_check_mark: Succeeded' || needs.smoke-tests.result == 'failure' && ':x: Failed' || ':warning: Incomplete' }}\n*Commit:* <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}>\n*Workflow:* ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

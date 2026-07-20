@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init
+  namespace: erp-storage
+  labels:
+    app.kubernetes.io/name: erp-platform
+    app.kubernetes.io/component: postgres
+data:
+  init.sql: |
+    -- Create extensions
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+    CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
+    CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+    CREATE EXTENSION IF NOT EXISTS "btree_gin";
+    CREATE EXTENSION IF NOT EXISTS "tablefunc";
+
+    -- Create schemas
+    CREATE SCHEMA IF NOT EXISTS core;
+    CREATE SCHEMA IF NOT EXISTS hr;
+    CREATE SCHEMA IF NOT EXISTS inventory;
+    CREATE SCHEMA IF NOT EXISTS procurement;
+    CREATE SCHEMA IF NOT EXISTS sales;
+    CREATE SCHEMA IF NOT EXISTS accounting;
+    CREATE SCHEMA IF NOT EXISTS projects;
+    CREATE SCHEMA IF NOT EXISTS system;
+    CREATE SCHEMA IF NOT EXISTS audit;
+
+    -- Set search path
+    ALTER DATABASE erp_db SET search_path TO core, hr, inventory, procurement, sales, accounting, projects, system, audit, public;

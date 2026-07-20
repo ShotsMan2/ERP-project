@@ -1,0 +1,54 @@
+# FastAPI & ASGI
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+python-multipart>=0.0.12
+
+# Database
+sqlalchemy[asyncio]>=2.0.36
+asyncpg>=0.30.0
+alembic>=1.14.0
+psycopg2-binary>=2.9.10
+
+# Configuration & Validation
+pydantic>=2.10.0
+pydantic-settings>=2.6.0
+python-dotenv>=1.0.1
+
+# Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+bcrypt>=4.2.0
+pyotp>=2.9.0
+cryptography>=44.0.0
+
+# Caching
+redis[hiredis]>=5.2.0
+
+# Queue
+celery>=5.4.0
+flower>=2.0.1
+
+# Search
+elasticsearch[async]>=8.16.0
+
+# Storage
+boto3>=1.36.0
+botocore>=1.36.0
+
+# Barcode & QR
+python-barcode>=0.15.1
+qrcode>=8.0
+
+# Excel export
+openpyxl>=3.1.5
+
+# HTTP client
+httpx>=0.28.0
+
+# Utilities
+python-dateutil>=2.9.0
+pytz>=2024.2
+email-validator>=2.2.0
+
+# Metrics & Monitoring
+prometheus-client>=0.21.0

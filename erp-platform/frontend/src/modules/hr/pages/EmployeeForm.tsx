@@ -1,0 +1,198 @@
+import { useState } from 'react';
+import {
+  Card, Form, Input, Select, DatePicker, Button, Row, Col, Space, InputNumber, message, Typography, Divider,
+} from 'antd';
+import { SaveOutlined } from '@ant-design/icons';
+import { useNavigate, useParams } from 'react-router-dom';
+import dayjs from 'dayjs';
+import PageHeader from '@/components/ui/PageHeader';
+
+const { TextArea } = Input;
+const { Text } = Typography;
+
+interface EmployeeFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  department: string;
+  jobTitle: string;
+  grade: string;
+  manager: string;
+  workLocation: string;
+  hireDate: dayjs.Dayjs;
+  employmentType: string;
+  salary: number;
+  emergencyName: string;
+  emergencyPhone: string;
+  emergencyRelation: string;
+  notes: string;
+}
+
+const EmployeeForm: React.FC = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [form] = Form.useForm<EmployeeFormData>();
+  const [saving, setSaving] = useState(false);
+  const isEditing = !!id;
+
+  const onFinish = async (values: EmployeeFormData) => {
+    setSaving(true);
+    try {
+      await new Promise((r) => setTimeout(r, 1000));
+      message.success(`Employee ${isEditing ? 'updated' : 'created'} successfully`);
+      navigate('/hr/employees');
+    } catch {
+      message.error(`Failed to ${isEditing ? 'update' : 'create'} employee`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <PageHeader
+        title={isEditing ? 'Edit Employee' : 'New Employee'}
+        subtitle={isEditing ? 'Update employee information' : 'Add a new employee to the system'}
+        onBack={() => navigate('/hr/employees')}
+      >
+        <Space>
+          <Button onClick={() => navigate('/hr/employees')}>Cancel</Button>
+          <Button type="primary" icon={<SaveOutlined />} loading={saving} onClick={() => form.submit()}>
+            {isEditing ? 'Update' : 'Create'} Employee
+          </Button>
+        </Space>
+      </PageHeader>
+
+      <Card>
+        <Form<EmployeeFormData>
+          form={form}
+          layout="vertical"
+          onFinish={onFinish}
+          initialValues={{
+            hireDate: dayjs(),
+            employmentType: 'full_time',
+            grade: 'L3',
+          }}
+        >
+          <Divider orientation="left">Personal Information</Divider>
+          <Row gutter={16}>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="First Name" name="firstName" rules={[{ required: true }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Last Name" name="lastName" rules={[{ required: true }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Phone" name="phone" rules={[{ required: true }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider orientation="left">Employment Details</Divider>
+          <Row gutter={16}>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Department" name="department" rules={[{ required: true }]}>
+                <Select>
+                  <Select.Option value="Engineering">Engineering</Select.Option>
+                  <Select.Option value="Marketing">Marketing</Select.Option>
+                  <Select.Option value="Finance">Finance</Select.Option>
+                  <Select.Option value="HR">Human Resources</Select.Option>
+                  <Select.Option value="Sales">Sales</Select.Option>
+                  <Select.Option value="Operations">Operations</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Job Title" name="jobTitle" rules={[{ required: true }]}>
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Grade" name="grade">
+                <Select>
+                  {['L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8'].map((g) => (
+                    <Select.Option key={g} value={g}>{g}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Manager" name="manager">
+                <Select showSearch placeholder="Search manager...">
+                  <Select.Option value="Alice Johnson">Alice Johnson</Select.Option>
+                  <Select.Option value="Bob Williams">Bob Williams</Select.Option>
+                  <Select.Option value="Carol Martinez">Carol Martinez</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Row gutter={16}>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Employment Type" name="employmentType" rules={[{ required: true }]}>
+                <Select>
+                  <Select.Option value="full_time">Full Time</Select.Option>
+                  <Select.Option value="part_time">Part Time</Select.Option>
+                  <Select.Option value="contract">Contract</Select.Option>
+                  <Select.Option value="intern">Intern</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Work Location" name="workLocation">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Hire Date" name="hireDate" rules={[{ required: true }]}>
+                <DatePicker className="w-full" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} lg={6}>
+              <Form.Item label="Salary" name="salary">
+                <InputNumber min={0} prefix="$" className="w-full" />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider orientation="left">Emergency Contact</Divider>
+          <Row gutter={16}>
+            <Col xs={24} sm={8}>
+              <Form.Item label="Full Name" name="emergencyName">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item label="Phone" name="emergencyPhone">
+                <Input />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={8}>
+              <Form.Item label="Relationship" name="emergencyRelation">
+                <Input />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Divider orientation="left">Notes</Divider>
+          <Form.Item name="notes">
+            <TextArea rows={4} placeholder="Additional notes, skills, certifications..." />
+          </Form.Item>
+        </Form>
+      </Card>
+    </div>
+  );
+};
+
+export default EmployeeForm;

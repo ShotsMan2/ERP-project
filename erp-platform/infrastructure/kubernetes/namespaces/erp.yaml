@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: erp-system
+  labels:
+    name: erp-system
+    environment: production
+    app.kubernetes.io/name: erp-platform
+    app.kubernetes.io/part-of: erp-system
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: erp-monitoring
+  labels:
+    name: erp-monitoring
+    environment: production
+    app.kubernetes.io/name: erp-platform
+    app.kubernetes.io/part-of: monitoring
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: erp-storage
+  labels:
+    name: erp-storage
+    environment: production
+    app.kubernetes.io/name: erp-platform
+    app.kubernetes.io/part-of: storage

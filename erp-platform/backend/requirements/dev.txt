@@ -1,0 +1,27 @@
+-r base.txt
+
+# Testing
+pytest>=8.3.0
+pytest-asyncio>=0.24.0
+pytest-cov>=6.0.0
+httpx>=0.28.0
+coverage>=7.6.0
+
+# Factories & Fixtures
+factory-boy>=3.3.1
+faker>=33.0.0
+
+# Linting & Formatting
+ruff>=0.8.0
+
+# Type Checking
+mypy>=1.13.0
+types-python-dateutil>=2.9.0
+types-pytz>=2024.2
+
+# Database
+pytest-aiohttp>=1.0.5
+aiosqlite>=0.20.0
+
+# Dev server
+watchfiles>=1.0.0
