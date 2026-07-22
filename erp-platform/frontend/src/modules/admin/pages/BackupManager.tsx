@@ -1,55 +1,108 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Table, Tag, Button, Space, Typography, message, Modal, Progress } from 'antd';
-import { PlayCircleOutlined, DownloadOutlined, RotateLeftOutlined, DeleteOutlined } from '@ant-design/icons';
-import DataTable from '@/components/data/DataTable';
+import { PlayCircleOutlined, DeleteOutlined, RotateLeftOutlined } from '@ant-design/icons';
 import PageHeader from '@/components/ui/PageHeader';
+import { adminService, Backup } from '@/services/adminService';
 const { Text } = Typography;
 
-interface Backup { id: string; name: string; type: string; size: string; status: string; createdAt: string; createdBy: string; }
-const mockBackups: Backup[] = [
-  { id: '1', name: 'full-backup-2024-12-15', type: 'Full', size: '2.5 GB', status: 'completed', createdAt: '2024-12-15 02:00', createdBy: 'System' },
-  { id: '2', name: 'wal-archive-2024-12-15', type: 'WAL', size: '450 MB', status: 'completed', createdAt: '2024-12-15 03:00', createdBy: 'System' },
-  { id: '3', name: 'full-backup-2024-12-14', type: 'Full', size: '2.4 GB', status: 'completed', createdAt: '2024-12-14 02:00', createdBy: 'System' },
-  { id: '4', name: 'full-backup-2024-12-13', type: 'Full', size: '2.4 GB', status: 'completed', createdAt: '2024-12-13 02:00', createdBy: 'System' },
-  { id: '5', name: 'incremental-2024-12-15', type: 'Incremental', size: '180 MB', status: 'running', createdAt: '2024-12-15 04:00', createdBy: 'Admin' },
-];
-
 const BackupManager: React.FC = () => {
+  const [backups, setBackups] = useState<Backup[]>([]);
+  const [loading, setLoading] = useState(false);
   const [restoreModal, setRestoreModal] = useState(false);
   const [selectedBackup, setSelectedBackup] = useState<Backup | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const fetchBackups = async () => {
+    setLoading(true);
+    try {
+      const data = await adminService.listBackups();
+      setBackups(data);
+    } catch { message.error('Failed to load backups'); }
+    finally { setLoading(false); }
+  };
+
+  useEffect(() => { fetchBackups(); }, []);
+
+  const handleCreateBackup = async () => {
+    setActionLoading(true);
+    try {
+      await adminService.createBackup('full');
+      message.success('Backup started');
+      fetchBackups();
+    } catch { message.error('Failed to start backup'); }
+    finally { setActionLoading(false); }
+  };
+
+  const handleDeleteBackup = async (id: string) => {
+    try {
+      await adminService.deleteBackup(id);
+      message.success('Backup deleted');
+      fetchBackups();
+    } catch { message.error('Failed to delete backup'); }
+  };
+
+  const handleRestore = async () => {
+    if (!selectedBackup) return;
+    setActionLoading(true);
+    try {
+      await adminService.restoreBackup(selectedBackup.id);
+      message.success('Restore initiated');
+      setRestoreModal(false);
+      fetchBackups();
+    } catch { message.error('Restore failed'); }
+    finally { setActionLoading(false); }
+  };
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Type', dataIndex: 'type', key: 'type', render: (t: string) => <Tag color={t === 'Full' ? 'blue' : t === 'WAL' ? 'green' : 'orange'}>{t}</Tag> },
-    { title: 'Size', dataIndex: 'size', key: 'size' },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => s === 'running' ? <Space><Progress type="circle" percent={65} size={20} /><Text>Running</Text></Space> : <Tag color={s === 'completed' ? 'green' : 'red'}>{s}</Tag> },
-    { title: 'Created', dataIndex: 'createdAt', key: 'createdAt' },
-    { title: 'Actions', key: 'actions', render: (_: unknown, r: Backup) => (
-      <Space>
-        <Button type="link" size="small" icon={<DownloadOutlined />} onClick={() => message.success('Downloading ' + r.name)} />
-        <Button type="link" size="small" icon={<RotateLeftOutlined />} onClick={() => { setSelectedBackup(r); setRestoreModal(true); }} />
-        <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={() => message.success('Backup deleted')} />
-      </Space>
-    )},
+    { title: 'Name', dataIndex: 'filename', key: 'filename' },
+    {
+      title: 'Type', dataIndex: 'type', key: 'type',
+      render: (t: string) => <Tag color={t === 'full' ? 'blue' : t === 'wal' ? 'green' : 'orange'}>{t.toUpperCase()}</Tag>,
+    },
+    {
+      title: 'Size', key: 'size',
+      render: (_: unknown, r: Backup) => r.size_bytes ? `${(r.size_bytes / 1024 / 1024).toFixed(1)} MB` : '-',
+    },
+    {
+      title: 'Status', dataIndex: 'status', key: 'status',
+      render: (s: string) => {
+        const colorMap: Record<string, string> = { completed: 'green', running: 'orange', pending: 'default', failed: 'red', restoring: 'blue' };
+        return s === 'running' || s === 'restoring'
+          ? <Space><Progress type="circle" percent={s === 'restoring' ? 50 : 30} size={20} /><Text>{s}</Text></Space>
+          : <Tag color={colorMap[s] || 'default'}>{s}</Tag>;
+      },
+    },
+    { title: 'Created', dataIndex: 'created_at', key: 'created_at', render: (d: string) => new Date(d).toLocaleString() },
+    {
+      title: 'Actions', key: 'actions',
+      render: (_: unknown, r: Backup) => (
+        <Space>
+          <Button type="link" size="small" icon={<RotateLeftOutlined />}
+            onClick={() => { setSelectedBackup(r); setRestoreModal(true); }} disabled={r.status !== 'completed'} />
+          <Button type="link" size="small" danger icon={<DeleteOutlined />} onClick={() => handleDeleteBackup(r.id)} />
+        </Space>
+      ),
+    },
   ];
 
   return (
     <div className="p-6">
       <PageHeader title="Backup Manager" subtitle="Database backup and restore management">
-        <Button type="primary" icon={<PlayCircleOutlined />} onClick={() => message.success('Backup started')}>Create Backup</Button>
+        <Button type="primary" icon={<PlayCircleOutlined />} onClick={handleCreateBackup} loading={actionLoading}>Create Backup</Button>
       </PageHeader>
-      <Card><DataTable dataSource={mockBackups} columns={columns} rowKey="id" pagination={false} /></Card>
+      <Card>
+        <Table dataSource={backups} columns={columns} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />
+      </Card>
 
       <Modal title="Restore Backup" open={restoreModal} onCancel={() => setRestoreModal(false)}
-        onOk={() => { message.warning('Restore initiated. This may take several minutes.'); setRestoreModal(false); }}
-        okText="Start Restore"
+        onOk={handleRestore} okText="Start Restore" confirmLoading={actionLoading}
       >
         {selectedBackup && (
           <div>
-            <Text>You are about to restore: <strong>{selectedBackup.name}</strong></Text>
-            <br /><Text type="secondary">Size: {selectedBackup.size} | Type: {selectedBackup.type}</Text>
+            <Text>You are about to restore: <strong>{selectedBackup.filename}</strong></Text>
+            <br /><Text type="secondary">Type: {selectedBackup.type} | Created: {new Date(selectedBackup.created_at).toLocaleString()}</Text>
             <div className="mt-4 p-3 bg-orange-50 rounded border border-orange-200">
-              <Text type="warning">Warning: This will overwrite current data. All changes after {selectedBackup.createdAt} will be lost.</Text>
+              <Text type="warning">Warning: This will overwrite current data. All changes after the backup date will be lost.</Text>
             </div>
           </div>
         )}
@@ -57,4 +110,5 @@ const BackupManager: React.FC = () => {
     </div>
   );
 };
+
 export default BackupManager;

@@ -13,7 +13,7 @@ export default function LoginPage() {
   const onFinish = async (values: { email: string; password: string; remember: boolean }) => {
     try {
       await login(values.email, values.password);
-      navigate('/');
+      navigate('/app');
     } catch {
       // Error handled by interceptor
     }

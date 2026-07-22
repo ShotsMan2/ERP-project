@@ -94,3 +94,38 @@ Kullanıcıya her adımda sürecin durumunu şu formatta bildirin:
 7. **Zero-Trust Security:** Implement JWT-based RBAC and Row-Level Security on every API request.
 8. **Observability:** Use OpenTelemetry for logs. Implement tracing across RabbitMQ, Redis, PostgreSQL, and FastAPI using `trace-id`. Integrate Prometheus and Grafana.
 9. **Smart AI Agent Layer:** Integrate an intelligent AI assistant within the ERP that queries Elasticsearch and PostgreSQL for predictive analysis (e.g., inventory bottleneck predictions) using the `.agents` integrations.
+
+---
+
+## 🏗️ GÜNCELLENMİŞ MİMARİ (v2.0)
+
+### Routing Yapısı
+- `/` → **PublicLayout**: Landing, Features, Pricing, About, Contact, Blog
+- `/auth` → **AuthLayout**: Login, MFA, Forgot Password
+- `/app` → **MainLayout**: Tüm ERP modülleri (dashboard, hr, inventory, vb.)
+- `/portal` → **PortalLayout**: Müşteri/Tedarikçi portalı
+- `/*` → 404 NotFound
+
+### Backend Modülleri (24 modülün tamamı aktif)
+Tüm modüller `main.py`'de register edilmiştir:
+- **Core**: auth, admin, audit, notifications, documents, companies, integrations, ai
+- **IAM**: users, roles, settings
+- **HR**: employees, hr, payroll
+- **Inventory**: products, inventory
+- **Procurement**: purchasing
+- **Sales**: sales, crm
+- **Finance**: accounting, finance
+- **Projects**: projects, workflows, reports
+
+### Admin API Genişletmeleri
+- `GET /admin/overview` - Sistem genel bakış
+- `GET /admin/health` - Sağlık özeti
+- `POST /admin/health/check` - Servis kontrolleri (gerçek DB/Redis ping)
+- `GET/POST/DELETE /admin/backups` - Yedekleme CRUD
+- `POST /admin/backups/{id}/restore` - Geri yükleme
+- `GET /admin/queue/summary` - Kuyruk özeti
+- `GET /admin/queue/tasks` - Görev listesi
+- `POST /admin/queue/tasks/{id}/retry` - Görev tekrarı
+- `POST /admin/queue/tasks/{id}/cancel` - Görev iptali
+- `POST /admin/queue/{name}/purge` - Kuyruk temizleme
+- `GET /admin/activities` - Aktivite günlükleri

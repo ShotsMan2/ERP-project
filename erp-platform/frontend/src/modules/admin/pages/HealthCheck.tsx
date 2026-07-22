@@ -1,61 +1,112 @@
-import { Card, Row, Col, Statistic, Tag, Typography, Progress, Space } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { Card, Row, Col, Statistic, Tag, Typography, Progress, Button, Space, Spin, message } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, WarningOutlined, ReloadOutlined } from '@ant-design/icons';
 import PageHeader from '@/components/ui/PageHeader';
+import { adminService, HealthCheck as HealthCheckType } from '@/services/adminService';
 const { Text } = Typography;
 
-interface HealthItem { name: string; status: 'healthy' | 'degraded' | 'down'; latency: string; uptime: string; details: string; }
-const services: HealthItem[] = [
-  { name: 'API Server', status: 'healthy', latency: '45ms', uptime: '99.98%', details: '8 pods running, 45% CPU' },
-  { name: 'Database (PostgreSQL)', status: 'healthy', latency: '12ms', uptime: '99.99%', details: 'Primary + 2 replicas, 60% storage' },
-  { name: 'Cache (Redis)', status: 'healthy', latency: '3ms', uptime: '99.95%', details: 'Cluster 6 nodes, 45% memory' },
-  { name: 'Queue (RabbitMQ)', status: 'degraded', latency: '120ms', uptime: '99.80%', details: '5 queues, 1 dead-letter alert' },
-  { name: 'Search (Elasticsearch)', status: 'healthy', latency: '25ms', uptime: '99.97%', details: '3 nodes, 120k docs indexed' },
-  { name: 'Storage (S3)', status: 'healthy', latency: '80ms', uptime: '99.99%', details: '2.4 TB used of 10 TB' },
-  { name: 'WebSocket Server', status: 'healthy', latency: '15ms', uptime: '99.95%', details: '142 connected clients' },
-  { name: 'Email Service', status: 'down', latency: 'N/A', uptime: '95.20%', details: 'SMTP relay unreachable' },
-];
+const serviceLabels: Record<string, string> = {
+  api_server: 'API Server', database: 'Database (PostgreSQL)', redis: 'Cache (Redis)',
+  rabbitmq: 'Queue (RabbitMQ)', elasticsearch: 'Search (Elasticsearch)',
+  celery_worker: 'Celery Worker', minio: 'Storage (S3)', websocket: 'WebSocket Server',
+};
 
 const statusColors: Record<string, string> = { healthy: '#52c41a', degraded: '#faad14', down: '#ff4d4f' };
-const statusIcons: Record<string, React.ReactNode> = { healthy: <CheckCircleOutlined />, degraded: <WarningOutlined />, down: <CloseCircleOutlined /> };
+const statusIcons: Record<string, React.ReactNode> = {
+  healthy: <CheckCircleOutlined />, degraded: <WarningOutlined />, down: <CloseCircleOutlined />,
+};
 
 const HealthCheck: React.FC = () => {
+  const [services, setServices] = useState<HealthCheckType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [overview, setOverview] = useState<{ total_users: number; api_requests_24h: number; uptime_percentage: number } | null>(null);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [healthRes, overviewRes] = await Promise.all([
+        adminService.getHealth(),
+        adminService.getOverview(),
+      ]);
+      setServices(healthRes.services || []);
+      setOverview(overviewRes);
+    } catch {
+      message.error('Failed to fetch health data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const runCheck = async () => {
+    setChecking(true);
+    try {
+      const results = await adminService.runHealthCheck();
+      setServices(results);
+      message.success('Health checks completed');
+    } catch {
+      message.error('Health check failed');
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  useEffect(() => { fetchData(); }, []);
+
   const healthyCount = services.filter((s) => s.status === 'healthy').length;
   const degradedCount = services.filter((s) => s.status === 'degraded').length;
   const downCount = services.filter((s) => s.status === 'down').length;
-  const uptime = (healthyCount / services.length) * 100;
+  const uptime = services.length > 0 ? (healthyCount / services.length) * 100 : 0;
 
   return (
-    <div className="p-6">
-      <PageHeader title="System Health" subtitle="Monitor system services and performance" />
+    <Spin spinning={loading}>
+      <PageHeader title="System Health" subtitle="Monitor system services and performance">
+        <Button type="primary" icon={<ReloadOutlined />} onClick={runCheck} loading={checking}>Run Health Check</Button>
+      </PageHeader>
+
+      {overview && (
+        <Row gutter={[16, 16]} className="mb-6">
+          <Col xs={24} sm={8}><Card><Statistic title="Total Users" value={overview.total_users} /></Card></Col>
+          <Col xs={24} sm={8}><Card><Statistic title="API Requests (24h)" value={overview.api_requests_24h} /></Card></Col>
+          <Col xs={24} sm={8}><Card><Statistic title="Uptime" value={overview.uptime_percentage} suffix="%" precision={2} valueStyle={{ color: overview.uptime_percentage > 99 ? '#52c41a' : '#faad14' }} /></Card></Col>
+        </Row>
+      )}
+
       <Row gutter={[16, 16]} className="mb-6">
         <Col xs={24} sm={8}><Card><Statistic title="Healthy" value={healthyCount} suffix={'/ ' + services.length} prefix={<CheckCircleOutlined />} valueStyle={{ color: '#52c41a' }} /></Card></Col>
         <Col xs={24} sm={8}><Card><Statistic title="Degraded" value={degradedCount} prefix={<WarningOutlined />} valueStyle={{ color: '#faad14' }} /></Card></Col>
         <Col xs={24} sm={8}><Card><Statistic title="Down" value={downCount} prefix={<CloseCircleOutlined />} valueStyle={{ color: '#ff4d4f' }} /></Card></Col>
       </Row>
+
       <Card title="Service Status">
         <Row gutter={[16, 16]}>
-          {services.map((s) => (
-            <Col xs={24} sm={12} lg={6} key={s.name}>
-              <Card size="small" className={s.status === 'down' ? 'bg-red-50' : s.status === 'degraded' ? 'bg-orange-50' : ''}>
-                <div className="flex items-center justify-between mb-2">
-                  <Text strong>{s.name}</Text>
-                  <Tag icon={statusIcons[s.status]} color={statusColors[s.status]}>{s.status.toUpperCase()}</Tag>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between"><Text type="secondary">Latency</Text><Text>{s.latency}</Text></div>
-                  <div className="flex justify-between"><Text type="secondary">Uptime</Text><Text>{s.uptime}</Text></div>
-                  <Text type="secondary" className="text-xs block mt-2">{s.details}</Text>
-                </div>
-              </Card>
-            </Col>
-          ))}
+          {services.map((s) => {
+            const label = serviceLabels[s.service_name] || s.service_name;
+            const latencyStr = s.latency_ms ? `${s.latency_ms.toFixed(1)}ms` : 'N/A';
+            return (
+              <Col xs={24} sm={12} lg={6} key={s.service_name}>
+                <Card size="small" className={s.status === 'down' ? 'bg-red-50' : s.status === 'degraded' ? 'bg-orange-50' : ''}>
+                  <div className="flex items-center justify-between mb-2">
+                    <Text strong>{label}</Text>
+                    <Tag icon={statusIcons[s.status]} color={statusColors[s.status]}>{s.status.toUpperCase()}</Tag>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between"><Text type="secondary">Latency</Text><Text>{latencyStr}</Text></div>
+                    <div className="flex justify-between"><Text type="secondary">Checked</Text><Text>{new Date(s.checked_at).toLocaleTimeString()}</Text></div>
+                    {s.error_message && <Text type="danger" className="text-xs block mt-2">{s.error_message}</Text>}
+                  </div>
+                </Card>
+              </Col>
+            );
+          })}
         </Row>
         <div className="mt-6">
           <Text strong>Overall System Health</Text>
           <Progress percent={Math.round(uptime)} status={downCount > 0 ? 'exception' : degradedCount > 0 ? 'active' : 'success'} />
         </div>
       </Card>
-    </div>
+    </Spin>
   );
 };
+
 export default HealthCheck;

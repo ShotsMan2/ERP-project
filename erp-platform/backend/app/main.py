@@ -53,7 +53,9 @@ def create_app() -> FastAPI:
     from app.middleware.cors import setup_cors
     setup_cors(app)
 
-    @app.get(f"{settings.API_V1_PREFIX}/health", tags=["System"])
+    api_prefix = settings.API_V1_PREFIX
+
+    @app.get(f"{api_prefix}/health", tags=["System"])
     async def health_check() -> dict:
         return {
             "status": "healthy",
@@ -67,17 +69,94 @@ def create_app() -> FastAPI:
             "name": settings.APP_NAME,
             "version": settings.APP_VERSION,
             "environment": settings.ENVIRONMENT,
-            "docs": f"{settings.API_V1_PREFIX}/docs",
+            "docs": f"{api_prefix}/docs",
         }
 
+    # ── Core / System Modules ───────────────────────────────────────
     from app.modules.auth.router import router as auth_router
-    app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
-
-    from app.modules.integrations.router import router as integrations_router
-    app.include_router(integrations_router, prefix=f"{settings.API_V1_PREFIX}/integrations", tags=["Integrations"])
+    app.include_router(auth_router, prefix=f"{api_prefix}/auth", tags=["Authentication"])
 
     from app.modules.admin.router import router as admin_router
-    app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Admin"])
+    app.include_router(admin_router, prefix=f"{api_prefix}/admin", tags=["Admin"])
+
+    from app.modules.audit.router import router as audit_router
+    app.include_router(audit_router, prefix=api_prefix)
+
+    from app.modules.notifications.router import router as notifications_router
+    app.include_router(notifications_router, prefix=f"{api_prefix}/notifications", tags=["Notifications"])
+
+    from app.modules.documents.router import router as documents_router
+    app.include_router(documents_router, prefix=api_prefix)
+
+    from app.modules.companies.router import router as companies_router
+    app.include_router(companies_router, prefix=f"{api_prefix}/companies", tags=["Companies"])
+    from app.modules.companies.router import branch_router, dept_router
+    app.include_router(branch_router, prefix=f"{api_prefix}/branches")
+    app.include_router(dept_router, prefix=f"{api_prefix}/departments")
+
+    from app.modules.integrations.router import router as integrations_router
+    app.include_router(integrations_router, prefix=f"{api_prefix}/integrations", tags=["Integrations"])
+
+    from app.modules.ai.router import router as ai_router
+    app.include_router(ai_router, prefix=api_prefix)
+
+    # ── IAM Modules ─────────────────────────────────────────────────
+    from app.modules.users.router import router as users_router
+    app.include_router(users_router, prefix=api_prefix)
+
+    from app.modules.roles.router import router as roles_router
+    app.include_router(roles_router, prefix=api_prefix)
+    from app.modules.roles.router import perm_router
+    app.include_router(perm_router, prefix=api_prefix)
+
+    from app.modules.settings.router import router as settings_router
+    app.include_router(settings_router, prefix=api_prefix)
+
+    # ── HR Modules ──────────────────────────────────────────────────
+    from app.modules.employees.router import router as employees_router
+    app.include_router(employees_router, prefix=api_prefix)
+
+    from app.modules.hr.router import router as hr_router
+    app.include_router(hr_router, prefix=f"{api_prefix}/hr", tags=["HR"])
+
+    from app.modules.payroll.router import router as payroll_router
+    app.include_router(payroll_router, prefix=api_prefix)
+
+    # ── Product & Inventory Modules ─────────────────────────────────
+    from app.modules.products.router import router as products_router
+    app.include_router(products_router, prefix=f"{api_prefix}/products", tags=["Products"])
+    from app.modules.products.router import cat_router
+    app.include_router(cat_router, prefix=f"{api_prefix}/categories")
+
+    from app.modules.inventory.router import router as inventory_router
+    app.include_router(inventory_router, prefix=api_prefix)
+
+    # ── Procurement & Sales Modules ─────────────────────────────────
+    from app.modules.purchasing.router import router as purchasing_router
+    app.include_router(purchasing_router, prefix=f"{api_prefix}/purchasing", tags=["Purchasing"])
+
+    from app.modules.sales.router import router as sales_router
+    app.include_router(sales_router, prefix=f"{api_prefix}/sales", tags=["Sales"])
+
+    from app.modules.crm.router import router as crm_router
+    app.include_router(crm_router, prefix=f"{api_prefix}/crm", tags=["CRM"])
+
+    # ── Financial Modules ───────────────────────────────────────────
+    from app.modules.accounting.router import router as accounting_router
+    app.include_router(accounting_router, prefix=f"{api_prefix}/accounting", tags=["Accounting"])
+
+    from app.modules.finance.router import router as finance_router
+    app.include_router(finance_router, prefix=f"{api_prefix}/finance", tags=["Finance"])
+
+    # ── Project & Workflow Modules ──────────────────────────────────
+    from app.modules.projects.router import router as projects_router
+    app.include_router(projects_router, prefix=f"{api_prefix}/projects", tags=["Projects"])
+
+    from app.modules.workflows.router import router as workflows_router
+    app.include_router(workflows_router, prefix=api_prefix)
+
+    from app.modules.reports.router import router as reports_router
+    app.include_router(reports_router, prefix=api_prefix)
 
     return app
 

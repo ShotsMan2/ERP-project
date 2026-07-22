@@ -4,6 +4,7 @@ import { Loading } from './components/ui/Loading';
 import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
+import PublicLayout from './layouts/PublicLayout';
 import PortalLayout from './layouts/PortalLayout';
 
 const LazyLoad = (Component: React.LazyExoticComponent<React.ComponentType>) => (
@@ -14,14 +15,26 @@ const LazyLoad = (Component: React.LazyExoticComponent<React.ComponentType>) => 
   </ErrorBoundary>
 );
 
+// ── Public Pages ──────────────────────────────────────────────────
+const LandingPage = lazy(() => import('./modules/public/LandingPage'));
+const FeaturesPage = lazy(() => import('./modules/public/FeaturesPage'));
+const PricingPage = lazy(() => import('./modules/public/PricingPage'));
+const AboutPage = lazy(() => import('./modules/public/AboutPage'));
+const ContactPage = lazy(() => import('./modules/public/ContactPage'));
+const BlogPage = lazy(() => import('./modules/public/BlogPage'));
+const BlogDetail = lazy(() => import('./modules/public/BlogDetail'));
+
+// ── Auth Pages ────────────────────────────────────────────────────
 const LoginPage = lazy(() => import('./modules/auth/LoginPage'));
 const ForgotPasswordPage = lazy(() => import('./modules/auth/ForgotPasswordPage'));
 const MFAPage = lazy(() => import('./modules/auth/MFAPage'));
 
-const ExecutiveDashboard = lazy(() => import('./modules/dashboard/ExecutiveDashboard'));
-const MyDashboard = lazy(() => import('./modules/dashboard/MyDashboard'));
-const AnalyticsPage = lazy(() => import('./modules/dashboard/AnalyticsPage'));
+// ── Dashboard Pages ───────────────────────────────────────────────
+const ExecutiveDashboard = lazy(() => import('./modules/dashboard/pages/ExecutiveDashboard'));
+const MyDashboard = lazy(() => import('./modules/dashboard/pages/MyDashboard'));
+const AnalyticsPage = lazy(() => import('./modules/dashboard/pages/Analytics'));
 
+// ── HR Pages ──────────────────────────────────────────────────────
 const EmployeeList = lazy(() => import('./modules/hr/EmployeeList'));
 const EmployeeDetail = lazy(() => import('./modules/hr/EmployeeDetail'));
 const AttendancePage = lazy(() => import('./modules/hr/AttendancePage'));
@@ -30,19 +43,23 @@ const PayrollPage = lazy(() => import('./modules/hr/PayrollPage'));
 const RecruitmentPage = lazy(() => import('./modules/hr/RecruitmentPage'));
 const PerformancePage = lazy(() => import('./modules/hr/PerformancePage'));
 
+// ── Inventory Pages ───────────────────────────────────────────────
 const ProductList = lazy(() => import('./modules/inventory/ProductList'));
 const StockPage = lazy(() => import('./modules/inventory/StockPage'));
 const WarehousePage = lazy(() => import('./modules/inventory/WarehousePage'));
 const TransferPage = lazy(() => import('./modules/inventory/TransferPage'));
 
+// ── Procurement Pages ─────────────────────────────────────────────
 const PurchaseOrderList = lazy(() => import('./modules/procurement/PurchaseOrderList'));
 const SupplierList = lazy(() => import('./modules/procurement/SupplierList'));
 const RFQPage = lazy(() => import('./modules/procurement/RFQPage'));
 
+// ── Sales Pages ───────────────────────────────────────────────────
 const CRMPage = lazy(() => import('./modules/sales/CRMPage'));
 const CustomerList = lazy(() => import('./modules/sales/CustomerList'));
 const SalesOrderList = lazy(() => import('./modules/sales/SalesOrderList'));
 
+// ── Accounting Pages ──────────────────────────────────────────────
 const ChartOfAccounts = lazy(() => import('./modules/accounting/ChartOfAccounts'));
 const JournalPage = lazy(() => import('./modules/accounting/JournalPage'));
 const InvoiceList = lazy(() => import('./modules/accounting/InvoiceList'));
@@ -52,15 +69,18 @@ const TaxPage = lazy(() => import('./modules/accounting/TaxPage'));
 const BudgetPage = lazy(() => import('./modules/accounting/BudgetPage'));
 const FinancialReports = lazy(() => import('./modules/accounting/FinancialReports'));
 
+// ── Projects Pages ────────────────────────────────────────────────
 const ProjectList = lazy(() => import('./modules/projects/ProjectList'));
 const TaskBoard = lazy(() => import('./modules/projects/TaskBoard'));
 const GanttChart = lazy(() => import('./modules/projects/GanttChart'));
 const TimeTracking = lazy(() => import('./modules/projects/TimeTracking'));
 
+// ── Reports Pages ─────────────────────────────────────────────────
 const ReportBuilder = lazy(() => import('./modules/reports/ReportBuilder'));
 const ScheduledReports = lazy(() => import('./modules/reports/ScheduledReports'));
 const ExportCenter = lazy(() => import('./modules/reports/ExportCenter'));
 
+// ── Settings Pages ────────────────────────────────────────────────
 const CompanySettings = lazy(() => import('./modules/settings/CompanySettings'));
 const UsersRoles = lazy(() => import('./modules/settings/UsersRoles'));
 const PermissionsPage = lazy(() => import('./modules/settings/PermissionsPage'));
@@ -69,19 +89,36 @@ const TemplatesPage = lazy(() => import('./modules/settings/TemplatesPage'));
 const IntegrationsPage = lazy(() => import('./modules/settings/IntegrationsPage'));
 const LocalizationPage = lazy(() => import('./modules/settings/LocalizationPage'));
 
-const AuditLogs = lazy(() => import('./modules/admin/AuditLogs'));
+// ── Admin Pages ───────────────────────────────────────────────────
+const AuditLogs = lazy(() => import('./modules/admin/pages/AuditLogViewer'));
 const ActivityLogs = lazy(() => import('./modules/admin/ActivityLogs'));
-const BackupPage = lazy(() => import('./modules/admin/BackupPage'));
-const QueueMonitor = lazy(() => import('./modules/admin/QueueMonitor'));
-const HealthCheck = lazy(() => import('./modules/admin/HealthCheck'));
+const BackupPage = lazy(() => import('./modules/admin/pages/BackupManager'));
+const QueueMonitor = lazy(() => import('./modules/admin/pages/QueueMonitor'));
+const HealthCheck = lazy(() => import('./modules/admin/pages/HealthCheck'));
 const ApiDocs = lazy(() => import('./modules/admin/ApiDocs'));
 
+// ── Portal Pages ──────────────────────────────────────────────────
 const CustomerPortal = lazy(() => import('./modules/portal/CustomerPortal'));
 const SupplierPortal = lazy(() => import('./modules/portal/SupplierPortal'));
 
 const NotFound = lazy(() => import('./modules/NotFound'));
 
 export const routes: RouteObject[] = [
+  // ── Public Routes ─────────────────────────────────────────────
+  {
+    path: '/',
+    element: <PublicLayout />,
+    children: [
+      { index: true, element: LazyLoad(LandingPage) },
+      { path: 'features', element: LazyLoad(FeaturesPage) },
+      { path: 'pricing', element: LazyLoad(PricingPage) },
+      { path: 'about', element: LazyLoad(AboutPage) },
+      { path: 'contact', element: LazyLoad(ContactPage) },
+      { path: 'blog', element: LazyLoad(BlogPage) },
+      { path: 'blog/:id', element: LazyLoad(BlogDetail) },
+    ],
+  },
+  // ── Auth Routes ──────────────────────────────────────────────
   {
     path: '/auth',
     element: <AuthLayout />,
@@ -91,6 +128,7 @@ export const routes: RouteObject[] = [
       { path: 'mfa', element: LazyLoad(MFAPage) },
     ],
   },
+  // ── Portal Routes ────────────────────────────────────────────
   {
     path: '/portal',
     element: <PortalLayout />,
@@ -99,8 +137,9 @@ export const routes: RouteObject[] = [
       { path: 'supplier', element: LazyLoad(SupplierPortal) },
     ],
   },
+  // ── Authenticated App Routes ─────────────────────────────────
   {
-    path: '/',
+    path: '/app',
     element: <MainLayout />,
     children: [
       { index: true, element: LazyLoad(ExecutiveDashboard) },
