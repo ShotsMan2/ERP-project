@@ -23,15 +23,17 @@ interface SidebarProps {
   className?: string;
 }
 
+const PREFIX = '/app';
+
 const getMenuItems = (t: any) => [
   {
     key: 'dashboard',
     icon: <DashboardOutlined />,
     label: t('nav.dashboard'),
     children: [
-      { key: '/dashboard/executive', label: t('nav.executiveDashboard') },
-      { key: '/dashboard/my', label: t('nav.myDashboard') },
-      { key: '/dashboard/analytics', label: t('nav.analytics') },
+      { key: `${PREFIX}/dashboard/executive`, label: t('nav.executiveDashboard') },
+      { key: `${PREFIX}/dashboard/my`, label: t('nav.myDashboard') },
+      { key: `${PREFIX}/dashboard/analytics`, label: t('nav.analytics') },
     ],
   },
   {
@@ -39,12 +41,12 @@ const getMenuItems = (t: any) => [
     icon: <TeamOutlined />,
     label: t('nav.humanResources'),
     children: [
-      { key: '/hr/employees', label: t('nav.employees') },
-      { key: '/hr/attendance', label: t('nav.attendance') },
-      { key: '/hr/leaves', label: t('nav.leaves') },
-      { key: '/hr/payroll', label: t('nav.payroll') },
-      { key: '/hr/recruitment', label: t('nav.recruitment') },
-      { key: '/hr/performance', label: t('nav.performance') },
+      { key: `${PREFIX}/hr/employees`, label: t('nav.employees') },
+      { key: `${PREFIX}/hr/attendance`, label: t('nav.attendance') },
+      { key: `${PREFIX}/hr/leaves`, label: t('nav.leaves') },
+      { key: `${PREFIX}/hr/payroll`, label: t('nav.payroll') },
+      { key: `${PREFIX}/hr/recruitment`, label: t('nav.recruitment') },
+      { key: `${PREFIX}/hr/performance`, label: t('nav.performance') },
     ],
   },
   {
@@ -52,10 +54,10 @@ const getMenuItems = (t: any) => [
     icon: <ShoppingCartOutlined />,
     label: t('nav.inventoryWarehouse'),
     children: [
-      { key: '/inventory/products', label: t('nav.products') },
-      { key: '/inventory/stock', label: t('nav.stock') },
-      { key: '/inventory/warehouses', label: t('nav.warehouses') },
-      { key: '/inventory/transfers', label: t('nav.transfers') },
+      { key: `${PREFIX}/inventory/products`, label: t('nav.products') },
+      { key: `${PREFIX}/inventory/stock`, label: t('nav.stock') },
+      { key: `${PREFIX}/inventory/warehouses`, label: t('nav.warehouses') },
+      { key: `${PREFIX}/inventory/transfers`, label: t('nav.transfers') },
     ],
   },
   {
@@ -63,9 +65,9 @@ const getMenuItems = (t: any) => [
     icon: <ShoppingOutlined />,
     label: t('nav.procurement'),
     children: [
-      { key: '/procurement/purchase-orders', label: t('nav.purchaseOrders') },
-      { key: '/procurement/suppliers', label: t('nav.suppliers') },
-      { key: '/procurement/rfqs', label: t('nav.rfqs') },
+      { key: `${PREFIX}/procurement/purchase-orders`, label: t('nav.purchaseOrders') },
+      { key: `${PREFIX}/procurement/suppliers`, label: t('nav.suppliers') },
+      { key: `${PREFIX}/procurement/rfqs`, label: t('nav.rfqs') },
     ],
   },
   {
@@ -73,9 +75,9 @@ const getMenuItems = (t: any) => [
     icon: <DollarOutlined />,
     label: t('nav.salesCRM'),
     children: [
-      { key: '/sales/crm', label: t('nav.crm') },
-      { key: '/sales/customers', label: t('nav.customers') },
-      { key: '/sales/orders', label: t('nav.salesOrders') },
+      { key: `${PREFIX}/sales/crm`, label: t('nav.crm') },
+      { key: `${PREFIX}/sales/customers`, label: t('nav.customers') },
+      { key: `${PREFIX}/sales/orders`, label: t('nav.salesOrders') },
     ],
   },
   {
@@ -83,14 +85,14 @@ const getMenuItems = (t: any) => [
     icon: <DollarOutlined />,
     label: t('nav.accountingFinance'),
     children: [
-      { key: '/accounting/chart-of-accounts', label: t('nav.chartOfAccounts') },
-      { key: '/accounting/journals', label: t('nav.journals') },
-      { key: '/accounting/invoices', label: t('nav.invoices') },
-      { key: '/accounting/payments', label: t('nav.payments') },
-      { key: '/accounting/bank', label: t('nav.bank') },
-      { key: '/accounting/taxes', label: t('nav.taxes') },
-      { key: '/accounting/budgets', label: t('nav.budgets') },
-      { key: '/accounting/reports', label: t('nav.financialReports') },
+      { key: `${PREFIX}/accounting/chart-of-accounts`, label: t('nav.chartOfAccounts') },
+      { key: `${PREFIX}/accounting/journals`, label: t('nav.journals') },
+      { key: `${PREFIX}/accounting/invoices`, label: t('nav.invoices') },
+      { key: `${PREFIX}/accounting/payments`, label: t('nav.payments') },
+      { key: `${PREFIX}/accounting/bank`, label: t('nav.bank') },
+      { key: `${PREFIX}/accounting/taxes`, label: t('nav.taxes') },
+      { key: `${PREFIX}/accounting/budgets`, label: t('nav.budgets') },
+      { key: `${PREFIX}/accounting/reports`, label: t('nav.financialReports') },
     ],
   },
   {
@@ -98,10 +100,10 @@ const getMenuItems = (t: any) => [
     icon: <ProjectOutlined />,
     label: t('nav.projects'),
     children: [
-      { key: '/projects', label: t('nav.projects') },
-      { key: '/projects/tasks', label: t('nav.tasks') },
-      { key: '/projects/gantt', label: t('nav.ganttChart') },
-      { key: '/projects/time-tracking', label: t('nav.timeTracking') },
+      { key: `${PREFIX}/projects`, label: t('nav.projects') },
+      { key: `${PREFIX}/projects/tasks`, label: t('nav.tasks') },
+      { key: `${PREFIX}/projects/gantt`, label: t('nav.ganttChart') },
+      { key: `${PREFIX}/projects/time-tracking`, label: t('nav.timeTracking') },
     ],
   },
   {
@@ -109,9 +111,9 @@ const getMenuItems = (t: any) => [
     icon: <BarChartOutlined />,
     label: t('nav.reportsAnalytics'),
     children: [
-      { key: '/reports/builder', label: t('nav.reportBuilder') },
-      { key: '/reports/scheduled', label: t('nav.scheduledReports') },
-      { key: '/reports/export', label: t('nav.exportCenter') },
+      { key: `${PREFIX}/reports/builder`, label: t('nav.reportBuilder') },
+      { key: `${PREFIX}/reports/scheduled`, label: t('nav.scheduledReports') },
+      { key: `${PREFIX}/reports/export`, label: t('nav.exportCenter') },
     ],
   },
   {
@@ -119,13 +121,13 @@ const getMenuItems = (t: any) => [
     icon: <SettingOutlined />,
     label: t('nav.settings'),
     children: [
-      { key: '/settings/company', label: t('nav.companySettings') },
-      { key: '/settings/users', label: t('nav.usersRoles') },
-      { key: '/settings/permissions', label: t('nav.permissions') },
-      { key: '/settings/workflows', label: t('nav.workflows') },
-      { key: '/settings/templates', label: t('nav.templates') },
-      { key: '/settings/integrations', label: t('nav.integrations') },
-      { key: '/settings/localization', label: t('nav.localization') },
+      { key: `${PREFIX}/settings/company`, label: t('nav.companySettings') },
+      { key: `${PREFIX}/settings/users`, label: t('nav.usersRoles') },
+      { key: `${PREFIX}/settings/permissions`, label: t('nav.permissions') },
+      { key: `${PREFIX}/settings/workflows`, label: t('nav.workflows') },
+      { key: `${PREFIX}/settings/templates`, label: t('nav.templates') },
+      { key: `${PREFIX}/settings/integrations`, label: t('nav.integrations') },
+      { key: `${PREFIX}/settings/localization`, label: t('nav.localization') },
     ],
   },
   {
@@ -133,12 +135,12 @@ const getMenuItems = (t: any) => [
     icon: <SafetyCertificateOutlined />,
     label: t('nav.systemAdmin'),
     children: [
-      { key: '/admin/audit-logs', label: t('nav.auditLogs') },
-      { key: '/admin/activity-logs', label: t('nav.activityLogs') },
-      { key: '/admin/backup', label: t('nav.backupRestore') },
-      { key: '/admin/queue', label: t('nav.queueMonitor') },
-      { key: '/admin/health', label: t('nav.healthCheck') },
-      { key: '/admin/api-docs', label: t('nav.apiDocs') },
+      { key: `${PREFIX}/admin/audit-logs`, label: t('nav.auditLogs') },
+      { key: `${PREFIX}/admin/activity-logs`, label: t('nav.activityLogs') },
+      { key: `${PREFIX}/admin/backup`, label: t('nav.backupRestore') },
+      { key: `${PREFIX}/admin/queue`, label: t('nav.queueMonitor') },
+      { key: `${PREFIX}/admin/health`, label: t('nav.healthCheck') },
+      { key: `${PREFIX}/admin/api-docs`, label: t('nav.apiDocs') },
     ],
   },
 ];
