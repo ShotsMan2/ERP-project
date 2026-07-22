@@ -1,0 +1,51 @@
+/* Custom styles for Ant Design overrides in Auth Module to fit Dark Glassmorphism */
+
+.auth-form-container .ant-input-password .ant-input,
+.auth-form-container .ant-input-password .ant-input::placeholder {
+  background: transparent;
+  color: white;
+}
+
+.auth-form-container .ant-checkbox-inner {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.auth-form-container .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #6366f1; /* Indigo 500 */
+  border-color: #6366f1;
+}
+
+.auth-form-container .ant-checkbox-wrapper:hover .ant-checkbox-inner {
+  border-color: #818cf8; /* Indigo 400 */
+}
+
+/* Fix ant-input background auto-fill issue in dark mode */
+.auth-form-container input:-webkit-autofill,
+.auth-form-container input:-webkit-autofill:hover, 
+.auth-form-container input:-webkit-autofill:focus, 
+.auth-form-container input:-webkit-autofill:active{
+    -webkit-box-shadow: 0 0 0 30px #1e293b inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Animations for background blobs */
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}

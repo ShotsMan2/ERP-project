@@ -5,7 +5,7 @@ const { Footer: AntFooter } = Layout;
 
 export default function Footer() {
   return (
-    <AntFooter className="flex items-center justify-between px-6 bg-white border-t border-gray-200">
+    <AntFooter className="flex items-center justify-between px-6 bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700">
       <Space>
         <CopyrightOutlined />
         <span>{new Date().getFullYear()} ERP Platform. All rights reserved.</span>

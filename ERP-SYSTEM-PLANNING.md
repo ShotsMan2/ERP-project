@@ -1,8 +1,8 @@
-﻿# Enterprise ERP System — Complete Architecture & Planning Document
+# Enterprise ERP System — Complete Architecture & Planning Document
 
 > **Prepared by:** Enterprise Software Architecture Team  
 > **Version:** 1.0  
-> **Status:** Draft for Review  
+> **Status:** Draft for Review (Superseded by V2 Architecture: `erp-platform/docs/PRD_AND_SPEC_V2.md`)  
 > **Classification:** Internal — Confidential
 
 ---

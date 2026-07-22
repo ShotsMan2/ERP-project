@@ -20,9 +20,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     await redis_client.initialize()
     from app.core.search.elastic import es_client
     await es_client.initialize()
+    from app.core.events import event_bus
+    await event_bus.initialize()
     yield
     await redis_client.close()
     await es_client.close()
+    await event_bus.close()
 
 
 def create_app() -> FastAPI:

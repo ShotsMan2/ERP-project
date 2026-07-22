@@ -13,137 +13,142 @@ import {
   GlobalOutlined,
 } from '@ant-design/icons';
 import { useUIStore } from '@/store/uiStore';
+import { useTranslation } from 'react-i18next';
 
 const { Sider } = Layout;
 
 interface SidebarProps {
   collapsed: boolean;
   onCollapse: (collapsed: boolean) => void;
+  className?: string;
 }
 
-const menuItems = [
+const getMenuItems = (t: any) => [
   {
     key: 'dashboard',
     icon: <DashboardOutlined />,
-    label: 'Dashboard',
+    label: t('nav.dashboard'),
     children: [
-      { key: '/dashboard/executive', label: 'Executive Dashboard' },
-      { key: '/dashboard/my', label: 'My Dashboard' },
-      { key: '/dashboard/analytics', label: 'Analytics' },
+      { key: '/dashboard/executive', label: t('nav.executiveDashboard') },
+      { key: '/dashboard/my', label: t('nav.myDashboard') },
+      { key: '/dashboard/analytics', label: t('nav.analytics') },
     ],
   },
   {
     key: 'hr',
     icon: <TeamOutlined />,
-    label: 'Human Resources',
+    label: t('nav.humanResources'),
     children: [
-      { key: '/hr/employees', label: 'Employees' },
-      { key: '/hr/attendance', label: 'Attendance' },
-      { key: '/hr/leaves', label: 'Leaves' },
-      { key: '/hr/payroll', label: 'Payroll' },
-      { key: '/hr/recruitment', label: 'Recruitment' },
-      { key: '/hr/performance', label: 'Performance' },
+      { key: '/hr/employees', label: t('nav.employees') },
+      { key: '/hr/attendance', label: t('nav.attendance') },
+      { key: '/hr/leaves', label: t('nav.leaves') },
+      { key: '/hr/payroll', label: t('nav.payroll') },
+      { key: '/hr/recruitment', label: t('nav.recruitment') },
+      { key: '/hr/performance', label: t('nav.performance') },
     ],
   },
   {
     key: 'inventory',
     icon: <ShoppingCartOutlined />,
-    label: 'Inventory & Warehouse',
+    label: t('nav.inventoryWarehouse'),
     children: [
-      { key: '/inventory/products', label: 'Products' },
-      { key: '/inventory/stock', label: 'Stock' },
-      { key: '/inventory/warehouses', label: 'Warehouses' },
-      { key: '/inventory/transfers', label: 'Transfers' },
+      { key: '/inventory/products', label: t('nav.products') },
+      { key: '/inventory/stock', label: t('nav.stock') },
+      { key: '/inventory/warehouses', label: t('nav.warehouses') },
+      { key: '/inventory/transfers', label: t('nav.transfers') },
     ],
   },
   {
     key: 'procurement',
     icon: <ShoppingOutlined />,
-    label: 'Procurement',
+    label: t('nav.procurement'),
     children: [
-      { key: '/procurement/purchase-orders', label: 'Purchase Orders' },
-      { key: '/procurement/suppliers', label: 'Suppliers' },
-      { key: '/procurement/rfqs', label: 'RFQs' },
+      { key: '/procurement/purchase-orders', label: t('nav.purchaseOrders') },
+      { key: '/procurement/suppliers', label: t('nav.suppliers') },
+      { key: '/procurement/rfqs', label: t('nav.rfqs') },
     ],
   },
   {
     key: 'sales',
     icon: <DollarOutlined />,
-    label: 'Sales & CRM',
+    label: t('nav.salesCRM'),
     children: [
-      { key: '/sales/crm', label: 'CRM' },
-      { key: '/sales/customers', label: 'Customers' },
-      { key: '/sales/orders', label: 'Sales Orders' },
+      { key: '/sales/crm', label: t('nav.crm') },
+      { key: '/sales/customers', label: t('nav.customers') },
+      { key: '/sales/orders', label: t('nav.salesOrders') },
     ],
   },
   {
     key: 'accounting',
     icon: <DollarOutlined />,
-    label: 'Accounting & Finance',
+    label: t('nav.accountingFinance'),
     children: [
-      { key: '/accounting/chart-of-accounts', label: 'Chart of Accounts' },
-      { key: '/accounting/journals', label: 'Journals' },
-      { key: '/accounting/invoices', label: 'Invoices' },
-      { key: '/accounting/payments', label: 'Payments' },
-      { key: '/accounting/bank', label: 'Bank' },
-      { key: '/accounting/taxes', label: 'Taxes' },
-      { key: '/accounting/budgets', label: 'Budgets' },
-      { key: '/accounting/reports', label: 'Financial Reports' },
+      { key: '/accounting/chart-of-accounts', label: t('nav.chartOfAccounts') },
+      { key: '/accounting/journals', label: t('nav.journals') },
+      { key: '/accounting/invoices', label: t('nav.invoices') },
+      { key: '/accounting/payments', label: t('nav.payments') },
+      { key: '/accounting/bank', label: t('nav.bank') },
+      { key: '/accounting/taxes', label: t('nav.taxes') },
+      { key: '/accounting/budgets', label: t('nav.budgets') },
+      { key: '/accounting/reports', label: t('nav.financialReports') },
     ],
   },
   {
     key: 'projects',
     icon: <ProjectOutlined />,
-    label: 'Projects',
+    label: t('nav.projects'),
     children: [
-      { key: '/projects', label: 'Projects' },
-      { key: '/projects/tasks', label: 'Tasks' },
-      { key: '/projects/gantt', label: 'Gantt Chart' },
-      { key: '/projects/time-tracking', label: 'Time Tracking' },
+      { key: '/projects', label: t('nav.projects') },
+      { key: '/projects/tasks', label: t('nav.tasks') },
+      { key: '/projects/gantt', label: t('nav.ganttChart') },
+      { key: '/projects/time-tracking', label: t('nav.timeTracking') },
     ],
   },
   {
     key: 'reports',
     icon: <BarChartOutlined />,
-    label: 'Reports & Analytics',
+    label: t('nav.reportsAnalytics'),
     children: [
-      { key: '/reports/builder', label: 'Report Builder' },
-      { key: '/reports/scheduled', label: 'Scheduled Reports' },
-      { key: '/reports/export', label: 'Export Center' },
+      { key: '/reports/builder', label: t('nav.reportBuilder') },
+      { key: '/reports/scheduled', label: t('nav.scheduledReports') },
+      { key: '/reports/export', label: t('nav.exportCenter') },
     ],
   },
   {
     key: 'settings',
     icon: <SettingOutlined />,
-    label: 'Settings',
+    label: t('nav.settings'),
     children: [
-      { key: '/settings/company', label: 'Company Settings' },
-      { key: '/settings/users', label: 'Users & Roles' },
-      { key: '/settings/permissions', label: 'Permissions' },
-      { key: '/settings/workflows', label: 'Workflows' },
-      { key: '/settings/templates', label: 'Templates' },
-      { key: '/settings/integrations', label: 'Integrations' },
-      { key: '/settings/localization', label: 'Localization' },
+      { key: '/settings/company', label: t('nav.companySettings') },
+      { key: '/settings/users', label: t('nav.usersRoles') },
+      { key: '/settings/permissions', label: t('nav.permissions') },
+      { key: '/settings/workflows', label: t('nav.workflows') },
+      { key: '/settings/templates', label: t('nav.templates') },
+      { key: '/settings/integrations', label: t('nav.integrations') },
+      { key: '/settings/localization', label: t('nav.localization') },
     ],
   },
   {
     key: 'admin',
     icon: <SafetyCertificateOutlined />,
-    label: 'System Administration',
+    label: t('nav.systemAdmin'),
     children: [
-      { key: '/admin/audit-logs', label: 'Audit Logs' },
-      { key: '/admin/activity-logs', label: 'Activity Logs' },
-      { key: '/admin/backup', label: 'Backup & Restore' },
-      { key: '/admin/queue', label: 'Queue Monitor' },
-      { key: '/admin/health', label: 'Health Check' },
-      { key: '/admin/api-docs', label: 'API Docs' },
+      { key: '/admin/audit-logs', label: t('nav.auditLogs') },
+      { key: '/admin/activity-logs', label: t('nav.activityLogs') },
+      { key: '/admin/backup', label: t('nav.backupRestore') },
+      { key: '/admin/queue', label: t('nav.queueMonitor') },
+      { key: '/admin/health', label: t('nav.healthCheck') },
+      { key: '/admin/api-docs', label: t('nav.apiDocs') },
     ],
   },
 ];
 
-export default function Sidebar({ collapsed, onCollapse }: SidebarProps) {
+export default function Sidebar({ collapsed, onCollapse, className = '' }: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const menuItems = getMenuItems(t);
 
   const findOpenKeys = () => {
     const path = location.pathname;
@@ -160,10 +165,10 @@ export default function Sidebar({ collapsed, onCollapse }: SidebarProps) {
       collapsible
       collapsed={collapsed}
       onCollapse={onCollapse}
-      className="border-r border-gray-200"
+      className={`border-r border-gray-200/50 dark:border-slate-700/50 !bg-transparent ${className}`}
       width={240}
     >
-      <div className="h-16 flex items-center justify-center border-b border-gray-200">
+      <div className="h-16 flex items-center justify-center border-b border-gray-200 dark:border-slate-700">
         <img src="/logo.svg" alt="ERP" className="h-8" />
         {!collapsed && <span className="ml-2 text-lg font-bold">ERP Platform</span>}
       </div>

@@ -38,9 +38,9 @@ const darkTheme = {
   },
   components: {
     Layout: {
-      headerBg: DESIGN_TOKENS.colors.slate[900],
-      siderBg: DESIGN_TOKENS.colors.slate[900],
-      bodyBg: '#000000',
+      headerBg: DESIGN_TOKENS.colors.slate[800],
+      siderBg: DESIGN_TOKENS.colors.slate[800],
+      bodyBg: DESIGN_TOKENS.colors.slate[900],
     },
     Menu: {
       itemBg: 'transparent',

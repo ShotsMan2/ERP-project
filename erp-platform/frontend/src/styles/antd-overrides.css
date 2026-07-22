@@ -99,14 +99,15 @@
 }
 
 .dark .ant-table-wrapper .ant-table-thead > tr > th {
-  background: #1f1f1f;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .dark .ant-card {
-  background: #1f1f1f;
-  border-color: #333;
+  background: var(--color-bg-container);
+  border-color: var(--color-border);
 }
 
 .dark .ant-breadcrumb a {
-  color: #999;
+  color: var(--color-text-secondary);
 }

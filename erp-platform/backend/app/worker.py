@@ -1,13 +1,13 @@
 from celery import Celery
 import os
 
-# Set default Celery broker and backend for the ERP platform
-# Redis is typically used for both
-redis_url = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+# Set default Celery broker (RabbitMQ) and backend (Redis) for the ERP platform
+rabbitmq_url = os.getenv("CELERY_BROKER_URL", "amqp://guest:guest@localhost:5672/")
+redis_url = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
 
 celery_app = Celery(
-    "worker",
-    broker=redis_url,
+    "erp_worker",
+    broker=rabbitmq_url,
     backend=redis_url
 )
 
