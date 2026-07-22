@@ -5,7 +5,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.deps import get_current_user_id, check_permission
-from app.modules.hr.schemas import AttendanceCreate, AttendanceResponse, LeaveCreate, LeaveResponse, LeavePolicyCreate, LeavePolicyResponse, PerformanceReviewCreate, PerformanceReviewResponse
+from app.modules.hr.schemas import (
+    AttendanceCreate, AttendanceResponse,
+    LeaveCreate, LeaveResponse,
+    LeavePolicyCreate, LeavePolicyResponse,
+    PerformanceReviewCreate, PerformanceReviewResponse,
+    JobPostingCreate, JobPostingResponse,
+    CandidateCreate, CandidateResponse,
+    ApplicationCreate, ApplicationResponse
+)
 from app.modules.hr.service import AttendanceService, LeaveService, LeavePolicyService, PerformanceService
 
 router = APIRouter(tags=["HR"])
@@ -75,3 +83,31 @@ async def create_review(body: PerformanceReviewCreate, db: AsyncSession = Depend
     service = PerformanceService(db)
     review = await service.create_review(body.model_dump(exclude_none=True))
     return PerformanceReviewResponse.model_validate(review)
+
+
+# --- Recruitment Routes ---
+
+@router.get("/recruitment/job-posts", response_model=list[JobPostingResponse])
+async def list_job_posts(db: AsyncSession = Depends(get_db)):
+    # Mock return for Orchestrator Plan
+    return []
+
+@router.post("/recruitment/job-posts", response_model=JobPostingResponse, status_code=201)
+async def create_job_post(body: JobPostingCreate, db: AsyncSession = Depends(get_db)):
+    # Mock return
+    raise HTTPException(status_code=501, detail="Not implemented yet")
+
+@router.get("/recruitment/candidates", response_model=list[CandidateResponse])
+async def list_candidates(db: AsyncSession = Depends(get_db)):
+    # Mock return
+    return []
+
+@router.post("/recruitment/candidates", response_model=CandidateResponse, status_code=201)
+async def create_candidate(body: CandidateCreate, db: AsyncSession = Depends(get_db)):
+    # Mock return
+    raise HTTPException(status_code=501, detail="Not implemented yet")
+
+@router.put("/recruitment/candidates/{candidate_id}/stage", response_model=ApplicationResponse)
+async def update_candidate_stage(candidate_id: str, stage: str, db: AsyncSession = Depends(get_db)):
+    # Mock return
+    raise HTTPException(status_code=501, detail="Not implemented yet")

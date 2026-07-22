@@ -1,36 +1,46 @@
-import { Button, Form, Input, Checkbox, Divider } from 'antd';
-import { MailOutlined, LockOutlined, GoogleOutlined, MicrosoftOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Checkbox, Divider, message } from 'antd';
+import { MailOutlined, LockOutlined, GoogleOutlined, WindowsOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
-import '@/styles/auth.css'; // Will create/update custom CSS if needed
+import '@/styles/auth.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { t } = useTranslation();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: { email: string; password: string; remember: boolean }) => {
     try {
       await login(values.email, values.password);
+      messageApi.success(t('auth.success'));
       navigate('/app');
-    } catch {
-      // Error handled by interceptor
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      if (errorMsg === 'MFA_REQUIRED') {
+        navigate('/auth/mfa');
+      } else if (errorMsg.includes('401') || errorMsg.includes('Invalid')) {
+        messageApi.error(t('auth.invalidCredentials'));
+      } else {
+        messageApi.error(errorMsg || t('auth.invalidCredentials'));
+      }
     }
   };
 
   return (
     <div className="auth-form-container">
-      <Form layout="vertical" onFinish={onFinish} autoComplete="off" requiredMark={false}>
+      {contextHolder}
+      <Form layout="vertical" onFinish={onFinish} requiredMark={false}>
         <Form.Item 
           name="email" 
-          rules={[{ required: true, type: 'email', message: t('validation.email') }]}
+          rules={[{ required: true, message: t('auth.enterEmail') }, { type: 'email', message: t('validation.email') }]}
         >
           <Input 
             prefix={<MailOutlined className="text-slate-400" />} 
             placeholder={t('auth.emailAddress')} 
-            size="large" 
-            className="bg-white/5 border-white/10 text-white placeholder-slate-400 hover:bg-white/10 focus:bg-white/10 focus:border-indigo-500 rounded-xl transition-all h-12"
+            size="large"
+            autoComplete="email"
           />
         </Form.Item>
 
@@ -41,8 +51,8 @@ export default function LoginPage() {
           <Input.Password 
             prefix={<LockOutlined className="text-slate-400" />} 
             placeholder={t('auth.password')} 
-            size="large" 
-            className="bg-white/5 border-white/10 text-white placeholder-slate-400 hover:bg-white/10 focus:bg-white/10 focus:border-indigo-500 rounded-xl transition-all h-12 custom-password-input"
+            size="large"
+            autoComplete="current-password"
           />
         </Form.Item>
 
@@ -86,7 +96,7 @@ export default function LoginPage() {
             {t('auth.google')}
           </Button>
           <Button 
-            icon={<MicrosoftOutlined />} 
+            icon={<WindowsOutlined />} 
             size="large" 
             className="h-11 rounded-xl bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all font-medium"
           >

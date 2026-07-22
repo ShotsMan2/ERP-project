@@ -5,7 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 import { useTranslation } from 'react-i18next';
+
 interface Project { id: string; name: string; code: string; status: string; priority: string; startDate: string; endDate: string; progress: number; budget: number; manager: string; }
+
 const mockProjects: Project[] = [
   { id: '1', name: 'ERP Implementation', code: 'PROJ-001', status: 'in_progress', priority: 'High', startDate: '2024-09-01', endDate: '2025-06-30', progress: 45, budget: 1500000, manager: 'Alice Johnson' },
   { id: '2', name: 'Mobile App Development', code: 'PROJ-002', status: 'planning', priority: 'Medium', startDate: '2025-01-15', endDate: '2025-08-30', progress: 10, budget: 500000, manager: 'Bob Williams' },
@@ -41,7 +43,7 @@ const ProjectList: React.FC = () => {
       <PageHeader title={t('projects.projectListPage.title')} subtitle={t('projects.projectListPage.subtitle')}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/projects/new')}>{t('projects.projectListPage.newProject')}</Button>
       </PageHeader>
-      <Card><DataTable dataSource={mockProjects} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (t: number) => t + ' ' + t('projects.projectListPage.projects') }} /></Card>
+      <Card><DataTable dataSource={mockProjects} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (total: number) => total + ' ' + t('projects.projectListPage.projects') }} /></Card>
     </div>
   );
 };

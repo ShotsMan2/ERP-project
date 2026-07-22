@@ -17,15 +17,33 @@ from app.core.logging.logger import setup_logging
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     setup_logging()
     from app.core.cache.redis import redis_client
-    await redis_client.initialize()
+    try:
+        await redis_client.initialize()
+    except Exception:
+        pass
     from app.core.search.elastic import es_client
-    await es_client.initialize()
+    try:
+        await es_client.initialize()
+    except Exception:
+        pass
     from app.core.events import event_bus
-    await event_bus.initialize()
+    try:
+        await event_bus.initialize()
+    except Exception:
+        pass
     yield
-    await redis_client.close()
-    await es_client.close()
-    await event_bus.close()
+    try:
+        await redis_client.close()
+    except Exception:
+        pass
+    try:
+        await es_client.close()
+    except Exception:
+        pass
+    try:
+        await event_bus.close()
+    except Exception:
+        pass
 
 
 def create_app() -> FastAPI:

@@ -63,13 +63,13 @@ api.interceptors.response.use(
         const refreshToken = useAuthStore.getState().refreshToken;
         if (!refreshToken) throw new Error('No refresh token');
 
-        const response = await api.post('/auth/refresh', { refreshToken });
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
-        useAuthStore.getState().setTokens(accessToken, newRefreshToken);
+        const response = await api.post('/auth/refresh', { refresh_token: refreshToken });
+        const { access_token, refresh_token: newRefreshToken } = response.data;
+        useAuthStore.getState().setTokens(access_token, newRefreshToken);
 
-        processQueue(null, accessToken);
+        processQueue(null, access_token);
         if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${access_token}`;
         }
         return api(originalRequest);
       } catch (refreshError) {

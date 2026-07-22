@@ -95,3 +95,65 @@ class PerformanceReviewResponse(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+# --- Recruitment Schemas ---
+
+class JobPostingCreate(BaseModel):
+    title: str
+    department: str
+    location: str
+    description: str
+    requirements: Optional[dict] = None
+
+class JobPostingResponse(BaseModel):
+    id: str
+    title: str
+    department: str
+    location: str
+    description: str
+    requirements: Optional[dict] = None
+    is_active: bool
+    published_at: Optional[datetime] = None
+    closed_at: Optional[datetime] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+class CandidateCreate(BaseModel):
+    first_name: str
+    last_name: str
+    email: str
+    phone: Optional[str] = None
+    resume_url: Optional[str] = None
+
+class CandidateResponse(BaseModel):
+    id: str
+    first_name: str
+    last_name: str
+    email: str
+    phone: Optional[str] = None
+    resume_url: Optional[str] = None
+    parsed_skills: Optional[dict] = None
+    ai_summary: Optional[str] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+class ApplicationCreate(BaseModel):
+    candidate_id: str
+    job_posting_id: str
+    notes: Optional[str] = None
+
+class ApplicationResponse(BaseModel):
+    id: str
+    candidate_id: str
+    job_posting_id: str
+    stage: str
+    ai_score: Optional[int] = None
+    applied_at: datetime
+    last_updated_at: Optional[datetime] = None
+    notes: Optional[str] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

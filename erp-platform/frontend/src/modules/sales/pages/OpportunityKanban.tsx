@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Card, Button, Tag, Avatar, Typography, Badge, Modal, Descriptions, Space, message, Dropdown, Progress } from 'antd';
-import { PlusOutlined, UserOutlined, MoreOutlined, DollarOutlined } from '@ant-design/icons';
+import { Card, Button, Tag, Typography, Badge, Modal, Descriptions, message, Dropdown, Progress } from 'antd';
+import { PlusOutlined, MoreOutlined, DollarOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { motion, Variants } from 'framer-motion';
 import PageHeader from '@/components/ui/PageHeader';
 const { Text } = Typography;
 
@@ -70,59 +71,71 @@ const OpportunityKanban: React.FC = () => {
     }));
   };
 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, scale: 0.9, y: 10 },
+    show: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', stiffness: 200 } }
+  };
+
   return (
     <div className="p-6">
       <PageHeader title={t('sales.opportunityKanban.title')} subtitle={t('sales.opportunityKanban.subtitle')}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Opening new opportunity form')}>{t('sales.opportunityKanban.addOpportunity')}</Button>
       </PageHeader>
 
-      <div className="flex gap-4 overflow-x-auto pb-4 min-h-[500px]">
+      <motion.div variants={containerVariants} initial="hidden" animate="show" className="flex gap-4 overflow-x-auto pb-4 min-h-[500px]">
         {allStages.map((stage) => {
           const opps = opportunities[stage.id] || [];
           const totalValue = opps.reduce((s, o) => s + o.value, 0);
           return (
-            <div key={stage.id} className="min-w-[280px] flex-shrink-0">
-              <div className="flex items-center justify-between mb-3">
+            <div key={stage.id} className="min-w-[280px] flex-shrink-0 bg-opacity-50 dark:bg-opacity-20 bg-gray-50 dark:bg-gray-800 p-3 rounded-xl border border-gray-100 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-3 px-1">
                 <div className="flex items-center gap-2">
                   <Badge color={stage.color} />
-                  <Text strong>{stageTitles[stage.id]}</Text>
-                  <Tag>{opps.length}</Tag>
+                  <Text strong className="dark:text-gray-200">{stageTitles[stage.id]}</Text>
+                  <Tag className="rounded-full border-none bg-white dark:bg-gray-700 dark:text-gray-300">{opps.length}</Tag>
                 </div>
-                <Text type="secondary" className="text-xs">${(totalValue / 1000).toFixed(0)}k</Text>
+                <Text type="secondary" className="text-xs font-semibold text-gray-500 dark:text-gray-400">${(totalValue / 1000).toFixed(0)}k</Text>
               </div>
               <div className="space-y-3">
                 {opps.map((opp) => (
-                  <Card key={opp.id} size="small" className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setSelectedOpp(opp)}>
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <Text strong className="text-sm">{opp.name}</Text>
-                        <br />
-                        <Text type="secondary" className="text-xs">{opp.company}</Text>
+                  <motion.div variants={cardVariants} key={opp.id}>
+                    <Card size="small" className="cursor-pointer hover:shadow-lg transition-shadow border-gray-200 dark:border-gray-700 dark:bg-gray-800" onClick={() => setSelectedOpp(opp)}>
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <Text strong className="text-sm dark:text-white">{opp.name}</Text>
+                          <br />
+                          <Text type="secondary" className="text-xs">{opp.company}</Text>
+                        </div>
+                        <Dropdown menu={{ items: stageActions(opp) }} trigger={['click']}>
+                          <Button type="text" size="small" icon={<MoreOutlined className="dark:text-gray-400" />} onClick={(e) => e.stopPropagation()} />
+                        </Dropdown>
                       </div>
-                      <Dropdown menu={{ items: stageActions(opp) }} trigger={['click']}>
-                        <Button type="text" size="small" icon={<MoreOutlined />} onClick={(e) => e.stopPropagation()} />
-                      </Dropdown>
-                    </div>
-                    <div className="mt-3">
-                      <div className="flex justify-between text-xs mb-1"><Text type="secondary">{t('sales.opportunityKanban.probability')}</Text><Text>{opp.probability}%</Text></div>
-                      <Progress percent={opp.probability} size="small" showInfo={false} />
-                    </div>
-                    <div className="flex justify-between mt-2">
-                      <Tag icon={<DollarOutlined />}>${(opp.value / 1000).toFixed(0)}k</Tag>
-                      <Text type="secondary" className="text-xs">{opp.expectedClose}</Text>
-                    </div>
-                  </Card>
+                      <div className="mt-3">
+                        <div className="flex justify-between text-xs mb-1"><Text type="secondary">{t('sales.opportunityKanban.probability')}</Text><Text className="dark:text-gray-300">{opp.probability}%</Text></div>
+                        <Progress percent={opp.probability} size="small" showInfo={false} strokeColor={stage.color} />
+                      </div>
+                      <div className="flex justify-between mt-2 items-center">
+                        <Tag icon={<DollarOutlined />} className="border-none bg-green-50 dark:bg-green-900 dark:text-green-300 text-green-700">${(opp.value / 1000).toFixed(0)}k</Tag>
+                        <Text type="secondary" className="text-xs">{opp.expectedClose}</Text>
+                      </div>
+                    </Card>
+                  </motion.div>
                 ))}
-                {opps.length === 0 && <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center"><Text type="secondary" className="text-sm">{t('sales.opportunityKanban.noOpportunities')}</Text></div>}
+                {opps.length === 0 && <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg p-6 text-center"><Text type="secondary" className="text-xs">{t('sales.opportunityKanban.noOpportunities')}</Text></div>}
               </div>
             </div>
           );
         })}
-      </div>
+      </motion.div>
 
-      <Modal title={selectedOpp?.name} open={!!selectedOpp} onCancel={() => setSelectedOpp(null)} footer={null} width={480}>
+      <Modal title={selectedOpp?.name} open={!!selectedOpp} onCancel={() => setSelectedOpp(null)} footer={null} width={480} className="dark-modal">
         {selectedOpp && (
-          <Descriptions column={1} bordered size="small">
+          <Descriptions column={1} bordered size="small" className="dark-descriptions">
             <Descriptions.Item label={t('sales.opportunityKanban.opportunity')}>{selectedOpp.name}</Descriptions.Item>
             <Descriptions.Item label={t('sales.opportunityKanban.company')}>{selectedOpp.company}</Descriptions.Item>
             <Descriptions.Item label={t('sales.opportunityKanban.value')}>${selectedOpp.value.toLocaleString()}</Descriptions.Item>

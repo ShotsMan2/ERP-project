@@ -20,3 +20,8 @@ async def ai_query(body: AIQueryRequest, db: AsyncSession = Depends(get_db), _: 
 async def get_predictions(model: str | None = Query(None), db: AsyncSession = Depends(get_db), _: bool = Depends(lambda: check_permission("ai.read"))):
     service = AIService(db)
     return await service.get_predictions(model=model)
+
+@router.get("/insights")
+async def get_insights(db: AsyncSession = Depends(get_db), _: bool = Depends(lambda: check_permission("ai.read"))):
+    service = AIService(db)
+    return await service.get_dashboard_insights()
