@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, Row, Col, Progress, Typography, Tag, Space } from 'antd';
 import {
   UserOutlined, CoffeeOutlined, HeartOutlined, HomeOutlined, MedicineBoxOutlined,
@@ -30,9 +31,10 @@ const leavePolicies: LeavePolicy[] = [
 ];
 
 const LeaveBalance: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <div className="p-6">
-      <PageHeader title="Leave Balance" subtitle="Your leave entitlement and usage summary" />
+      <PageHeader title={t('hr.leaveBalanceTitle')} subtitle={t('hr.leaveEntitlementSummary')} />
 
       <Row gutter={[16, 16]}>
         {leavePolicies.map((policy) => {
@@ -45,7 +47,7 @@ const LeaveBalance: React.FC = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <div className="text-2xl" style={{ color: policy.color }}>{policy.icon}</div>
                   <div>
-                    <Text strong>{policy.name}</Text>
+                    <Text strong>{t(`hr.${policy.type}LeaveLabel`)}</Text>
                     <br />
                     <Text type="secondary" className="text-xs">{policy.type.replace('_', ' ')}</Text>
                   </div>
@@ -53,7 +55,7 @@ const LeaveBalance: React.FC = () => {
 
                 <div className="text-center mb-4">
                   <Text className="text-3xl font-bold" style={{ color: policy.color }}>{available}</Text>
-                  <Text type="secondary" className="text-sm ml-1">/ {policy.total} days</Text>
+                  <Text type="secondary" className="text-sm ml-1">/ {policy.total} {t('hr.daysLabel')}</Text>
                 </div>
 
                 <Progress
@@ -66,16 +68,16 @@ const LeaveBalance: React.FC = () => {
                 <div className="flex justify-between mt-3 text-sm">
                   <Space>
                     <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
-                    <Text type="secondary">Used: {policy.used}</Text>
+                    <Text type="secondary">{t('hr.usedLabel')} {policy.used}</Text>
                   </Space>
                   <Space>
                     <span className="w-2 h-2 rounded-full bg-orange-500 inline-block" />
-                    <Text type="secondary">Pending: {policy.pending}</Text>
+                    <Text type="secondary">{t('hr.pendingColon')} {policy.pending}</Text>
                   </Space>
                   {policy.carryOver > 0 && (
                     <Space>
                       <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
-                      <Text type="secondary">Carry: {policy.carryOver}</Text>
+                      <Text type="secondary">{t('hr.carryLabel')} {policy.carryOver}</Text>
                     </Space>
                   )}
                 </div>

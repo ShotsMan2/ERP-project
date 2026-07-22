@@ -2,27 +2,30 @@ import { Row, Col, Card, Statistic, Tag } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { GaugeChart } from '@/components/charts/GaugeChart';
-
-const services = [
-  { name: 'API Server', status: 'healthy', uptime: '15d 7h 32m', responseTime: '45ms' },
-  { name: 'Database', status: 'healthy', uptime: '30d 2h 15m', responseTime: '12ms' },
-  { name: 'Redis Cache', status: 'healthy', uptime: '30d 2h 15m', responseTime: '2ms' },
-  { name: 'Queue Worker', status: 'healthy', uptime: '15d 7h 30m', responseTime: '-ms' },
-  { name: 'Search Index', status: 'degraded', uptime: '15d 7h 00m', responseTime: '250ms' },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function HealthCheck() {
+  const { t } = useTranslation();
+
+  const services = [
+    { name: 'API Server', status: 'healthy', uptime: '15d 7h 32m', responseTime: '45ms' },
+    { name: 'Database', status: 'healthy', uptime: '30d 2h 15m', responseTime: '12ms' },
+    { name: 'Redis Cache', status: 'healthy', uptime: '30d 2h 15m', responseTime: '2ms' },
+    { name: 'Queue Worker', status: 'healthy', uptime: '15d 7h 30m', responseTime: '-ms' },
+    { name: 'Search Index', status: 'degraded', uptime: '15d 7h 00m', responseTime: '250ms' },
+  ];
+
   return (
     <div>
-      <PageHeader title="Health Check" subtitle="System health monitoring" />
+      <PageHeader title={t('admin.health.title')} subtitle={t('admin.health.subtitle')} />
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12} lg={8}>
           <Card>
-            <GaugeChart value={98.5} title="System Uptime" height={250} />
+            <GaugeChart value={98.5} title={t('admin.health.systemUptime')} height={250} />
           </Card>
         </Col>
         <Col xs={24} md={12} lg={16}>
-          <Card title="Services">
+          <Card title={t('admin.health.services')}>
             {services.map((s) => (
               <div key={s.name} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                 <div className="flex items-center gap-2">

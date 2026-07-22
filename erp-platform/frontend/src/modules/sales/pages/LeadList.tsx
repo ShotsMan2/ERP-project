@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Tag, Button, Space, Select, Input, Rate, Typography } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 interface Lead { id: string; name: string; company: string; email: string; phone: string; source: string; status: string; score: number; assignedTo: string; created: string; }
@@ -18,6 +19,7 @@ const scoreColor = (s: number) => s >= 80 ? 'green' : s >= 50 ? 'orange' : 'red'
 
 const LeadList: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
   const filtered = mockLeads.filter((l) => {
@@ -27,30 +29,30 @@ const LeadList: React.FC = () => {
   });
 
   const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name', render: (v: string, r: Lead) => <a onClick={() => navigate('/sales/leads/' + r.id)}>{v}</a> },
-    { title: 'Company', dataIndex: 'company', key: 'company' },
-    { title: 'Source', dataIndex: 'source', key: 'source', render: (s: string) => <Tag>{s}</Tag> },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag> },
-    { title: 'Score', dataIndex: 'score', key: 'score', render: (s: number) => <Tag color={scoreColor(s)}>{s}</Tag>, sorter: (a: Lead, b: Lead) => a.score - b.score },
-    { title: 'Assigned To', dataIndex: 'assignedTo', key: 'assignedTo' },
-    { title: 'Created', dataIndex: 'created', key: 'created' },
-    { title: 'Actions', key: 'actions', render: (_: unknown, r: Lead) => (
+    { title: t('sales.leadList.name'), dataIndex: 'name', key: 'name', render: (v: string, r: Lead) => <a onClick={() => navigate('/sales/leads/' + r.id)}>{v}</a> },
+    { title: t('sales.leadList.company'), dataIndex: 'company', key: 'company' },
+    { title: t('sales.leadList.source'), dataIndex: 'source', key: 'source', render: (s: string) => <Tag>{s}</Tag> },
+    { title: t('sales.leadList.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag> },
+    { title: t('sales.leadList.score'), dataIndex: 'score', key: 'score', render: (s: number) => <Tag color={scoreColor(s)}>{s}</Tag>, sorter: (a: Lead, b: Lead) => a.score - b.score },
+    { title: t('sales.leadList.assignedTo'), dataIndex: 'assignedTo', key: 'assignedTo' },
+    { title: t('sales.leadList.created'), dataIndex: 'created', key: 'created' },
+    { title: t('sales.leadList.actions'), key: 'actions', render: (_: unknown, r: Lead) => (
       <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate('/sales/leads/' + r.id)} /><Button type="link" size="small" icon={<EditOutlined />} onClick={() => navigate('/sales/leads/' + r.id + '/edit')} /></Space>
     )},
   ];
 
   return (
     <div className="p-6">
-      <PageHeader title="Leads" subtitle="Manage sales leads and prospects">
+      <PageHeader title={t('sales.leadList.title')} subtitle={t('sales.leadList.subtitle')}>
         <Space>
-          <Select placeholder="Filter by status" value={statusFilter || undefined} onChange={(v) => setStatusFilter(v || '')} allowClear className="w-40"
-            options={[{ value: 'new', label: 'New' }, { value: 'contacted', label: 'Contacted' }, { value: 'qualified', label: 'Qualified' }, { value: 'cold', label: 'Cold' }, { value: 'lost', label: 'Lost' }]} />
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/sales/leads/new')}>Add Lead</Button>
+          <Select placeholder={t('sales.leadList.filterByStatus')} value={statusFilter || undefined} onChange={(v) => setStatusFilter(v || '')} allowClear className="w-40"
+            options={[{ value: 'new', label: t('sales.leadList.new') }, { value: 'contacted', label: t('sales.leadList.contacted') }, { value: 'qualified', label: t('sales.leadList.qualified') }, { value: 'cold', label: t('sales.leadList.cold') }, { value: 'lost', label: t('sales.leadList.lost') }]} />
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/sales/leads/new')}>{t('sales.leadList.addLead')}</Button>
         </Space>
       </PageHeader>
       <Card>
-        <Input placeholder="Search leads..." prefix={<SearchOutlined />} value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs mb-4" allowClear />
-        <DataTable dataSource={filtered} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (t: number) => t + ' leads' }} />
+        <Input placeholder={t('sales.leadList.searchLeads')} prefix={<SearchOutlined />} value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs mb-4" allowClear />
+        <DataTable dataSource={filtered} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (total: number) => t('sales.leadList.leadsCount', { count: total }) }} />
       </Card>
     </div>
   );

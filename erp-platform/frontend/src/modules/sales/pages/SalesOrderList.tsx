@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Tag, Button, Space, Select, Typography, message } from 'antd';
 import { PlusOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -19,33 +20,34 @@ const statusColors: Record<string, string> = { draft: 'default', pending: 'orang
 
 const SalesOrderList: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState<string>('');
   const filtered = statusFilter ? mockSOs.filter((so) => so.status === statusFilter) : mockSOs;
 
   const columns = [
-    { title: 'Order #', dataIndex: 'orderNumber', key: 'orderNumber', render: (v: string) => <a onClick={() => navigate('/sales/orders/' + v)}>{v}</a> },
-    { title: 'Customer', dataIndex: 'customer', key: 'customer', sorter: (a: SalesOrder, b: SalesOrder) => a.customer.localeCompare(b.customer) },
-    { title: 'Order Date', dataIndex: 'orderDate', key: 'orderDate' },
-    { title: 'Delivery Date', dataIndex: 'deliveryDate', key: 'deliveryDate' },
-    { title: 'Items', dataIndex: 'items', key: 'items' },
-    { title: 'Total', dataIndex: 'total', key: 'total', render: (v: number) => '$' + v.toLocaleString(), sorter: (a: SalesOrder, b: SalesOrder) => a.total - b.total },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag> },
-    { title: 'Actions', key: 'actions', render: (_: unknown, r: SalesOrder) => (
+    { title: t('sales.salesOrderList.orderNumber'), dataIndex: 'orderNumber', key: 'orderNumber', render: (v: string) => <a onClick={() => navigate('/sales/orders/' + v)}>{v}</a> },
+    { title: t('sales.salesOrderList.customer'), dataIndex: 'customer', key: 'customer', sorter: (a: SalesOrder, b: SalesOrder) => a.customer.localeCompare(b.customer) },
+    { title: t('sales.salesOrderList.orderDate'), dataIndex: 'orderDate', key: 'orderDate' },
+    { title: t('sales.salesOrderList.deliveryDate'), dataIndex: 'deliveryDate', key: 'deliveryDate' },
+    { title: t('sales.salesOrderList.items'), dataIndex: 'items', key: 'items' },
+    { title: t('sales.salesOrderList.total'), dataIndex: 'total', key: 'total', render: (v: number) => '$' + v.toLocaleString(), sorter: (a: SalesOrder, b: SalesOrder) => a.total - b.total },
+    { title: t('sales.salesOrderList.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag> },
+    { title: t('sales.salesOrderList.actions'), key: 'actions', render: (_: unknown, r: SalesOrder) => (
       <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate('/sales/orders/' + r.orderNumber)} /><Button type="link" size="small" icon={<EditOutlined />} onClick={() => navigate('/sales/orders/' + r.orderNumber + '/edit')} /></Space>
     )},
   ];
 
   return (
     <div className="p-6">
-      <PageHeader title="Sales Orders" subtitle="Manage customer orders">
+      <PageHeader title={t('sales.salesOrderList.title')} subtitle={t('sales.salesOrderList.subtitle')}>
         <Space>
-          <Select placeholder="Filter by status" value={statusFilter || undefined} onChange={(v) => setStatusFilter(v || '')} allowClear className="w-40"
-            options={[{ value: 'draft', label: 'Draft' }, { value: 'pending', label: 'Pending' }, { value: 'approved', label: 'Approved' }, { value: 'shipped', label: 'Shipped' }, { value: 'delivered', label: 'Delivered' }, { value: 'invoiced', label: 'Invoiced' }]} />
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/sales/orders/new')}>Create Order</Button>
+          <Select placeholder={t('sales.salesOrderList.filterByStatus')} value={statusFilter || undefined} onChange={(v) => setStatusFilter(v || '')} allowClear className="w-40"
+            options={[{ value: 'draft', label: t('sales.salesOrderList.draft') }, { value: 'pending', label: t('sales.salesOrderList.pending') }, { value: 'approved', label: t('sales.salesOrderList.approved') }, { value: 'shipped', label: t('sales.salesOrderList.shipped') }, { value: 'delivered', label: t('sales.salesOrderList.delivered') }, { value: 'invoiced', label: t('sales.salesOrderList.invoiced') }]} />
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/sales/orders/new')}>{t('sales.salesOrderList.createOrder')}</Button>
         </Space>
       </PageHeader>
       <Card>
-        <DataTable dataSource={filtered} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (t: number) => t + ' orders' }} />
+        <DataTable dataSource={filtered} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (cnt: number) => t('sales.salesOrderList.ordersCount', { count: cnt }) }} />
       </Card>
     </div>
   );

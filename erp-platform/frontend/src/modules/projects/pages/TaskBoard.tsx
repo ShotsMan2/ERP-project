@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Button, Tag, Avatar, Typography, Badge, Space, message, Dropdown } from 'antd';
 import { PlusOutlined, UserOutlined, MoreOutlined } from '@ant-design/icons';
 import PageHeader from '@/components/ui/PageHeader';
+import { useTranslation } from 'react-i18next';
 const { Text } = Typography;
 
 const columns = [
@@ -33,13 +34,14 @@ const priorityColors: Record<string, string> = { Low: 'default', Medium: 'blue',
 
 const TaskBoard: React.FC = () => {
   const [tasks, setTasks] = useState(initialTasks);
+  const { t } = useTranslation();
 
   const moveTask = (task: TaskItem, targetCol: string) => {
     const newTasks = { ...tasks };
     for (const col of columns) { newTasks[col.id] = newTasks[col.id].filter((t) => t.id !== task.id); }
     newTasks[targetCol] = [...newTasks[targetCol], task];
     setTasks(newTasks);
-    message.success('Task moved to ' + columns.find((c) => c.id === targetCol)?.title);
+    message.success(t('projects.taskBoardPage.taskMoved', { column: columns.find((c) => c.id === targetCol)?.title }));
   };
 
   const taskActions = (task: TaskItem) => columns.filter((c) => !tasks[c.id].includes(task)).map((c) => ({
@@ -48,8 +50,8 @@ const TaskBoard: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Task Board" subtitle="Kanban-style task management">
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Opening new task form')}>Add Task</Button>
+      <PageHeader title={t('projects.taskBoardPage.title')} subtitle={t('projects.taskBoardPage.subtitle')}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Opening new task form')}>{t('projects.taskBoardPage.addTask')}</Button>
       </PageHeader>
       <div className="flex gap-4 overflow-x-auto pb-4 min-h-[400px]">
         {columns.map((col) => (
@@ -75,7 +77,7 @@ const TaskBoard: React.FC = () => {
                   </div>
                 </Card>
               ))}
-              {tasks[col.id].length === 0 && <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center"><Text type="secondary" className="text-sm">No tasks</Text></div>}
+              {tasks[col.id].length === 0 && <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center"><Text type="secondary" className="text-sm">{t('projects.taskBoardPage.noTasks')}</Text></div>}
             </div>
           </div>
         ))}

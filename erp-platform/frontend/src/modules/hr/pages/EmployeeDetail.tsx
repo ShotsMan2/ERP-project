@@ -4,6 +4,7 @@ import {
   DollarOutlined, TrophyOutlined, EditOutlined, MailOutlined, PhoneOutlined,
 } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 
 const { Text } = Typography;
@@ -43,6 +44,7 @@ const performanceReviews = [
 ];
 
 const EmployeeDetail: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -54,22 +56,22 @@ const EmployeeDetail: React.FC = () => {
         onBack={() => navigate('/hr/employees')}
       >
         <Button type="primary" icon={<EditOutlined />} onClick={() => navigate(`/hr/employees/${id}/edit`)}>
-          Edit Employee
+          {t('hr.editEmployeeBtn')}
         </Button>
       </PageHeader>
 
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={6}><Card><Statistic title="Attendance (This Month)" value={96} suffix="%" precision={0} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Leaves Taken" value={12} suffix="/ 20 days" /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Payroll (YTD)" value={68750} prefix="$" precision={0} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Performance Avg" value={4.0} precision={1} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('hr.attendanceThisMonth')} value={96} suffix="%" precision={0} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('hr.leavesTaken')} value={12} suffix={`/ 20 ${t('hr.daysLabel')}`} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('hr.payrollYTD')} value={68750} prefix="$" precision={0} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('hr.performanceAvg')} value={4.0} precision={1} /></Card></Col>
       </Row>
 
       <Card>
         <Tabs defaultActiveKey="profile"
           items={[
             {
-              key: 'profile', label: <span><UserOutlined /> Profile</span>,
+              key: 'profile', label: <span><UserOutlined /> {t('hr.personalInformation')}</span>,
               children: (
                 <div>
                   <div className="flex items-center gap-6 mb-6">
@@ -83,81 +85,81 @@ const EmployeeDetail: React.FC = () => {
                     </div>
                   </div>
                   <Descriptions bordered column={2} size="small">
-                    <Descriptions.Item label="Employee Code">{mockEmployee.code}</Descriptions.Item>
-                    <Descriptions.Item label="Department">{mockEmployee.department}</Descriptions.Item>
-                    <Descriptions.Item label="Job Title">{mockEmployee.jobTitle}</Descriptions.Item>
-                    <Descriptions.Item label="Grade">{mockEmployee.grade}</Descriptions.Item>
-                    <Descriptions.Item label="Manager">{mockEmployee.manager}</Descriptions.Item>
-                    <Descriptions.Item label="Work Location">{mockEmployee.workLocation}</Descriptions.Item>
-                    <Descriptions.Item label="Email"><Space><MailOutlined />{mockEmployee.email}</Space></Descriptions.Item>
-                    <Descriptions.Item label="Phone"><Space><PhoneOutlined />{mockEmployee.phone}</Space></Descriptions.Item>
-                    <Descriptions.Item label="Hire Date">{mockEmployee.hireDate}</Descriptions.Item>
-                    <Descriptions.Item label="Emergency Contact">{mockEmployee.emergencyContact}</Descriptions.Item>
+                    <Descriptions.Item label={t('hr.employeeCodeLabel')}>{mockEmployee.code}</Descriptions.Item>
+                    <Descriptions.Item label={t('hr.department')}>{mockEmployee.department}</Descriptions.Item>
+                    <Descriptions.Item label={t('hr.jobTitle')}>{mockEmployee.jobTitle}</Descriptions.Item>
+                    <Descriptions.Item label={t('hr.grade')}>{mockEmployee.grade}</Descriptions.Item>
+                    <Descriptions.Item label={t('hr.reportsTo')}>{mockEmployee.manager}</Descriptions.Item>
+                    <Descriptions.Item label={t('hr.workLocation')}>{mockEmployee.workLocation}</Descriptions.Item>
+                    <Descriptions.Item label={t('hr.email')}><Space><MailOutlined />{mockEmployee.email}</Space></Descriptions.Item>
+                    <Descriptions.Item label={t('hr.phone')}><Space><PhoneOutlined />{mockEmployee.phone}</Space></Descriptions.Item>
+                    <Descriptions.Item label={t('hr.hireDate')}>{mockEmployee.hireDate}</Descriptions.Item>
+                    <Descriptions.Item label={t('hr.emergencyContact')}>{mockEmployee.emergencyContact}</Descriptions.Item>
                   </Descriptions>
                 </div>
               ),
             },
             {
-              key: 'documents', label: <span><FileTextOutlined /> Documents</span>,
+              key: 'documents', label: <span><FileTextOutlined /> {t('hr.documents')}</span>,
               children: (
                 <Table dataSource={mockDocuments} rowKey="name" pagination={false} size="small"
                   columns={[
-                    { title: 'Name', dataIndex: 'name' },
-                    { title: 'Type', dataIndex: 'type' },
-                    { title: 'Size', dataIndex: 'size' },
-                    { title: 'Uploaded', dataIndex: 'uploaded' },
-                    { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color={s === 'verified' ? 'green' : 'orange'}>{s}</Tag> },
-                    { title: 'Action', render: () => <Button type="link" size="small">Download</Button> },
+                    { title: t('hr.name'), dataIndex: 'name' },
+                    { title: t('hr.type'), dataIndex: 'type' },
+                    { title: t('hr.size'), dataIndex: 'size' },
+                    { title: t('hr.date'), dataIndex: 'uploaded' },
+                    { title: t('hr.status'), dataIndex: 'status', render: (s: string) => <Tag color={s === 'verified' ? 'green' : 'orange'}>{s}</Tag> },
+                    { title: t('common.actions'), render: () => <Button type="link" size="small">{t('common.download')}</Button> },
                   ]}
                 />
               ),
             },
             {
-              key: 'attendance', label: <span><ClockCircleOutlined /> Attendance</span>,
+              key: 'attendance', label: <span><ClockCircleOutlined /> {t('hr.attendance')}</span>,
               children: (
                 <Table dataSource={mockAttendance} rowKey="date" pagination={false} size="small"
                   columns={[
-                    { title: 'Date', dataIndex: 'date' },
-                    { title: 'Clock In', dataIndex: 'clockIn', render: (t: string) => <Tag color={t > '09:00' ? 'orange' : 'green'}>{t}</Tag> },
-                    { title: 'Clock Out', dataIndex: 'clockOut' },
-                    { title: 'Total Hours', dataIndex: 'total' },
-                    { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color={s === 'normal' ? 'green' : s === 'late' ? 'orange' : 'blue'}>{s}</Tag> },
+                    { title: t('hr.date'), dataIndex: 'date' },
+                    { title: t('hr.clockIn'), dataIndex: 'clockIn', render: (t: string) => <Tag color={t > '09:00' ? 'orange' : 'green'}>{t}</Tag> },
+                    { title: t('hr.clockOut'), dataIndex: 'clockOut' },
+                    { title: t('hr.totalHours'), dataIndex: 'total' },
+                    { title: t('hr.status'), dataIndex: 'status', render: (s: string) => <Tag color={s === 'normal' ? 'green' : s === 'late' ? 'orange' : 'blue'}>{s}</Tag> },
                   ]}
                 />
               ),
             },
             {
-              key: 'leaves', label: <span><CalendarOutlined /> Leaves</span>,
+              key: 'leaves', label: <span><CalendarOutlined /> {t('hr.leaveManagement')}</span>,
               children: (
                 <div className="text-center py-8">
-                  <Text type="secondary">Leave history will be displayed here</Text>
+                  <Text type="secondary">{t('hr.leaveHistory')}</Text>
                 </div>
               ),
             },
             {
-              key: 'payroll', label: <span><DollarOutlined /> Payroll</span>,
+              key: 'payroll', label: <span><DollarOutlined /> {t('hr.payroll')}</span>,
               children: (
                 <Table dataSource={payrollHistory} rowKey="period" pagination={false} size="small"
                   columns={[
-                    { title: 'Period', dataIndex: 'period' },
-                    { title: 'Gross', dataIndex: 'gross', render: (v: number) => `$${v.toLocaleString()}` },
-                    { title: 'Net', dataIndex: 'net', render: (v: number) => `$${v.toLocaleString()}` },
-                    { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color="green">{s}</Tag> },
-                    { title: 'Action', render: () => <Button type="link" size="small">View Payslip</Button> },
+                    { title: t('hr.period'), dataIndex: 'period' },
+                    { title: t('hr.gross'), dataIndex: 'gross', render: (v: number) => `$${v.toLocaleString()}` },
+                    { title: t('hr.net'), dataIndex: 'net', render: (v: number) => `$${v.toLocaleString()}` },
+                    { title: t('hr.status'), dataIndex: 'status', render: (s: string) => <Tag color="green">{s}</Tag> },
+                    { title: t('common.actions'), render: () => <Button type="link" size="small">{t('hr.viewPayslip')}</Button> },
                   ]}
                 />
               ),
             },
             {
-              key: 'performance', label: <span><TrophyOutlined /> Performance</span>,
+              key: 'performance', label: <span><TrophyOutlined /> {t('hr.performance')}</span>,
               children: (
                 <Table dataSource={performanceReviews} rowKey="period" pagination={false} size="small"
                   columns={[
-                    { title: 'Period', dataIndex: 'period' },
-                    { title: 'Rating', dataIndex: 'rating', render: (v: number) => <span>{'★'.repeat(Math.round(v))}{'☆'.repeat(5 - Math.round(v))} {v}</span> },
-                    { title: 'Reviewer', dataIndex: 'reviewer' },
-                    { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color={s === 'completed' ? 'green' : 'orange'}>{s}</Tag> },
-                    { title: 'Comments', dataIndex: 'comments' },
+                    { title: t('hr.period'), dataIndex: 'period' },
+                    { title: t('hr.rating'), dataIndex: 'rating', render: (v: number) => <span>{'★'.repeat(Math.round(v))}{'☆'.repeat(5 - Math.round(v))} {v}</span> },
+                    { title: t('hr.reviewer'), dataIndex: 'reviewer' },
+                    { title: t('hr.status'), dataIndex: 'status', render: (s: string) => <Tag color={s === 'completed' ? 'green' : 'orange'}>{s}</Tag> },
+                    { title: t('hr.comments'), dataIndex: 'comments' },
                   ]}
                 />
               ),

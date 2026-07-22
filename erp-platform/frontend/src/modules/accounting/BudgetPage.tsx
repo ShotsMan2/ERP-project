@@ -1,5 +1,6 @@
 import { Card, Table, Tag, Progress } from 'antd';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { useTranslation } from 'react-i18next';
 
 const data = [
   { key: '1', account: 'Revenue', fiscalYear: '2026', budgeted: 1200000, actual: 850000, variance: 70.8 },
@@ -8,18 +9,20 @@ const data = [
   { key: '4', account: 'Marketing', fiscalYear: '2026', budgeted: 150000, actual: 95000, variance: 63.3 },
 ];
 
-const columns = [
-  { title: 'Account', dataIndex: 'account', key: 'account' },
-  { title: 'Fiscal Year', dataIndex: 'fiscalYear', key: 'fiscalYear' },
-  { title: 'Budgeted', dataIndex: 'budgeted', key: 'budgeted', render: (v: number) => '$' + v.toLocaleString() },
-  { title: 'Actual', dataIndex: 'actual', key: 'actual', render: (v: number) => '$' + v.toLocaleString() },
-  { title: 'Utilization', key: 'utilization', render: (_: any, r: any) => <Progress percent={Math.round(r.variance)} size="small" /> },
-];
-
 export default function BudgetPage() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('accounting.budgets.account'), dataIndex: 'account', key: 'account' },
+    { title: t('accounting.budgets.fiscalYear'), dataIndex: 'fiscalYear', key: 'fiscalYear' },
+    { title: t('accounting.budgets.budgeted'), dataIndex: 'budgeted', key: 'budgeted', render: (v: number) => '$' + v.toLocaleString() },
+    { title: t('accounting.budgets.actual'), dataIndex: 'actual', key: 'actual', render: (v: number) => '$' + v.toLocaleString() },
+    { title: t('accounting.budgets.utilization'), key: 'utilization', render: (_: any, r: any) => <Progress percent={Math.round(r.variance)} size="small" /> },
+  ];
+
   return (
     <div>
-      <PageHeader title="Budgets" subtitle="Manage departmental budgets" onAdd={() => {}} addLabel="New Budget" />
+      <PageHeader title={t('accounting.budgets.title')} subtitle={t('accounting.budgets.subtitle')} onAdd={() => {}} addLabel={t('accounting.budgets.newBudget')} />
       <Card><Table columns={columns} dataSource={data} /></Card>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, Table, Tag, Button, Space, Typography, message, Progress } from 'antd';
 import { PlusOutlined, EyeOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -34,16 +35,17 @@ const statusColors: Record<string, string> = {
 };
 
 const PayrollList: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const columns = [
-    { title: 'Period', dataIndex: 'period', key: 'period', sorter: (a: PayrollRun, b: PayrollRun) => b.period.localeCompare(a.period) },
-    { title: 'Employees', dataIndex: 'employeeCount', key: 'employeeCount' },
-    { title: 'Gross Pay', dataIndex: 'totalGross', key: 'totalGross', render: (v: number) => v ? `$${v.toLocaleString()}` : '-' },
-    { title: 'Net Pay', dataIndex: 'totalNet', key: 'totalNet', render: (v: number) => v ? `$${v.toLocaleString()}` : '-' },
-    { title: 'Total Tax', dataIndex: 'totalTax', key: 'totalTax', render: (v: number) => v ? `$${v.toLocaleString()}` : '-' },
+    { title: t('hr.periodLabel'), dataIndex: 'period', key: 'period', sorter: (a: PayrollRun, b: PayrollRun) => b.period.localeCompare(a.period) },
+    { title: t('hr.employeesLabel'), dataIndex: 'employeeCount', key: 'employeeCount' },
+    { title: t('hr.grossPayLabel'), dataIndex: 'totalGross', key: 'totalGross', render: (v: number) => v ? `$${v.toLocaleString()}` : '-' },
+    { title: t('hr.netPayLabel'), dataIndex: 'totalNet', key: 'totalNet', render: (v: number) => v ? `$${v.toLocaleString()}` : '-' },
+    { title: t('hr.totalTaxLabel'), dataIndex: 'totalTax', key: 'totalTax', render: (v: number) => v ? `$${v.toLocaleString()}` : '-' },
     {
-      title: 'Status', dataIndex: 'status', key: 'status',
+      title: t('common.status'), dataIndex: 'status', key: 'status',
       render: (s: string) => (
         <Space>
           <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag>
@@ -52,20 +54,20 @@ const PayrollList: React.FC = () => {
       ),
     },
     {
-      title: 'Actions', key: 'actions',
+      title: t('common.actions'), key: 'actions',
       render: (_: unknown, record: PayrollRun) => (
         <Space>
           <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate(`/hr/payroll/${record.id}`)}>
-            View
+            {t('hr.viewBtn')}
           </Button>
           {record.status === 'draft' && (
-            <Button type="link" size="small" icon={<CheckCircleOutlined />} style={{ color: '#52c41a' }} onClick={() => message.success('Payroll processing started')}>
-              Process
+            <Button type="link" size="small" icon={<CheckCircleOutlined />} style={{ color: '#52c41a' }} onClick={() => message.success(t('hr.payrollProcessingStarted'))}>
+              {t('hr.processBtn')}
             </Button>
           )}
           {record.status === 'completed' && (
-            <Button type="link" size="small" icon={<CheckCircleOutlined />} style={{ color: '#1677ff' }} onClick={() => message.success('Payroll marked as paid')}>
-              Mark Paid
+            <Button type="link" size="small" icon={<CheckCircleOutlined />} style={{ color: '#1677ff' }} onClick={() => message.success(t('hr.payrollMarkedPaid'))}>
+              {t('hr.markPaidBtn')}
             </Button>
           )}
         </Space>
@@ -75,9 +77,9 @@ const PayrollList: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Payroll Runs" subtitle="Manage payroll processing cycles">
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Creating new payroll run')}>
-          New Payroll Run
+      <PageHeader title={t('hr.payrollRunsTitle')} subtitle={t('hr.managePayrollCycles')}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info(t('hr.newPayrollRunBtn'))}>
+          {t('hr.newPayrollRunBtn')}
         </Button>
       </PageHeader>
 
@@ -86,7 +88,7 @@ const PayrollList: React.FC = () => {
           dataSource={mockPayrolls}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10, showTotal: (t: number) => `${t} payroll runs` }}
+          pagination={{ pageSize: 10, showTotal: (count: number) => t('hr.payrollRunsCount', { count }) }}
         />
       </Card>
     </div>

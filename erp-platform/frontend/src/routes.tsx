@@ -1,14 +1,17 @@
 import { lazy, Suspense } from 'react';
 import { RouteObject } from 'react-router-dom';
 import { Loading } from './components/ui/Loading';
+import { ErrorBoundary } from './components/ui/ErrorBoundary';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import PortalLayout from './layouts/PortalLayout';
 
 const LazyLoad = (Component: React.LazyExoticComponent<React.ComponentType>) => (
-  <Suspense fallback={<Loading type="page" />}>
-    <Component />
-  </Suspense>
+  <ErrorBoundary>
+    <Suspense fallback={<Loading type="page" />}>
+      <Component />
+    </Suspense>
+  </ErrorBoundary>
 );
 
 const LoginPage = lazy(() => import('./modules/auth/LoginPage'));

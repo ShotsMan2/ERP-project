@@ -1,6 +1,7 @@
 import { Card, Descriptions, Tag, Table, Row, Col, Statistic, Typography, Tabs, Tree, Button, Space } from 'antd';
 import { EditOutlined, FolderOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { DataNode } from 'antd/es/tree';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -52,6 +53,7 @@ const binData = [
 ];
 
 const WarehouseDetail: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -59,39 +61,39 @@ const WarehouseDetail: React.FC = () => {
     <div className="p-6">
       <PageHeader
         title={warehouseData.name}
-        subtitle={`Code: ${warehouseData.code} · Type: ${warehouseData.type}`}
+        subtitle={`${t('inventory.warehouseDetailPage.code')}: ${warehouseData.code} · ${t('inventory.warehouseDetailPage.type')}: ${warehouseData.type}`}
         onBack={() => navigate('/inventory/warehouses')}
       >
-        <Button type="primary" icon={<EditOutlined />}>Edit Warehouse</Button>
+        <Button type="primary" icon={<EditOutlined />}>{t('inventory.warehouseDetailPage.editButton')}</Button>
       </PageHeader>
 
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={8}><Card><Statistic title="Locations" value={warehouseData.totalLocations} /></Card></Col>
-        <Col xs={24} sm={8}><Card><Statistic title="Total Bins" value={warehouseData.totalBins} /></Card></Col>
-        <Col xs={24} sm={8}><Card><Statistic title="Stock Value" value={warehouseData.stockValue} prefix="$" precision={0} /></Card></Col>
+        <Col xs={24} sm={8}><Card><Statistic title={t('inventory.warehouseDetailPage.locations')} value={warehouseData.totalLocations} /></Card></Col>
+        <Col xs={24} sm={8}><Card><Statistic title={t('inventory.warehouseDetailPage.totalBins')} value={warehouseData.totalBins} /></Card></Col>
+        <Col xs={24} sm={8}><Card><Statistic title={t('inventory.warehouseDetailPage.stockValue')} value={warehouseData.stockValue} prefix="$" precision={0} /></Card></Col>
       </Row>
 
       <Card>
         <Tabs defaultActiveKey="locations"
           items={[
             {
-              key: 'locations', label: 'Locations & Bins',
+              key: 'locations', label: t('inventory.warehouseDetailPage.locationsBins'),
               children: (
                 <Row gutter={24}>
                   <Col span={8}>
-                    <Card title="Location Tree" size="small">
+                    <Card title={t('inventory.warehouseDetailPage.locationTree')} size="small">
                       <Tree treeData={locationTree} defaultExpandedKeys={['A', 'B']} showIcon />
                     </Card>
                   </Col>
                   <Col span={16}>
                     <Table dataSource={binData} rowKey="bin" pagination={false} size="small"
                       columns={[
-                        { title: 'Bin', dataIndex: 'bin' },
-                        { title: 'Product', dataIndex: 'product' },
-                        { title: 'SKU', dataIndex: 'sku' },
-                        { title: 'Qty', dataIndex: 'quantity' },
-                        { title: 'Capacity', dataIndex: 'capacity' },
-                        { title: 'Utilization', dataIndex: 'utilization', render: (u: string) => (
+                        { title: t('inventory.warehouseDetailPage.bin'), dataIndex: 'bin' },
+                        { title: t('inventory.warehouseDetailPage.product'), dataIndex: 'product' },
+                        { title: t('inventory.warehouseDetailPage.sku'), dataIndex: 'sku' },
+                        { title: t('inventory.warehouseDetailPage.qty'), dataIndex: 'quantity' },
+                        { title: t('inventory.warehouseDetailPage.capacity'), dataIndex: 'capacity' },
+                        { title: t('inventory.warehouseDetailPage.utilization'), dataIndex: 'utilization', render: (u: string) => (
                           <Tag color={parseInt(u) > 80 ? 'red' : parseInt(u) > 50 ? 'orange' : 'green'}>{u}</Tag>
                         )},
                       ]}
@@ -101,16 +103,16 @@ const WarehouseDetail: React.FC = () => {
               ),
             },
             {
-              key: 'info', label: 'Information',
+              key: 'info', label: t('inventory.warehouseDetailPage.information'),
               children: (
                 <Descriptions bordered column={2} size="small">
-                  <Descriptions.Item label="Name">{warehouseData.name}</Descriptions.Item>
-                  <Descriptions.Item label="Code">{warehouseData.code}</Descriptions.Item>
-                  <Descriptions.Item label="Type"><Tag color="blue">{warehouseData.type}</Tag></Descriptions.Item>
-                  <Descriptions.Item label="Status"><Tag color={warehouseData.isActive ? 'green' : 'default'}>{warehouseData.isActive ? 'Active' : 'Inactive'}</Tag></Descriptions.Item>
-                  <Descriptions.Item label="Address" span={2}>{warehouseData.address}</Descriptions.Item>
-                  <Descriptions.Item label="Phone">{warehouseData.phone}</Descriptions.Item>
-                  <Descriptions.Item label="Manager">{warehouseData.manager}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.warehouseDetailPage.name')}>{warehouseData.name}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.warehouseDetailPage.code')}>{warehouseData.code}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.warehouseDetailPage.type')}><Tag color="blue">{warehouseData.type}</Tag></Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.warehouseDetailPage.status')}><Tag color={warehouseData.isActive ? 'green' : 'default'}>{warehouseData.isActive ? t('inventory.warehouseDetailPage.active') : t('inventory.warehouseDetailPage.inactive')}</Tag></Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.warehouseDetailPage.address')} span={2}>{warehouseData.address}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.warehouseDetailPage.phone')}>{warehouseData.phone}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.warehouseDetailPage.manager')}>{warehouseData.manager}</Descriptions.Item>
                 </Descriptions>
               ),
             },

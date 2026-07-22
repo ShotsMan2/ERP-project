@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
@@ -24,15 +25,16 @@ const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useTranslation();
 
   const onFinish = async (values: LoginFormData) => {
     setLoading(true);
     try {
       await login(values.email, values.password);
-      message.success('Login successful');
+      message.success(t('auth.success'));
       navigate('/');
     } catch {
-      message.error('Invalid email or password');
+      message.error(t('auth.invalidCredentials'));
     } finally {
       setLoading(false);
     }
@@ -47,8 +49,8 @@ const LoginPage: React.FC = () => {
               <span className="text-white text-2xl font-bold">E</span>
             </div>
           </div>
-          <Title level={3} className="mb-1">Welcome Back</Title>
-          <Text type="secondary">Sign in to your ERP account</Text>
+          <Title level={3} className="mb-1">{t('auth.welcomeBack', { name: '' })}</Title>
+          <Text type="secondary">{t('auth.signInSubtitle')}</Text>
         </div>
 
         <Form<LoginFormData>
@@ -60,10 +62,10 @@ const LoginPage: React.FC = () => {
         >
           <Form.Item
             name="email"
-            label="Email Address"
+            label={t('auth.emailAddress')}
             rules={[
-              { required: true, message: 'Please enter your email' },
-              { type: 'email', message: 'Please enter a valid email' },
+              { required: true, message: t('auth.enterEmail') },
+              { type: 'email', message: t('validation.email') },
             ]}
           >
             <Input prefix={<MailOutlined />} placeholder="you@company.com" />
@@ -71,12 +73,12 @@ const LoginPage: React.FC = () => {
 
           <Form.Item
             name="password"
-            label="Password"
-            rules={[{ required: true, message: 'Please enter your password' }]}
+            label={t('auth.password')}
+            rules={[{ required: true, message: t('auth.enterPassword') }]}
           >
             <Input.Password
               prefix={<LockOutlined />}
-              placeholder="Enter your password"
+              placeholder={t('auth.enterPasswordPlaceholder')}
               iconRender={(visible) =>
                 visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
               }
@@ -86,39 +88,38 @@ const LoginPage: React.FC = () => {
           <Form.Item>
             <div className="flex items-center justify-between">
               <Form.Item name="remember" valuePropName="checked" noStyle>
-                <Checkbox>Remember me</Checkbox>
+                <Checkbox>{t('auth.rememberMe')}</Checkbox>
               </Form.Item>
               <Link to="/forgot-password" className="text-blue-600 hover:text-blue-700">
-                Forgot password?
+                {t('auth.forgotPassword')}
               </Link>
             </div>
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading} block className="h-11">
-              Sign In
+              {t('auth.signIn')}
             </Button>
           </Form.Item>
         </Form>
 
-        <Divider plain><Text type="secondary" className="text-sm">Or continue with</Text></Divider>
+        <Divider plain><Text type="secondary" className="text-sm">{t('auth.orContinueWith')}</Text></Divider>
 
         <Space direction="vertical" className="w-full" size="small">
-          <Button icon={<GoogleOutlined />} block className="h-10" onClick={() => message.info('SSO not configured')}>
-            Sign in with Google
+          <Button icon={<GoogleOutlined />} block className="h-10" onClick={() => message.info(t('auth.ssoNotConfigured'))}>
+            {t('auth.signInWithGoogle')}
           </Button>
-          <Button icon={<GithubOutlined />} block className="h-10" onClick={() => message.info('SSO not configured')}>
-            Sign in with GitHub
+          <Button icon={<GithubOutlined />} block className="h-10" onClick={() => message.info(t('auth.ssoNotConfigured'))}>
+            {t('auth.signInWithGitHub')}
           </Button>
-          <Button icon={<LinkedinOutlined />} block className="h-10" onClick={() => message.info('SSO not configured')}>
-            Sign in with LinkedIn
+          <Button icon={<LinkedinOutlined />} block className="h-10" onClick={() => message.info(t('auth.ssoNotConfigured'))}>
+            {t('auth.signInWithLinkedIn')}
           </Button>
         </Space>
 
         <div className="text-center mt-6">
           <Text type="secondary">
-            Don&apos;t have an account?{' '}
-            <Link to="/register" className="text-blue-600">Contact your administrator</Link>
+            {t('auth.noAccount')}
           </Text>
         </div>
       </Card>

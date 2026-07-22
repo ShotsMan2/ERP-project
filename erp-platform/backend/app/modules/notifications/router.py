@@ -18,6 +18,13 @@ async def list_notifications(unread_only: bool = Query(False), page: int = Query
     return [NotificationResponse.model_validate(n) for n in items]
 
 
+@router.put("/notifications/read-all")
+async def mark_all_read(user_id: str = Depends(get_current_user_id), db: AsyncSession = Depends(get_db), _: bool = Depends(lambda: check_permission("notifications.update"))):
+    service = NotificationService(db)
+    await service.mark_all_as_read(uuid.UUID(user_id))
+    return {"status": "ok"}
+
+
 @router.put("/notifications/{notif_id}/read", response_model=NotificationResponse)
 async def mark_as_read(notif_id: str, db: AsyncSession = Depends(get_db), _: bool = Depends(lambda: check_permission("notifications.update"))):
     service = NotificationService(db)

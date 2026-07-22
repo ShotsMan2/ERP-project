@@ -1,14 +1,17 @@
 import { Card } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { BarChart } from '@/components/charts/BarChart';
 
 export default function GanttChart() {
+  const { t } = useTranslation();
+
   return (
     <div>
-      <PageHeader title="Gantt Chart" subtitle="Project timeline view" />
+      <PageHeader title={t('projects.ganttChartPage.title')} subtitle={t('projects.ganttChartPage.subtitle')} />
       <Card>
         <BarChart
-          title="Project Timeline Overview"
+          title={t('projects.ganttChartPage.overview')}
           data={[
             { name: 'Phase 1', value: 100 },
             { name: 'Phase 2', value: 75 },

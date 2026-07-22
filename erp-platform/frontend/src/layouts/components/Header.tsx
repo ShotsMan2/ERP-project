@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Layout, Input, Badge, Dropdown, Avatar, Space, Button, Select } from 'antd';
+import { Layout, Input, Dropdown, Avatar, Space, Button, Select } from 'antd';
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   SearchOutlined,
-  BellOutlined,
   UserOutlined,
   SunOutlined,
   MoonOutlined,
@@ -17,6 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { useUIStore } from '@/store/uiStore';
 import { useTranslation } from 'react-i18next';
+import NotificationDropdown from './NotificationDropdown';
 
 const { Header: AntHeader } = Layout;
 
@@ -41,10 +41,13 @@ export default function Header({ collapsed, onCollapse, className = '' }: Header
     { key: 'logout', icon: <LogoutOutlined />, label: t('auth.logout'), danger: true },
   ];
 
-  const handleUserMenu = ({ key }: { key: string }) => {
+  const handleUserMenu = async ({ key }: { key: string }) => {
     if (key === 'logout') {
-      logout();
-      navigate('/auth');
+      try {
+        await logout();
+      } finally {
+        navigate('/auth');
+      }
     } else if (key === 'profile') {
       navigate('/settings/company');
     }
@@ -83,9 +86,7 @@ export default function Header({ collapsed, onCollapse, className = '' }: Header
           icon={theme === 'dark' ? <SunOutlined /> : <MoonOutlined />}
           onClick={toggleTheme}
         />
-        <Badge count={5} size="small">
-          <Button type="text" icon={<BellOutlined />} />
-        </Badge>
+        <NotificationDropdown />
         <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenu }} placement="bottomRight">
           <Space className="cursor-pointer">
             <Avatar icon={<UserOutlined />} src={user?.avatar} />

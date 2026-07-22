@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Typography, Tag, Space, Button, Input, message } from 'antd';
 import { PlusOutlined, SearchOutlined, EditOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 const { Text } = Typography;
 
@@ -42,22 +43,23 @@ const accountData: Account[] = [
 const typeColors: Record<string, string> = { asset: 'blue', liability: 'orange', equity: 'purple', revenue: 'green', expense: 'red' };
 
 const ChartOfAccounts: React.FC = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const columns: ColumnsType<Account> = [
-    { title: 'Code', dataIndex: 'code', key: 'code', width: 120 },
-    { title: 'Account Name', dataIndex: 'name', key: 'name' },
-    { title: 'Type', dataIndex: 'type', key: 'type', render: (t: string) => <Tag color={typeColors[t]}>{t.toUpperCase()}</Tag> },
-    { title: 'Balance', dataIndex: 'balance', key: 'balance', align: 'right' as const, render: (v: number) => <Text className={v < 0 ? 'text-green-600' : ''}>${Math.abs(v).toLocaleString()}</Text> },
-    { title: 'Actions', key: 'actions', render: () => <Button type="link" size="small" icon={<EditOutlined />} /> },
+    { title: t('accounting.chartOfAccountsPage.code'), dataIndex: 'code', key: 'code', width: 120 },
+    { title: t('accounting.chartOfAccountsPage.accountName'), dataIndex: 'name', key: 'name' },
+    { title: t('accounting.chartOfAccountsPage.type'), dataIndex: 'type', key: 'type', render: (tVal: string) => <Tag color={typeColors[tVal]}>{tVal.toUpperCase()}</Tag> },
+    { title: t('accounting.chartOfAccountsPage.balance'), dataIndex: 'balance', key: 'balance', align: 'right' as const, render: (v: number) => <Text className={v < 0 ? 'text-green-600' : ''}>${Math.abs(v).toLocaleString()}</Text> },
+    { title: t('accounting.chartOfAccountsPage.actions'), key: 'actions', render: () => <Button type="link" size="small" icon={<EditOutlined />} /> },
   ];
 
   return (
     <div className="p-6">
-      <PageHeader title="Chart of Accounts" subtitle="General ledger account structure">
+      <PageHeader title={t('accounting.chartOfAccountsPage.title')} subtitle={t('accounting.chartOfAccountsPage.subtitle')}>
         <Space>
-          <Input placeholder="Search accounts..." prefix={<SearchOutlined />} value={search} onChange={(e) => setSearch(e.target.value)} className="w-64" allowClear />
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Opening new account form')}>Add Account</Button>
+          <Input placeholder={t('accounting.chartOfAccountsPage.searchPlaceholder')} prefix={<SearchOutlined />} value={search} onChange={(e) => setSearch(e.target.value)} className="w-64" allowClear />
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Opening new account form')}>{t('accounting.chartOfAccountsPage.addAccount')}</Button>
         </Space>
       </PageHeader>
       <Card>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Tag, Button, Space, Input, Rate, Typography } from 'antd';
 import { PlusOutlined, SearchOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -17,31 +18,32 @@ const mockSuppliers: Supplier[] = [
 
 const SupplierList: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const filtered = mockSuppliers.filter((s) => !search || s.name.toLowerCase().includes(search.toLowerCase()) || s.code.toLowerCase().includes(search.toLowerCase()));
 
   const columns = [
-    { title: 'Code', dataIndex: 'code', key: 'code' },
-    { title: 'Name', dataIndex: 'name', key: 'name', sorter: (a: Supplier, b: Supplier) => a.name.localeCompare(b.name) },
-    { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Category', dataIndex: 'category', key: 'category', render: (c: string) => <Tag>{c}</Tag> },
-    { title: 'Rating', dataIndex: 'rating', key: 'rating', render: (r: number) => <Rate disabled allowHalf value={r} /> },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'default'}>{s}</Tag> },
-    { title: 'Payment Terms', dataIndex: 'paymentTerms', key: 'paymentTerms' },
-    { title: 'Actions', key: 'actions', render: (_: unknown, r: Supplier) => (
+    { title: t('procurement.supplierList.code'), dataIndex: 'code', key: 'code' },
+    { title: t('procurement.supplierList.name'), dataIndex: 'name', key: 'name', sorter: (a: Supplier, b: Supplier) => a.name.localeCompare(b.name) },
+    { title: t('procurement.supplierList.email'), dataIndex: 'email', key: 'email' },
+    { title: t('procurement.supplierList.category'), dataIndex: 'category', key: 'category', render: (c: string) => <Tag>{c}</Tag> },
+    { title: t('procurement.supplierList.rating'), dataIndex: 'rating', key: 'rating', render: (r: number) => <Rate disabled allowHalf value={r} /> },
+    { title: t('procurement.supplierList.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'default'}>{s}</Tag> },
+    { title: t('procurement.supplierList.paymentTerms'), dataIndex: 'paymentTerms', key: 'paymentTerms' },
+    { title: t('procurement.supplierList.actions'), key: 'actions', render: (_: unknown, r: Supplier) => (
       <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate('/procurement/suppliers/' + r.id)} /><Button type="link" size="small" icon={<EditOutlined />} onClick={() => navigate('/procurement/suppliers/' + r.id + '/edit')} /></Space>
     )},
   ];
 
   return (
     <div className="p-6">
-      <PageHeader title="Suppliers" subtitle="Manage vendor relationships">
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/procurement/suppliers/new')}>Add Supplier</Button>
+      <PageHeader title={t('procurement.supplierList.title')} subtitle={t('procurement.supplierList.subtitle')}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/procurement/suppliers/new')}>{t('procurement.supplierList.addSupplier')}</Button>
       </PageHeader>
       <Card>
-        <Input placeholder="Search suppliers..." prefix={<SearchOutlined />} value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs mb-4" allowClear />
-        <DataTable dataSource={filtered} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (t: number) => t + ' suppliers' }} />
+        <Input placeholder={t('procurement.supplierList.searchSuppliers')} prefix={<SearchOutlined />} value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs mb-4" allowClear />
+        <DataTable dataSource={filtered} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (cnt: number) => t('procurement.supplierList.suppliersCount', { count: cnt }) }} />
       </Card>
     </div>
   );

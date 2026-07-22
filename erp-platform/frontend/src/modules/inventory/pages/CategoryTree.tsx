@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Tree, Button, Modal, Form, Input, Select, Typography, Space, message, Popconfirm } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, FolderOutlined, FolderOpenOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 
 const { Text } = Typography;
@@ -31,6 +32,7 @@ const initialTreeData: CategoryNode[] = [
 ];
 
 const CategoryTree: React.FC = () => {
+  const { t } = useTranslation();
   const [treeData, setTreeData] = useState<CategoryNode[]>(initialTreeData);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<CategoryNode | null>(null);
@@ -66,7 +68,7 @@ const CategoryTree: React.FC = () => {
     const removeNode = (nodes: CategoryNode[]): CategoryNode[] =>
       nodes.filter((n) => n.id !== id).map((n) => ({ ...n, children: n.children ? removeNode(n.children) : undefined }));
     setTreeData(removeNode(treeData));
-    message.success('Category deleted');
+    message.success(t('inventory.categoryTreePage.categoryDeleted'));
   };
 
   const handleSave = () => {
@@ -78,7 +80,7 @@ const CategoryTree: React.FC = () => {
             return { ...n, children: n.children ? updateNode(n.children) : undefined };
           });
         setTreeData(updateNode(treeData));
-        message.success('Category updated');
+        message.success(t('inventory.categoryTreePage.categoryUpdated'));
       } else {
         const newNode: CategoryNode = {
           id: Date.now().toString(),
@@ -97,16 +99,16 @@ const CategoryTree: React.FC = () => {
         } else {
           setTreeData([...treeData, newNode]);
         }
-        message.success('Category created');
+        message.success(t('inventory.categoryTreePage.categoryCreated'));
       }
       setModalOpen(false);
     });
   };
 
   const menuItems = (node: CategoryNode) => [
-    { key: 'add', label: 'Add Subcategory', icon: <PlusOutlined />, onClick: () => handleAdd(node.id) },
-    { key: 'edit', label: 'Edit', icon: <EditOutlined />, onClick: () => handleEdit(node) },
-    { key: 'delete', label: 'Delete', icon: <DeleteOutlined />, danger: true, onClick: () => handleDelete(node.id) },
+    { key: 'add', label: t('inventory.categoryTreePage.addSubcategory'), icon: <PlusOutlined />, onClick: () => handleAdd(node.id) },
+    { key: 'edit', label: t('inventory.categoryTreePage.edit'), icon: <EditOutlined />, onClick: () => handleEdit(node) },
+    { key: 'delete', label: t('inventory.categoryTreePage.delete'), icon: <DeleteOutlined />, danger: true, onClick: () => handleDelete(node.id) },
   ];
 
   const titleRender = (node: CategoryNode) => (
@@ -115,7 +117,7 @@ const CategoryTree: React.FC = () => {
       <Space size="small" className="opacity-0 group-hover:opacity-100 transition-opacity">
         <Button type="text" size="small" icon={<PlusOutlined />} onClick={(e) => { e.stopPropagation(); handleAdd(node.id); }} />
         <Button type="text" size="small" icon={<EditOutlined />} onClick={(e) => { e.stopPropagation(); handleEdit(node); }} />
-        <Popconfirm title="Delete this category?" onConfirm={() => handleDelete(node.id)}>
+        <Popconfirm title={t('inventory.categoryTreePage.deleteConfirm')} onConfirm={() => handleDelete(node.id)}>
           <Button type="text" size="small" danger icon={<DeleteOutlined />} onClick={(e) => e.stopPropagation()} />
         </Popconfirm>
       </Space>
@@ -124,9 +126,9 @@ const CategoryTree: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Product Categories" subtitle="Organize your product catalog hierarchy">
+      <PageHeader title={t('inventory.categoryTreePage.title')} subtitle={t('inventory.categoryTreePage.subtitle')}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => handleAdd()}>
-          Add Root Category
+          {t('inventory.categoryTreePage.addRootCategory')}
         </Button>
       </PageHeader>
 
@@ -142,21 +144,21 @@ const CategoryTree: React.FC = () => {
       </Card>
 
       <Modal
-        title={editingCategory ? 'Edit Category' : 'New Category'}
+        title={editingCategory ? t('inventory.categoryTreePage.editCategory') : t('inventory.categoryTreePage.newCategory')}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         onOk={handleSave}
-        okText={editingCategory ? 'Update' : 'Create'}
+        okText={editingCategory ? t('inventory.categoryTreePage.update') : t('inventory.categoryTreePage.create')}
       >
         <Form form={form} layout="vertical">
-          <Form.Item label="Category Name" name="name" rules={[{ required: true }]}>
+          <Form.Item label={t('inventory.categoryTreePage.categoryName')} name="name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
-          <Form.Item label="Slug" name="slug">
-            <Input placeholder="Auto-generated if empty" />
+          <Form.Item label={t('inventory.categoryTreePage.slug')} name="slug">
+            <Input placeholder={t('inventory.categoryTreePage.autoGenerated')} />
           </Form.Item>
           {parentId && (
-            <Text type="secondary">Parent category: <strong>{findNode(treeData, parentId)?.title}</strong></Text>
+            <Text type="secondary">{t('inventory.categoryTreePage.parentCategory')}: <strong>{findNode(treeData, parentId)?.title}</strong></Text>
           )}
         </Form>
       </Modal>

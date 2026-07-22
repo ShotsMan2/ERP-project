@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, Button, Tag, Avatar, Typography, Badge, Modal, Descriptions, Space, message, Dropdown } from 'antd';
 import { PlusOutlined, UserOutlined, MoreOutlined, RightOutlined } from '@ant-design/icons';
 import PageHeader from '@/components/ui/PageHeader';
@@ -73,6 +74,7 @@ const scoreColor = (score: number) => {
 };
 
 const RecruitmentPipeline: React.FC = () => {
+  const { t } = useTranslation();
   const [stages, setStages] = useState<Stage[]>(initialStages);
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
@@ -86,7 +88,7 @@ const RecruitmentPipeline: React.FC = () => {
       targetStage.candidates.push({ ...candidate, stage: targetStageId });
     }
     setStages(newStages);
-    message.success(`${candidate.name} moved to ${targetStage?.title}`);
+    message.success(`${candidate.name} ${t('hr.movedToLabel')} ${targetStage?.title}`);
   };
 
   const getStageActions = (candidate: Candidate) => {
@@ -96,7 +98,7 @@ const RecruitmentPipeline: React.FC = () => {
       if (idx !== currentIdx) {
         items.push({
           key: stage.id,
-          label: (idx > currentIdx ? 'Move to ' : 'Move back to ') + stage.title,
+          label: (idx > currentIdx ? t('hr.moveTo') : t('hr.moveBackTo')) + ' ' + stage.title,
           onClick: () => moveCandidate(candidate, stage.id),
         });
       }
@@ -106,9 +108,9 @@ const RecruitmentPipeline: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Recruitment Pipeline" subtitle="Track candidates through the hiring process">
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Opening new candidate form')}>
-          Add Candidate
+      <PageHeader title={t('hr.recruitmentPipelineTitle')} subtitle={t('hr.trackCandidates')}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info(t('hr.openingCandidateForm'))}>
+          {t('hr.addCandidateBtn')}
         </Button>
       </PageHeader>
 
@@ -118,7 +120,7 @@ const RecruitmentPipeline: React.FC = () => {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Badge color={stage.color} />
-                <Text strong>{stage.title}</Text>
+                <Text strong>{t(`hr.${stage.id}Label`)}</Text>
                 <Tag>{stage.candidates.length}</Tag>
               </div>
             </div>
@@ -153,7 +155,7 @@ const RecruitmentPipeline: React.FC = () => {
 
               {stage.candidates.length === 0 && (
                 <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center">
-                  <Text type="secondary" className="text-sm">No candidates</Text>
+                  <Text type="secondary" className="text-sm">{t('hr.noCandidates')}</Text>
                 </div>
               )}
             </div>
@@ -170,13 +172,13 @@ const RecruitmentPipeline: React.FC = () => {
       >
         {selectedCandidate && (
           <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="Name">{selectedCandidate.name}</Descriptions.Item>
-            <Descriptions.Item label="Email">{selectedCandidate.email}</Descriptions.Item>
-            <Descriptions.Item label="Phone">{selectedCandidate.phone}</Descriptions.Item>
-            <Descriptions.Item label="Position">{selectedCandidate.position}</Descriptions.Item>
-            <Descriptions.Item label="Score"><Tag color={scoreColor(selectedCandidate.score)}>{selectedCandidate.score}%</Tag></Descriptions.Item>
-            <Descriptions.Item label="Applied">{selectedCandidate.appliedDate}</Descriptions.Item>
-            <Descriptions.Item label="Stage"><Tag>{selectedCandidate.stage}</Tag></Descriptions.Item>
+            <Descriptions.Item label={t('hr.name')}>{selectedCandidate.name}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.email')}>{selectedCandidate.email}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.phone')}>{selectedCandidate.phone}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.jobTitleLabel')}>{selectedCandidate.position}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.scoreLabel')}><Tag color={scoreColor(selectedCandidate.score)}>{selectedCandidate.score}%</Tag></Descriptions.Item>
+            <Descriptions.Item label={t('hr.appliedLabel')}>{selectedCandidate.appliedDate}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.stageLabel')}><Tag>{selectedCandidate.stage}</Tag></Descriptions.Item>
           </Descriptions>
         )}
       </Modal>

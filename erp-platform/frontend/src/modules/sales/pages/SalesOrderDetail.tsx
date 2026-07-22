@@ -1,6 +1,7 @@
 import { Card, Descriptions, Tag, Table, Button, Space, Timeline, Row, Col, Statistic, Typography } from 'antd';
 import { EditOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 const { Text } = Typography;
 
@@ -15,48 +16,49 @@ const invoiceStatus = [{ inv: 'INV-2024-0892', amount: 28999.90, status: 'unpaid
 
 const SalesOrderDetail: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div className="p-6">
-      <PageHeader title={mockSO.orderNumber} subtitle={'Customer: ' + mockSO.customer} onBack={() => navigate('/sales/orders')}>
-        <Space><Button type="primary" icon={<EditOutlined />}>Edit Order</Button><Button icon={<ShoppingOutlined />}>Create Shipment</Button></Space>
+      <PageHeader title={mockSO.orderNumber} subtitle={t('sales.salesOrderDetail.customer', { name: mockSO.customer })} onBack={() => navigate('/sales/orders')}>
+        <Space><Button type="primary" icon={<EditOutlined />}>{t('sales.salesOrderDetail.editOrder')}</Button><Button icon={<ShoppingOutlined />}>{t('sales.salesOrderDetail.createShipment')}</Button></Space>
       </PageHeader>
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={6}><Card><Statistic title="Total Amount" value={mockSO.total} prefix="$" precision={2} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Items" value={soLines.length} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Delivered" value={0} suffix={'/ ' + soLines.reduce((s, l) => s + l.qty, 0)} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Status" value={mockSO.status.toUpperCase()} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.salesOrderDetail.totalAmount')} value={mockSO.total} prefix="$" precision={2} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.salesOrderDetail.items')} value={soLines.length} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.salesOrderDetail.delivered')} value={0} suffix={'/ ' + soLines.reduce((s, l) => s + l.qty, 0)} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.salesOrderDetail.status')} value={mockSO.status.toUpperCase()} /></Card></Col>
       </Row>
       <Card>
         <Row gutter={24}>
           <Col span={16}>
             <Descriptions bordered column={2} size="small" className="mb-6">
-              <Descriptions.Item label="Order Number">{mockSO.orderNumber}</Descriptions.Item>
-              <Descriptions.Item label="Customer"><a>{mockSO.customer}</a></Descriptions.Item>
-              <Descriptions.Item label="Order Date">{mockSO.orderDate}</Descriptions.Item>
-              <Descriptions.Item label="Delivery Date">{mockSO.deliveryDate}</Descriptions.Item>
-              <Descriptions.Item label="Status"><Tag color="orange">{mockSO.status.toUpperCase()}</Tag></Descriptions.Item>
-              <Descriptions.Item label="Currency">{mockSO.currency}</Descriptions.Item>
-              <Descriptions.Item label="Shipping Address" span={2}>{mockSO.shippingAddress}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.salesOrderDetail.orderNumber')}>{mockSO.orderNumber}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.salesOrderDetail.customer')}><a>{mockSO.customer}</a></Descriptions.Item>
+              <Descriptions.Item label={t('sales.salesOrderDetail.orderDate')}>{mockSO.orderDate}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.salesOrderDetail.deliveryDate')}>{mockSO.deliveryDate}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.salesOrderDetail.status')}><Tag color="orange">{mockSO.status.toUpperCase()}</Tag></Descriptions.Item>
+              <Descriptions.Item label={t('sales.salesOrderDetail.currency')}>{mockSO.currency}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.salesOrderDetail.shippingAddress')} span={2}>{mockSO.shippingAddress}</Descriptions.Item>
             </Descriptions>
-            <Text strong className="text-base block mb-3">Line Items</Text>
+            <Text strong className="text-base block mb-3">{t('sales.salesOrderDetail.lineItems')}</Text>
             <Table dataSource={soLines} rowKey="id" pagination={false} size="small"
               columns={[
-                { title: 'Product', dataIndex: 'product' }, { title: 'SKU', dataIndex: 'sku' },
-                { title: 'Qty', dataIndex: 'qty' }, { title: 'Unit Price', dataIndex: 'unitPrice', render: (v: number) => '$' + v.toFixed(2) },
-                { title: 'Discount %', dataIndex: 'discount' }, { title: 'Tax', dataIndex: 'taxRate' },
-                { title: 'Total', dataIndex: 'total', render: (v: number) => '$' + v.toFixed(2) },
-                { title: 'Delivered', dataIndex: 'deliveredQty' },
+                { title: t('sales.salesOrderDetail.product'), dataIndex: 'product' }, { title: t('sales.salesOrderDetail.sku'), dataIndex: 'sku' },
+                { title: t('sales.salesOrderDetail.qty'), dataIndex: 'qty' }, { title: t('sales.salesOrderDetail.unitPrice'), dataIndex: 'unitPrice', render: (v: number) => '$' + v.toFixed(2) },
+                { title: t('sales.salesOrderDetail.discountPercent'), dataIndex: 'discount' }, { title: t('sales.salesOrderDetail.tax'), dataIndex: 'taxRate' },
+                { title: t('sales.salesOrderDetail.total'), dataIndex: 'total', render: (v: number) => '$' + v.toFixed(2) },
+                { title: t('sales.salesOrderDetail.delivered'), dataIndex: 'deliveredQty' },
               ]}
             />
           </Col>
           <Col span={8}>
-            <Card title="Shipments" size="small" className="mb-4">
+            <Card title={t('sales.salesOrderDetail.shipments')} size="small" className="mb-4">
               <Table dataSource={shipments} rowKey="id" pagination={false} size="small"
-                columns={[{ title: 'Number', dataIndex: 'number' }, { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color="blue">{s.replace('_', ' ')}</Tag> }]} />
+                columns={[{ title: t('sales.salesOrderDetail.number'), dataIndex: 'number' }, { title: t('sales.salesOrderDetail.status'), dataIndex: 'status', render: (s: string) => <Tag color="blue">{s.replace('_', ' ')}</Tag> }]} />
             </Card>
-            <Card title="Invoice Status" size="small">
+            <Card title={t('sales.salesOrderDetail.invoiceStatus')} size="small">
               <Table dataSource={invoiceStatus} rowKey="inv" pagination={false} size="small"
-                columns={[{ title: 'Invoice', dataIndex: 'inv' }, { title: 'Amount', dataIndex: 'amount', render: (v: number) => '$' + v.toFixed(2) }, { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color="red">{s}</Tag> }]} />
+                columns={[{ title: t('sales.salesOrderDetail.invoice'), dataIndex: 'inv' }, { title: t('sales.salesOrderDetail.amount'), dataIndex: 'amount', render: (v: number) => '$' + v.toFixed(2) }, { title: t('sales.salesOrderDetail.status'), dataIndex: 'status', render: (s: string) => <Tag color="red">{s}</Tag> }]} />
             </Card>
           </Col>
         </Row>

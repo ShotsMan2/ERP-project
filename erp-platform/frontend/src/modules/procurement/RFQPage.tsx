@@ -1,4 +1,5 @@
 import { Card, Table, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 const data = [
@@ -7,19 +8,21 @@ const data = [
   { key: '3', number: 'RFQ-2026-003', title: 'Cleaning Services', issueDate: '2026-07-01', closingDate: '2026-07-15', status: 'closed', bids: 7 },
 ];
 
-const columns = [
-  { title: 'RFQ Number', dataIndex: 'number', key: 'number' },
-  { title: 'Title', dataIndex: 'title', key: 'title' },
-  { title: 'Issue Date', dataIndex: 'issueDate', key: 'issueDate' },
-  { title: 'Closing Date', dataIndex: 'closingDate', key: 'closingDate' },
-  { title: 'Bids', dataIndex: 'bids', key: 'bids' },
-  { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'open' ? 'blue' : 'default'}>{s}</Tag> },
-];
-
 export default function RFQPage() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('procurement.rfqNumber'), dataIndex: 'number', key: 'number' },
+    { title: t('procurement.fieldTitle'), dataIndex: 'title', key: 'title' },
+    { title: t('procurement.issueDate'), dataIndex: 'issueDate', key: 'issueDate' },
+    { title: t('procurement.closingDate'), dataIndex: 'closingDate', key: 'closingDate' },
+    { title: t('procurement.bids'), dataIndex: 'bids', key: 'bids' },
+    { title: t('procurement.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'open' ? 'blue' : 'default'}>{s}</Tag> },
+  ];
+
   return (
     <div>
-      <PageHeader title="Request for Quotations" subtitle="Manage RFQs" onAdd={() => {}} addLabel="New RFQ" />
+      <PageHeader title={t('procurement.rfqTitle')} subtitle={t('procurement.rfqSubtitle')} onAdd={() => {}} addLabel={t('procurement.newRFQ')} />
       <Card><Table columns={columns} dataSource={data} /></Card>
     </div>
   );

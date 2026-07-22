@@ -3,6 +3,7 @@ import { Card, Typography, Button, message, Space, Alert, Input } from 'antd';
 import { SafetyOutlined, KeyOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
@@ -14,6 +15,7 @@ const MFAPage: React.FC = () => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const navigate = useNavigate();
   const { loginMfa } = useAuth();
+  const { t } = useTranslation();
 
   const handleChange = (value: string, index: number) => {
     const digit = value.replace(/\D/g, '');
@@ -46,16 +48,16 @@ const MFAPage: React.FC = () => {
   const handleVerify = async () => {
     const token = code.join('');
     if (token.length !== 6) {
-      message.error('Please enter the complete 6-digit code');
+      message.error(t('auth.mfaPage.enterCompleteCode'));
       return;
     }
     setLoading(true);
     try {
       await loginMfa(token, '');
-      message.success('Verification successful');
+      message.success(t('auth.mfaPage.verificationSuccess'));
       navigate('/');
     } catch {
-      message.error('Invalid verification code');
+      message.error(t('auth.mfaPage.invalidCode'));
     } finally {
       setLoading(false);
     }
@@ -63,16 +65,16 @@ const MFAPage: React.FC = () => {
 
   const handleBackupVerify = async () => {
     if (!backupCode.trim()) {
-      message.error('Please enter a backup code');
+      message.error(t('auth.mfaPage.enterRecoveryCode'));
       return;
     }
     setLoading(true);
     try {
       await loginMfa(backupCode.trim(), 'backup');
-      message.success('Backup code accepted');
+      message.success(t('auth.mfaPage.verificationSuccess'));
       navigate('/');
     } catch {
-      message.error('Invalid backup code');
+      message.error(t('auth.mfaPage.invalidCode'));
     } finally {
       setLoading(false);
     }
@@ -84,8 +86,8 @@ const MFAPage: React.FC = () => {
         <Card className="w-full max-w-md shadow-xl rounded-xl">
           <div className="text-center mb-6">
             <KeyOutlined className="text-4xl text-blue-600 mb-2" />
-            <Title level={4}>Backup Code</Title>
-            <Text type="secondary">Enter one of your recovery codes</Text>
+            <Title level={4}>{t('auth.mfaPage.backupCode')}</Title>
+            <Text type="secondary">{t('auth.mfaPage.enterRecoveryCode')}</Text>
           </div>
           <Input
             size="large"
@@ -96,10 +98,10 @@ const MFAPage: React.FC = () => {
             className="text-center font-mono text-lg mb-4"
           />
           <Button type="primary" block size="large" loading={loading} onClick={handleBackupVerify}>
-            Verify Backup Code
+            {t('auth.mfaPage.verifyBackupCode')}
           </Button>
           <Button type="link" block className="mt-2" onClick={() => setShowBackup(false)}>
-            Back to TOTP
+            {t('auth.mfaPage.backToTotp')}
           </Button>
         </Card>
       </div>
@@ -111,12 +113,12 @@ const MFAPage: React.FC = () => {
       <Card className="w-full max-w-md shadow-xl rounded-xl">
         <div className="text-center mb-6">
           <SafetyOutlined className="text-4xl text-blue-600 mb-2" />
-          <Title level={4}>Two-Factor Authentication</Title>
-          <Text type="secondary">Enter the 6-digit code from your authenticator app</Text>
+          <Title level={4}>{t('auth.mfaPage.title')}</Title>
+          <Text type="secondary">{t('auth.mfaPage.description')}</Text>
         </div>
 
         <Alert
-          message="For security reasons, this code expires in 30 seconds"
+          message={t('auth.mfaPage.codeExpiresWarning')}
           type="info"
           showIcon
           className="mb-6"
@@ -141,10 +143,10 @@ const MFAPage: React.FC = () => {
 
         <Space direction="vertical" className="w-full" size="middle">
           <Button type="primary" block size="large" loading={loading} onClick={handleVerify}>
-            Verify
+            {t('auth.mfaPage.verify')}
           </Button>
           <Button type="link" block onClick={() => setShowBackup(true)}>
-            Use a backup code
+            {t('auth.mfaPage.useBackupCode')}
           </Button>
         </Space>
       </Card>

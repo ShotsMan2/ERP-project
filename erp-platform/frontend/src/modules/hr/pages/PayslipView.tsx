@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Card, Descriptions, Table, Divider, Typography, Row, Col, Button, Space, Tag } from 'antd';
 import { PrinterOutlined, DownloadOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -33,54 +34,55 @@ const totalDeductions = deductions.reduce((sum, d) => sum + d.amount, 0);
 const netPay = totalEarnings - totalDeductions;
 
 const PayslipView: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
 
   const totalColumns = [
-    { title: 'Description', dataIndex: 'description', key: 'description' },
-    { title: 'Amount', dataIndex: 'amount', key: 'amount', render: (v: number) => `$${v.toLocaleString()}` },
+    { title: t('hr.descriptionLabel'), dataIndex: 'description', key: 'description' },
+    { title: t('hr.amountLabel'), dataIndex: 'amount', key: 'amount', render: (v: number) => `$${v.toLocaleString()}` },
   ];
 
   return (
     <div className="p-6">
       <PageHeader
-        title="Payslip"
-        subtitle={`Payroll Period: December 2024`}
+        title={t('hr.payslipTitle')}
+        subtitle={t('hr.payrollPeriodFormat', { period: 'December 2024' })}
         onBack={() => navigate('/hr/payroll')}
       >
         <Space>
-          <Button icon={<PrinterOutlined />} onClick={() => window.print()}>Print</Button>
-          <Button type="primary" icon={<DownloadOutlined />}>Download PDF</Button>
+          <Button icon={<PrinterOutlined />} onClick={() => window.print()}>{t('hr.printBtn')}</Button>
+          <Button type="primary" icon={<DownloadOutlined />}>{t('hr.downloadPdfBtn')}</Button>
         </Space>
       </PageHeader>
 
       <Card id="payslip-content">
         <div className="text-center mb-6">
-          <Title level={4}>Company Name Inc.</Title>
+          <Title level={4}>{t('hr.payslipCompanyName')}</Title>
           <Text type="secondary">123 Business Ave, Suite 100, New York, NY 10001</Text>
           <br />
-          <Text type="secondary">Tax ID: 12-3456789</Text>
+          <Text type="secondary">{t('hr.taxIdLabel')}: 12-3456789</Text>
           <Divider />
-          <Title level={5}>PAYSLIP — December 2024</Title>
+          <Title level={5}>{t('hr.payslipFor', { period: 'December 2024' })}</Title>
         </div>
 
         <Row gutter={[48, 16]}>
           <Col span={12}>
             <Descriptions column={1} size="small" bordered>
-              <Descriptions.Item label="Employee">John Smith</Descriptions.Item>
-              <Descriptions.Item label="Employee Code">EMP001</Descriptions.Item>
-              <Descriptions.Item label="Department">Engineering</Descriptions.Item>
-              <Descriptions.Item label="Designation">Senior Developer</Descriptions.Item>
-              <Descriptions.Item label="Bank Account">****4521 (Chase)</Descriptions.Item>
+              <Descriptions.Item label={t('hr.employee')}>John Smith</Descriptions.Item>
+              <Descriptions.Item label={t('hr.employeeCodeLabel')}>EMP001</Descriptions.Item>
+              <Descriptions.Item label={t('hr.department')}>Engineering</Descriptions.Item>
+              <Descriptions.Item label={t('hr.designationLabel')}>Senior Developer</Descriptions.Item>
+              <Descriptions.Item label={t('hr.bankAccountLabel')}>****4521 (Chase)</Descriptions.Item>
             </Descriptions>
           </Col>
           <Col span={12}>
             <Descriptions column={1} size="small" bordered>
-              <Descriptions.Item label="Pay Period">December 1 - December 31, 2024</Descriptions.Item>
-              <Descriptions.Item label="Pay Date">January 5, 2025</Descriptions.Item>
-              <Descriptions.Item label="Working Days">22</Descriptions.Item>
-              <Descriptions.Item label="Pay Type">Monthly</Descriptions.Item>
-              <Descriptions.Item label="Status"><Tag color="green">PAID</Tag></Descriptions.Item>
+              <Descriptions.Item label={t('hr.payPeriodLabel')}>December 1 - December 31, 2024</Descriptions.Item>
+              <Descriptions.Item label={t('hr.payDateLabel')}>January 5, 2025</Descriptions.Item>
+              <Descriptions.Item label={t('hr.workingDaysLabel')}>22</Descriptions.Item>
+              <Descriptions.Item label={t('hr.payTypeLabel')}>{t('hr.monthlyLabel')}</Descriptions.Item>
+              <Descriptions.Item label={t('common.status')}><Tag color="green">{t('hr.paidLabel')}</Tag></Descriptions.Item>
             </Descriptions>
           </Col>
         </Row>
@@ -89,7 +91,7 @@ const PayslipView: React.FC = () => {
 
         <Row gutter={[48, 16]}>
           <Col span={12}>
-            <Title level={5}>Earnings</Title>
+            <Title level={5}>{t('hr.earningsLabel')}</Title>
             <Table
               dataSource={earnings}
               columns={totalColumns}
@@ -98,14 +100,14 @@ const PayslipView: React.FC = () => {
               rowKey="description"
               summary={() => (
                   <Table.Summary.Row>
-                  <Table.Summary.Cell index={0}><Text strong>Total Earnings</Text></Table.Summary.Cell>
+                  <Table.Summary.Cell index={0}><Text strong>{t('hr.totalEarningsLabel')}</Text></Table.Summary.Cell>
                   <Table.Summary.Cell index={1}><Text strong>${totalEarnings.toLocaleString()}</Text></Table.Summary.Cell>
                 </Table.Summary.Row>
               )}
             />
           </Col>
           <Col span={12}>
-            <Title level={5}>Deductions</Title>
+            <Title level={5}>{t('hr.deductionsLabel')}</Title>
             <Table
               dataSource={deductions}
               columns={totalColumns}
@@ -114,7 +116,7 @@ const PayslipView: React.FC = () => {
               rowKey="description"
               summary={() => (
                   <Table.Summary.Row>
-                  <Table.Summary.Cell index={0}><Text strong>Total Deductions</Text></Table.Summary.Cell>
+                  <Table.Summary.Cell index={0}><Text strong>{t('hr.totalDeductionsLabel')}</Text></Table.Summary.Cell>
                   <Table.Summary.Cell index={1}><Text strong>${totalDeductions.toLocaleString()}</Text></Table.Summary.Cell>
                 </Table.Summary.Row>
               )}
@@ -126,22 +128,22 @@ const PayslipView: React.FC = () => {
 
         <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg">
           <div>
-            <Text type="secondary">Total Gross</Text>
+            <Text type="secondary">{t('hr.totalGrossLabel')}</Text>
             <div className="text-xl font-bold">${totalEarnings.toLocaleString()}</div>
           </div>
           <div className="text-right">
-            <Text type="secondary">Total Deductions</Text>
+            <Text type="secondary">{t('hr.totalDeductionsLabel')}</Text>
             <div className="text-xl font-bold">-${totalDeductions.toLocaleString()}</div>
           </div>
           <div className="text-right">
-            <Text type="secondary">Net Pay</Text>
+            <Text type="secondary">{t('hr.netPayLabel')}</Text>
             <div className="text-2xl font-bold text-green-600">${netPay.toLocaleString()}</div>
           </div>
         </div>
 
         <div className="mt-6 text-center">
           <Text type="secondary" className="text-xs">
-            This is a computer-generated document and does not require a signature.
+            {t('hr.computerGeneratedNote')}
           </Text>
         </div>
       </Card>

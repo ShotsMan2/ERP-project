@@ -13,6 +13,9 @@ class EventDispatcher:
     def __init__(self) -> None:
         self._handlers: dict[str, list[Callable[..., Any]]] = {}
 
+    async def initialize(self) -> None:
+        pass
+
     def register(self, event_type: str, handler: Callable[..., Any]) -> None:
         if event_type not in self._handlers:
             self._handlers[event_type] = []

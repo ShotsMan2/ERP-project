@@ -1,4 +1,5 @@
 import { Tag, Rate } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
@@ -8,19 +9,21 @@ const data = [
   { id: '3', name: 'Global Parts Co.', code: 'SUP-003', email: 'contact@globalparts.com', phone: '+1-555-0103', rating: 4.2, status: 'active' },
 ];
 
-const columns = [
-  { title: 'Name', dataIndex: 'name', key: 'name' },
-  { title: 'Code', dataIndex: 'code', key: 'code' },
-  { title: 'Email', dataIndex: 'email', key: 'email' },
-  { title: 'Phone', dataIndex: 'phone', key: 'phone' },
-  { title: 'Rating', dataIndex: 'rating', key: 'rating', render: (r: number) => <Rate disabled value={r} allowHalf /> },
-  { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color="green">{s}</Tag> },
-];
-
 export default function SupplierList() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('procurement.name'), dataIndex: 'name', key: 'name' },
+    { title: t('procurement.code'), dataIndex: 'code', key: 'code' },
+    { title: t('procurement.email'), dataIndex: 'email', key: 'email' },
+    { title: t('procurement.phone'), dataIndex: 'phone', key: 'phone' },
+    { title: t('procurement.rating'), dataIndex: 'rating', key: 'rating', render: (r: number) => <Rate disabled value={r} allowHalf /> },
+    { title: t('procurement.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color="green">{s}</Tag> },
+  ];
+
   return (
     <div>
-      <PageHeader title="Suppliers" subtitle="Manage suppliers" onAdd={() => {}} addLabel="Add Supplier" />
+      <PageHeader title={t('procurement.supplierList')} subtitle={t('procurement.suppliersSubtitle')} onAdd={() => {}} addLabel={t('procurement.addSupplier')} />
       <DataTable columns={columns} dataSource={data} rowKey="id" />
     </div>
   );

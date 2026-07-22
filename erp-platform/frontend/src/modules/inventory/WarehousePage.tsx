@@ -1,4 +1,5 @@
 import { Card, Table, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 const data = [
@@ -7,19 +8,21 @@ const data = [
   { key: '3', name: 'Cold Storage', code: 'WH-003', type: 'Perishables', location: 'Building C', capacity: '60%', status: 'active' },
 ];
 
-const columns = [
-  { title: 'Name', dataIndex: 'name', key: 'name' },
-  { title: 'Code', dataIndex: 'code', key: 'code' },
-  { title: 'Type', dataIndex: 'type', key: 'type' },
-  { title: 'Location', dataIndex: 'location', key: 'location' },
-  { title: 'Capacity', dataIndex: 'capacity', key: 'capacity' },
-  { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color="green">{s}</Tag> },
-];
-
 export default function WarehousePage() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('inventory.warehousesPage.name'), dataIndex: 'name', key: 'name' },
+    { title: t('inventory.warehousesPage.code'), dataIndex: 'code', key: 'code' },
+    { title: t('inventory.warehousesPage.type'), dataIndex: 'type', key: 'type' },
+    { title: t('inventory.warehousesPage.location'), dataIndex: 'location', key: 'location' },
+    { title: t('inventory.warehousesPage.capacity'), dataIndex: 'capacity', key: 'capacity' },
+    { title: t('inventory.warehousesPage.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color="green">{s}</Tag> },
+  ];
+
   return (
     <div>
-      <PageHeader title="Warehouses" subtitle="Manage warehouse locations" onAdd={() => {}} addLabel="Add Warehouse" />
+      <PageHeader title={t('inventory.warehousesPage.title')} subtitle={t('inventory.warehousesPage.subtitle')} onAdd={() => {}} addLabel={t('inventory.warehousesPage.addLabel')} />
       <Card><Table columns={columns} dataSource={data} /></Card>
     </div>
   );

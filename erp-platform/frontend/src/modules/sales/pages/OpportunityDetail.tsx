@@ -1,6 +1,7 @@
 import { Card, Descriptions, Tag, Table, Row, Col, Statistic, Typography, Progress, Timeline, Space, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 const { Text } = Typography;
 
@@ -20,42 +21,43 @@ const activities = [
 
 const OpportunityDetail: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div className="p-6">
       <PageHeader title={mockOpp.name} subtitle={mockOpp.company} onBack={() => navigate('/sales/opportunities')}>
-        <Button type="primary" icon={<EditOutlined />}>Edit Opportunity</Button>
+        <Button type="primary" icon={<EditOutlined />}>{t('sales.opportunityDetail.editOpportunity')}</Button>
       </PageHeader>
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={6}><Card><Statistic title="Deal Value" value={mockOpp.value} prefix="$" precision={0} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Probability" value={mockOpp.probability} suffix="%" /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Stage" value={mockOpp.stage.replace('_', ' ')} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Expected Close" value={mockOpp.expectedClose} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.opportunityDetail.dealValue')} value={mockOpp.value} prefix="$" precision={0} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.opportunityDetail.probability')} value={mockOpp.probability} suffix="%" /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.opportunityDetail.stage')} value={mockOpp.stage.replace('_', ' ')} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.opportunityDetail.expectedClose')} value={mockOpp.expectedClose} /></Card></Col>
       </Row>
       <Card>
         <Row gutter={24}>
           <Col span={16}>
             <Descriptions bordered column={2} size="small" className="mb-6">
-              <Descriptions.Item label="Opportunity Name">{mockOpp.name}</Descriptions.Item>
-              <Descriptions.Item label="Company">{mockOpp.company}</Descriptions.Item>
-              <Descriptions.Item label="Deal Value">${mockOpp.value.toLocaleString()}</Descriptions.Item>
-              <Descriptions.Item label="Probability"><Progress percent={mockOpp.probability} size="small" style={{ width: 120 }} /></Descriptions.Item>
-              <Descriptions.Item label="Stage"><Tag color="gold">{mockOpp.stage.replace('_', ' ')}</Tag></Descriptions.Item>
-              <Descriptions.Item label="Assigned To">{mockOpp.assignedTo}</Descriptions.Item>
-              <Descriptions.Item label="Expected Close">{mockOpp.expectedClose}</Descriptions.Item>
-              <Descriptions.Item label="Created">{mockOpp.created}</Descriptions.Item>
-              <Descriptions.Item label="Description" span={2}>{mockOpp.description}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.opportunityName')}>{mockOpp.name}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.company')}>{mockOpp.company}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.dealValue')}>${mockOpp.value.toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.probability')}><Progress percent={mockOpp.probability} size="small" style={{ width: 120 }} /></Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.stage')}><Tag color="gold">{mockOpp.stage.replace('_', ' ')}</Tag></Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.assignedTo')}>{mockOpp.assignedTo}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.expectedClose')}>{mockOpp.expectedClose}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.created')}>{mockOpp.created}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.opportunityDetail.description')} span={2}>{mockOpp.description}</Descriptions.Item>
             </Descriptions>
           </Col>
           <Col span={8}>
-            <Card title="Stage Progress" size="small" className="mb-4">
+            <Card title={t('sales.opportunityDetail.stageProgress')} size="small" className="mb-4">
               <Space direction="vertical" className="w-full">
                 {stages.map((s) => (
                   <div key={s.name}><div className="flex justify-between text-sm"><Text>{s.name}</Text><Text type="secondary">{s.pct}%</Text></div><Progress percent={s.pct} size="small" /></div>
                 ))}
               </Space>
             </Card>
-            <Card title="Activities" size="small">
-              <Timeline items={activities.map((a) => ({ children: <><Text strong className="text-sm">{a.action}</Text><br /><Text type="secondary" className="text-xs">{a.user} · {a.date} · {a.type}</Text></> }))} />
+            <Card title={t('sales.opportunityDetail.activities')} size="small">
+              <Timeline items={activities.map((a) => ({ children: <><Text strong className="text-sm">{a.action}</Text><br /><Text type="secondary" className="text-xs">{a.user} â€¢ {a.date} â€¢ {a.type}</Text></> }))} />
             </Card>
           </Col>
         </Row>
