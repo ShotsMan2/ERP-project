@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Tag, Button, Space, Select, Typography, message } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -19,33 +20,34 @@ const statusColors: Record<string, string> = { unpaid: 'orange', paid: 'green', 
 const typeColors: Record<string, string> = { sales: 'blue', purchase: 'purple' };
 
 const InvoiceList: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [typeFilter, setTypeFilter] = useState<string>('');
   const filtered = typeFilter ? mockInvoices.filter((inv) => inv.type === typeFilter) : mockInvoices;
 
   const columns = [
-    { title: 'Invoice #', dataIndex: 'invoiceNumber', key: 'invoiceNumber', render: (v: string) => <a onClick={() => navigate('/accounting/invoices/' + v)}>{v}</a> },
-    { title: 'Type', dataIndex: 'type', key: 'type', render: (t: string) => <Tag color={typeColors[t]}>{t.toUpperCase()}</Tag> },
-    { title: 'Customer/Supplier', dataIndex: 'customerSupplier', key: 'customerSupplier' },
-    { title: 'Issue Date', dataIndex: 'issueDate', key: 'issueDate' },
-    { title: 'Due Date', dataIndex: 'dueDate', key: 'dueDate', render: (v: string, r: Invoice) => <span className={r.status === 'overdue' ? 'text-red-500 font-semibold' : ''}>{v}</span> },
-    { title: 'Total', dataIndex: 'total', key: 'total', render: (v: number) => '$' + v.toLocaleString(), sorter: (a: Invoice, b: Invoice) => a.total - b.total },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag> },
-    { title: 'Actions', key: 'actions', render: (_: unknown, r: Invoice) => (
-      <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate('/accounting/invoices/' + r.invoiceNumber)} />{r.status === 'unpaid' && <Button type="link" size="small" style={{ color: '#52c41a' }} onClick={() => message.info('Opening payment form')}>Pay</Button>}</Space>
+    { title: t('accounting.invoiceList.invoiceNumber'), dataIndex: 'invoiceNumber', key: 'invoiceNumber', render: (v: string) => <a onClick={() => navigate('/accounting/invoices/' + v)}>{v}</a> },
+    { title: t('accounting.invoiceList.type'), dataIndex: 'type', key: 'type', render: (tVal: string) => <Tag color={typeColors[tVal]}>{tVal.toUpperCase()}</Tag> },
+    { title: t('accounting.invoiceList.customerSupplier'), dataIndex: 'customerSupplier', key: 'customerSupplier' },
+    { title: t('accounting.invoiceList.issueDate'), dataIndex: 'issueDate', key: 'issueDate' },
+    { title: t('accounting.invoiceList.dueDate'), dataIndex: 'dueDate', key: 'dueDate', render: (v: string, r: Invoice) => <span className={r.status === 'overdue' ? 'text-red-500 font-semibold' : ''}>{v}</span> },
+    { title: t('accounting.invoiceList.total'), dataIndex: 'total', key: 'total', render: (v: number) => '$' + v.toLocaleString(), sorter: (a: Invoice, b: Invoice) => a.total - b.total },
+    { title: t('accounting.invoiceList.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag> },
+    { title: t('accounting.invoiceList.actions'), key: 'actions', render: (_: unknown, r: Invoice) => (
+      <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate('/accounting/invoices/' + r.invoiceNumber)} />{r.status === 'unpaid' && <Button type="link" size="small" style={{ color: '#52c41a' }} onClick={() => message.info('Opening payment form')}>{t('accounting.invoiceList.pay')}</Button>}</Space>
     )},
   ];
 
   return (
     <div className="p-6">
-      <PageHeader title="Invoices" subtitle="Accounts receivable and payable">
+      <PageHeader title={t('accounting.invoiceList.title')} subtitle={t('accounting.invoiceList.subtitle')}>
         <Space>
-          <Select placeholder="Filter by type" value={typeFilter || undefined} onChange={(v) => setTypeFilter(v || '')} allowClear className="w-40"
-            options={[{ value: 'sales', label: 'Sales (AR)' }, { value: 'purchase', label: 'Purchase (AP)' }]} />
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/accounting/invoices/new')}>New Invoice</Button>
+          <Select placeholder={t('accounting.invoiceList.filterByType')} value={typeFilter || undefined} onChange={(v) => setTypeFilter(v || '')} allowClear className="w-40"
+            options={[{ value: 'sales', label: t('accounting.invoiceForm.salesAR') }, { value: 'purchase', label: t('accounting.invoiceForm.purchaseAP') }]} />
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/accounting/invoices/new')}>{t('accounting.invoiceList.newInvoice')}</Button>
         </Space>
       </PageHeader>
-      <Card><DataTable dataSource={filtered} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (t: number) => t + ' invoices' }} /></Card>
+      <Card><DataTable dataSource={filtered} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (tCount: number) => tCount + ' ' + t('accounting.invoiceList.invoices') }} /></Card>
     </div>
   );
 };

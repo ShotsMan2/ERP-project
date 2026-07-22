@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Tag, Row, Col, Statistic, Select, Typography, Space, Button, message } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 const { Text } = Typography;
 
@@ -13,6 +14,7 @@ const taxData = [
 ];
 
 const TaxReport: React.FC = () => {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState('2024-Q4');
   const totals = {
     sales: taxData.reduce((s, r) => s + r.sales, 0),
@@ -30,34 +32,34 @@ const TaxReport: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Tax Report" subtitle="VAT and tax liability summary">
+      <PageHeader title={t('accounting.taxReport.title')} subtitle={t('accounting.taxReport.subtitle')}>
         <Space>
           <Select value={period} onChange={setPeriod} style={{ width: 140 }} options={[{ value: '2024-Q4', label: 'Q4 2024' }, { value: '2024-Q3', label: 'Q3 2024' }, { value: '2024-Q2', label: 'Q2 2024' }]} />
-          <Button icon={<DownloadOutlined />} onClick={() => message.success('Report exported')}>Export</Button>
+          <Button icon={<DownloadOutlined />} onClick={() => message.success(t('accounting.taxReport.reportExported'))}>{t('accounting.taxReport.export')}</Button>
         </Space>
       </PageHeader>
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={8}><Card><Statistic title="Total Sales Tax" value={totals.sales} prefix="$" precision={0} /></Card></Col>
-        <Col xs={24} sm={8}><Card><Statistic title="Total Purchase Tax" value={totals.purchases} prefix="$" precision={0} /></Card></Col>
-        <Col xs={24} sm={8}><Card><Statistic title="Net Tax Due" value={totals.netDue} prefix="$" precision={0} valueStyle={{ color: totals.netDue > 0 ? '#ff4d4f' : '#52c41a' }} /></Card></Col>
+        <Col xs={24} sm={8}><Card><Statistic title={t('accounting.taxReport.totalSalesTax')} value={totals.sales} prefix="$" precision={0} /></Card></Col>
+        <Col xs={24} sm={8}><Card><Statistic title={t('accounting.taxReport.totalPurchaseTax')} value={totals.purchases} prefix="$" precision={0} /></Card></Col>
+        <Col xs={24} sm={8}><Card><Statistic title={t('accounting.taxReport.netTaxDue')} value={totals.netDue} prefix="$" precision={0} valueStyle={{ color: totals.netDue > 0 ? '#ff4d4f' : '#52c41a' }} /></Card></Col>
       </Row>
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
-          <Card title="Tax Breakdown">
+          <Card title={t('accounting.taxReport.taxBreakdown')}>
             <Table dataSource={taxData} rowKey="taxCode" pagination={false} size="small"
               columns={[
-                { title: 'Tax Code', dataIndex: 'taxCode' }, { title: 'Description', dataIndex: 'description' },
-                { title: 'Taxable Amount', dataIndex: 'taxableAmount', render: (v: number) => '$' + v.toLocaleString() },
-                { title: 'Tax Amount', dataIndex: 'taxAmount', render: (v: number) => '$' + v.toLocaleString() },
-                { title: 'Sales Tax', dataIndex: 'sales', render: (v: number) => '$' + v.toLocaleString() },
-                { title: 'Purchase Tax', dataIndex: 'purchases', render: (v: number) => '$' + v.toLocaleString() },
-                { title: 'Net Due', dataIndex: 'netDue', render: (v: number) => <Tag color={v > 0 ? 'red' : 'green'}>${v.toLocaleString()}</Tag> },
+                { title: t('accounting.taxReport.taxCode'), dataIndex: 'taxCode' }, { title: t('accounting.taxReport.description'), dataIndex: 'description' },
+                { title: t('accounting.taxReport.taxableAmount'), dataIndex: 'taxableAmount', render: (v: number) => '$' + v.toLocaleString() },
+                { title: t('accounting.taxReport.taxAmount'), dataIndex: 'taxAmount', render: (v: number) => '$' + v.toLocaleString() },
+                { title: t('accounting.taxReport.salesTax'), dataIndex: 'sales', render: (v: number) => '$' + v.toLocaleString() },
+                { title: t('accounting.taxReport.purchaseTax'), dataIndex: 'purchases', render: (v: number) => '$' + v.toLocaleString() },
+                { title: t('accounting.taxReport.netDue'), dataIndex: 'netDue', render: (v: number) => <Tag color={v > 0 ? 'red' : 'green'}>${v.toLocaleString()}</Tag> },
               ]}
             />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Tax Distribution">
+          <Card title={t('accounting.taxReport.taxDistribution')}>
             <ReactECharts option={pieOption} style={{ height: 300 }} />
           </Card>
         </Col>

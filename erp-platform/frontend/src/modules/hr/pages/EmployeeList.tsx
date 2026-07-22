@@ -6,6 +6,7 @@ import {
   PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, EyeOutlined, FilterOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -37,6 +38,7 @@ const statusColors: Record<string, string> = {
 };
 
 const EmployeeList: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [deptFilter, setDeptFilter] = useState<string>('');
@@ -55,21 +57,21 @@ const EmployeeList: React.FC = () => {
   });
 
   const columns = [
-    { title: 'Code', dataIndex: 'code', key: 'code', sorter: (a: Employee, b: Employee) => a.code.localeCompare(b.code) },
-    { title: 'Name', dataIndex: 'name', key: 'name', sorter: (a: Employee, b: Employee) => a.name.localeCompare(b.name) },
-    { title: 'Department', dataIndex: 'department', key: 'department', sorter: (a: Employee, b: Employee) => a.department.localeCompare(b.department) },
-    { title: 'Job Title', dataIndex: 'jobTitle', key: 'jobTitle' },
+    { title: t('hr.code'), dataIndex: 'code', key: 'code', sorter: (a: Employee, b: Employee) => a.code.localeCompare(b.code) },
+    { title: t('hr.name'), dataIndex: 'name', key: 'name', sorter: (a: Employee, b: Employee) => a.name.localeCompare(b.name) },
+    { title: t('hr.department'), dataIndex: 'department', key: 'department', sorter: (a: Employee, b: Employee) => a.department.localeCompare(b.department) },
+    { title: t('hr.jobTitle'), dataIndex: 'jobTitle', key: 'jobTitle' },
     {
-      title: 'Status', dataIndex: 'status', key: 'status',
+      title: t('hr.status'), dataIndex: 'status', key: 'status',
       render: (s: string) => <Tag color={statusColors[s]}>{s.replace('_', ' ').toUpperCase()}</Tag>,
     },
     {
-      title: 'Actions', key: 'actions',
+      title: t('common.actions'), key: 'actions',
       render: (_: unknown, record: Employee) => (
         <Space>
           <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate(`/hr/employees/${record.id}`)} />
           <Button type="link" size="small" icon={<EditOutlined />} onClick={() => { setSelectedEmployee(record); setDrawerOpen(true); }} />
-          <Popconfirm title="Delete this employee?" onConfirm={() => message.success('Employee deleted')}>
+          <Popconfirm title={t('hr.deleteEmployeeConfirm')} onConfirm={() => message.success(t('hr.employeeDeleted'))}>
             <Button type="link" size="small" danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </Space>
@@ -79,16 +81,16 @@ const EmployeeList: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Employees" subtitle="Manage your workforce">
+      <PageHeader title={t('hr.employeeListTitlePage')} subtitle={t('hr.manageYourWorkforce')}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/hr/employees/new')}>
-          Add Employee
+          {t('hr.addEmployeeBtn')}
         </Button>
       </PageHeader>
 
       <Card>
         <div className="flex flex-wrap gap-4 mb-4">
           <Input
-            placeholder="Search by name or code..."
+            placeholder={t('hr.searchPlaceholder')}
             prefix={<SearchOutlined />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -96,7 +98,7 @@ const EmployeeList: React.FC = () => {
             allowClear
           />
           <Select
-            placeholder="Filter by department"
+            placeholder={t('hr.filterByDepartment')}
             value={deptFilter || undefined}
             onChange={(v) => setDeptFilter(v || '')}
             allowClear
@@ -104,7 +106,7 @@ const EmployeeList: React.FC = () => {
             options={departments.map((d) => ({ value: d, label: d }))}
           />
           <Select
-            placeholder="Filter by status"
+            placeholder={t('hr.filterByStatus')}
             value={statusFilter || undefined}
             onChange={(v) => setStatusFilter(v || '')}
             allowClear
@@ -117,12 +119,12 @@ const EmployeeList: React.FC = () => {
           dataSource={filtered}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (t: number) => `${t} employees` }}
+          pagination={{ pageSize: 10, showSizeChanger: true, showTotal: (count: number) => t('hr.employeesCount', { count }) }}
         />
       </Card>
 
       <Drawer
-        title={selectedEmployee ? `Edit: ${selectedEmployee.name}` : 'Employee Details'}
+        title={selectedEmployee ? `${t('hr.editEmployeeBtn')}: ${selectedEmployee.name}` : t('hr.employeeDetails')}
         open={drawerOpen}
         onClose={() => { setDrawerOpen(false); setSelectedEmployee(null); }}
         width={480}
@@ -138,16 +140,16 @@ const EmployeeList: React.FC = () => {
               <Text type="secondary">{selectedEmployee.jobTitle}</Text>
             </div>
             <div className="space-y-3 pt-4">
-              <div><Text type="secondary">Code:</Text><br /><Text strong>{selectedEmployee.code}</Text></div>
-              <div><Text type="secondary">Department:</Text><br /><Text strong>{selectedEmployee.department}</Text></div>
-              <div><Text type="secondary">Email:</Text><br /><Text strong>{selectedEmployee.email}</Text></div>
-              <div><Text type="secondary">Phone:</Text><br /><Text strong>{selectedEmployee.phone}</Text></div>
-              <div><Text type="secondary">Status:</Text><br /><Tag color={statusColors[selectedEmployee.status]}>{selectedEmployee.status.replace('_', ' ').toUpperCase()}</Tag></div>
-              <div><Text type="secondary">Hire Date:</Text><br /><Text strong>{selectedEmployee.hireDate}</Text></div>
+              <div><Text type="secondary">{t('hr.code')}:</Text><br /><Text strong>{selectedEmployee.code}</Text></div>
+              <div><Text type="secondary">{t('hr.department')}:</Text><br /><Text strong>{selectedEmployee.department}</Text></div>
+              <div><Text type="secondary">{t('hr.email')}:</Text><br /><Text strong>{selectedEmployee.email}</Text></div>
+              <div><Text type="secondary">{t('hr.phone')}:</Text><br /><Text strong>{selectedEmployee.phone}</Text></div>
+              <div><Text type="secondary">{t('hr.status')}:</Text><br /><Tag color={statusColors[selectedEmployee.status]}>{selectedEmployee.status.replace('_', ' ').toUpperCase()}</Tag></div>
+              <div><Text type="secondary">{t('hr.hireDate')}:</Text><br /><Text strong>{selectedEmployee.hireDate}</Text></div>
             </div>
             <Space className="w-full mt-4">
-              <Button type="primary" onClick={() => { message.success('Changes saved'); setDrawerOpen(false); }}>Save</Button>
-              <Button onClick={() => { setDrawerOpen(false); }}>Cancel</Button>
+              <Button type="primary" onClick={() => { message.success(t('hr.changesSavedMsg')); setDrawerOpen(false); }}>{t('common.save')}</Button>
+              <Button onClick={() => { setDrawerOpen(false); }}>{t('common.cancel')}</Button>
             </Space>
           </div>
         )}

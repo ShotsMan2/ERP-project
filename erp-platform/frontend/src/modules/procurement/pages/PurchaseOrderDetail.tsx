@@ -1,6 +1,7 @@
 import { Card, Descriptions, Tag, Table, Button, Space, Timeline, Typography, Row, Col, Statistic } from 'antd';
 import { CheckCircleOutlined, ClockCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 
 const { Text } = Typography;
@@ -27,54 +28,55 @@ const approvalTimeline = [
 
 const PurchaseOrderDetail: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const totalReceived = poLines.reduce((s, l) => s + l.received, 0);
   const totalQty = poLines.reduce((s, l) => s + l.qty, 0);
 
   return (
     <div className="p-6">
-      <PageHeader title={mockPO.orderNumber} subtitle={'Supplier: ' + mockPO.supplier} onBack={() => navigate('/procurement/purchase-orders')}>
+      <PageHeader title={mockPO.orderNumber} subtitle={t('procurement.purchaseOrderDetail.subtitle', { name: mockPO.supplier })} onBack={() => navigate('/procurement/purchase-orders')}>
         <Space>
-          <Button type="primary" icon={<EditOutlined />} onClick={() => navigate('/procurement/purchase-orders/' + mockPO.orderNumber + '/edit')}>Edit PO</Button>
-          <Button>Receive Goods</Button>
+          <Button type="primary" icon={<EditOutlined />} onClick={() => navigate('/procurement/purchase-orders/' + mockPO.orderNumber + '/edit')}>{t('procurement.purchaseOrderDetail.editPO')}</Button>
+          <Button>{t('procurement.purchaseOrderDetail.receiveGoods')}</Button>
         </Space>
       </PageHeader>
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={6}><Card><Statistic title="Total Amount" value={mockPO.totalAmount} prefix="$" precision={0} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Items" value={poLines.length} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Received" value={totalReceived} suffix={'/ ' + totalQty} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Status" value={mockPO.status.toUpperCase()} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('procurement.purchaseOrderDetail.totalAmount')} value={mockPO.totalAmount} prefix="$" precision={0} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('procurement.purchaseOrderDetail.items')} value={poLines.length} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('procurement.purchaseOrderDetail.received')} value={totalReceived} suffix={'/ ' + totalQty} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('procurement.purchaseOrderDetail.status')} value={mockPO.status.toUpperCase()} /></Card></Col>
       </Row>
       <Card>
         <Row gutter={24}>
           <Col span={16}>
             <Descriptions bordered column={2} size="small" className="mb-6">
-              <Descriptions.Item label="PO Number">{mockPO.orderNumber}</Descriptions.Item>
-              <Descriptions.Item label="Supplier"><a>{mockPO.supplier}</a></Descriptions.Item>
-              <Descriptions.Item label="Order Date">{mockPO.orderDate}</Descriptions.Item>
-              <Descriptions.Item label="Expected Date">{mockPO.expectedDate}</Descriptions.Item>
-              <Descriptions.Item label="Status"><Tag color="blue">{mockPO.status.toUpperCase()}</Tag></Descriptions.Item>
-              <Descriptions.Item label="Payment Terms">{mockPO.paymentTerms}</Descriptions.Item>
-              <Descriptions.Item label="Approved By">{mockPO.approvedBy}</Descriptions.Item>
-              <Descriptions.Item label="Approved At">{mockPO.approvedAt}</Descriptions.Item>
+              <Descriptions.Item label={t('procurement.purchaseOrderDetail.poNumber')}>{mockPO.orderNumber}</Descriptions.Item>
+              <Descriptions.Item label={t('procurement.purchaseOrderDetail.supplier')}><a>{mockPO.supplier}</a></Descriptions.Item>
+              <Descriptions.Item label={t('procurement.purchaseOrderDetail.orderDate')}>{mockPO.orderDate}</Descriptions.Item>
+              <Descriptions.Item label={t('procurement.purchaseOrderDetail.expectedDate')}>{mockPO.expectedDate}</Descriptions.Item>
+              <Descriptions.Item label={t('procurement.purchaseOrderDetail.status')}><Tag color="blue">{mockPO.status.toUpperCase()}</Tag></Descriptions.Item>
+              <Descriptions.Item label={t('procurement.purchaseOrderDetail.paymentTerms')}>{mockPO.paymentTerms}</Descriptions.Item>
+              <Descriptions.Item label={t('procurement.purchaseOrderDetail.approvedBy')}>{mockPO.approvedBy}</Descriptions.Item>
+              <Descriptions.Item label={t('procurement.purchaseOrderDetail.approvedAt')}>{mockPO.approvedAt}</Descriptions.Item>
             </Descriptions>
 
-            <Text strong className="text-base block mb-3">Line Items</Text>
+            <Text strong className="text-base block mb-3">{t('procurement.purchaseOrderDetail.lineItems')}</Text>
             <Table dataSource={poLines} rowKey="id" pagination={false} size="small"
               columns={[
-                { title: 'Product', dataIndex: 'product' }, { title: 'SKU', dataIndex: 'sku' },
-                { title: 'Qty', dataIndex: 'qty' }, { title: 'Unit Price', dataIndex: 'unitPrice', render: (v: number) => '$' + v.toFixed(2) },
-                { title: 'Tax', dataIndex: 'taxRate' }, { title: 'Total', dataIndex: 'total', render: (v: number) => '$' + v.toFixed(2) },
-                { title: 'Received', dataIndex: 'received', render: (v: number) => <Tag color={v > 0 ? 'green' : 'default'}>{v}</Tag> },
+                { title: t('procurement.purchaseOrderDetail.product'), dataIndex: 'product' }, { title: t('procurement.purchaseOrderDetail.sku'), dataIndex: 'sku' },
+                { title: t('procurement.purchaseOrderDetail.qty'), dataIndex: 'qty' }, { title: t('procurement.purchaseOrderDetail.unitPrice'), dataIndex: 'unitPrice', render: (v: number) => '$' + v.toFixed(2) },
+                { title: t('procurement.purchaseOrderDetail.tax'), dataIndex: 'taxRate' }, { title: t('procurement.purchaseOrderDetail.total'), dataIndex: 'total', render: (v: number) => '$' + v.toFixed(2) },
+                { title: t('procurement.purchaseOrderDetail.received'), dataIndex: 'received', render: (v: number) => <Tag color={v > 0 ? 'green' : 'default'}>{v}</Tag> },
               ]}
             />
           </Col>
           <Col span={8}>
-            <Card title="Approval Timeline" size="small" className="mb-4">
-              <Timeline items={approvalTimeline.map((t) => ({ children: <><Text strong>{t.action}</Text><br /><Text type="secondary">{t.user} · {t.date} {t.time}</Text></> }))} />
+            <Card title={t('procurement.purchaseOrderDetail.approvalTimeline')} size="small" className="mb-4">
+              <Timeline items={approvalTimeline.map((ev) => ({ children: <><Text strong>{ev.action}</Text><br /><Text type="secondary">{ev.user} &bull; {ev.date} {ev.time}</Text></> }))} />
             </Card>
-            <Card title="GRN History" size="small">
+            <Card title={t('procurement.purchaseOrderDetail.grnHistory')} size="small">
               <Table dataSource={grnHistory} rowKey="receiptNumber" pagination={false} size="small"
-                columns={[{ title: 'Receipt', dataIndex: 'receiptNumber' }, { title: 'Date', dataIndex: 'date' }, { title: 'Items', dataIndex: 'items' }, { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color="green">{s}</Tag> }]} />
+                columns={[{ title: t('procurement.purchaseOrderDetail.receipt'), dataIndex: 'receiptNumber' }, { title: t('procurement.purchaseOrderDetail.date'), dataIndex: 'date' }, { title: t('procurement.purchaseOrderDetail.items'), dataIndex: 'items' }, { title: t('procurement.purchaseOrderDetail.status'), dataIndex: 'status', render: (s: string) => <Tag color="green">{s}</Tag> }]} />
             </Card>
           </Col>
         </Row>

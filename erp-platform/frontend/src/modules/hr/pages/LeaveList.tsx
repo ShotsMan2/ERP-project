@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card, Table, Tag, Button, Space, Select, Typography, message, Modal, Descriptions } from 'antd';
 import { CheckOutlined, CloseOutlined, EyeOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -32,38 +33,39 @@ const statusColors: Record<string, string> = {
 };
 
 const LeaveList: React.FC = () => {
+  const { t } = useTranslation();
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [selectedLeave, setSelectedLeave] = useState<LeaveRequest | null>(null);
 
   const filtered = statusFilter ? mockLeaves.filter((l) => l.status === statusFilter) : mockLeaves;
 
   const handleAction = (id: string, action: 'approved' | 'rejected') => {
-    message.success(`Leave request ${id} has been ${action}`);
+    message.success(`${t('hr.leaveRequestDetails')} ${id} ${action === 'approved' ? t('hr.approvedLabel') : t('hr.rejectedLabel')}`);
   };
 
   const columns = [
-    { title: 'ID', dataIndex: 'id', key: 'id' },
-    { title: 'Employee', dataIndex: 'employee', key: 'employee', sorter: (a: LeaveRequest, b: LeaveRequest) => a.employee.localeCompare(b.employee) },
-    { title: 'Type', dataIndex: 'type', key: 'type', render: (t: string) => <Tag>{t}</Tag> },
-    { title: 'From', dataIndex: 'startDate', key: 'startDate' },
-    { title: 'To', dataIndex: 'endDate', key: 'endDate' },
-    { title: 'Days', dataIndex: 'days', key: 'days' },
+    { title: t('hr.id'), dataIndex: 'id', key: 'id' },
+    { title: t('hr.employee'), dataIndex: 'employee', key: 'employee', sorter: (a: LeaveRequest, b: LeaveRequest) => a.employee.localeCompare(b.employee) },
+    { title: t('hr.leaveType'), dataIndex: 'type', key: 'type', render: (t: string) => <Tag>{t}</Tag> },
+    { title: t('hr.from'), dataIndex: 'startDate', key: 'startDate' },
+    { title: t('hr.to'), dataIndex: 'endDate', key: 'endDate' },
+    { title: t('hr.daysColumn'), dataIndex: 'days', key: 'days' },
     {
-      title: 'Status', dataIndex: 'status', key: 'status',
+      title: t('common.status'), dataIndex: 'status', key: 'status',
       render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag>,
     },
     {
-      title: 'Actions', key: 'actions',
+      title: t('common.actions'), key: 'actions',
       render: (_: unknown, record: LeaveRequest) => (
         <Space>
           <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => setSelectedLeave(record)} />
           {record.status === 'pending' && (
             <>
               <Button type="link" size="small" icon={<CheckOutlined />} style={{ color: '#52c41a' }} onClick={() => handleAction(record.id, 'approved')}>
-                Approve
+                {t('hr.approveBtn')}
               </Button>
               <Button type="link" size="small" danger icon={<CloseOutlined />} onClick={() => handleAction(record.id, 'rejected')}>
-                Reject
+                {t('hr.rejectBtn')}
               </Button>
             </>
           )}
@@ -74,18 +76,18 @@ const LeaveList: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Leave Requests" subtitle="Manage employee leave requests">
+      <PageHeader title={t('hr.leaveRequestsTitle')} subtitle={t('hr.manageLeaveRequests')}>
         <Select
-          placeholder="Filter by status"
+          placeholder={t('hr.filterByStatus')}
           value={statusFilter || undefined}
           onChange={(v) => setStatusFilter(v || '')}
           allowClear
           className="w-40"
           options={[
-            { value: 'pending', label: 'Pending' },
-            { value: 'approved', label: 'Approved' },
-            { value: 'rejected', label: 'Rejected' },
-            { value: 'cancelled', label: 'Cancelled' },
+            { value: 'pending', label: t('hr.pendingLabel') },
+            { value: 'approved', label: t('hr.approvedLabel') },
+            { value: 'rejected', label: t('hr.rejectedLabel') },
+            { value: 'cancelled', label: t('hr.cancelledLabel') },
           ]}
         />
       </PageHeader>
@@ -95,12 +97,12 @@ const LeaveList: React.FC = () => {
           dataSource={filtered}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10, showTotal: (t: number) => `${t} requests` }}
+          pagination={{ pageSize: 10, showTotal: (count: number) => t('hr.leaveRequestsCount', { count }) }}
         />
       </Card>
 
       <Modal
-        title="Leave Request Details"
+        title={t('hr.leaveRequestDetails')}
         open={!!selectedLeave}
         onCancel={() => setSelectedLeave(null)}
         footer={null}
@@ -108,15 +110,15 @@ const LeaveList: React.FC = () => {
       >
         {selectedLeave && (
           <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="ID">{selectedLeave.id}</Descriptions.Item>
-            <Descriptions.Item label="Employee">{selectedLeave.employee}</Descriptions.Item>
-            <Descriptions.Item label="Leave Type">{selectedLeave.type}</Descriptions.Item>
-            <Descriptions.Item label="Duration">{selectedLeave.startDate} → {selectedLeave.endDate} ({selectedLeave.days} days)</Descriptions.Item>
-            <Descriptions.Item label="Status">
+            <Descriptions.Item label={t('hr.id')}>{selectedLeave.id}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.employee')}>{selectedLeave.employee}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.leaveTypeLabel')}>{selectedLeave.type}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.durationLabel')}>{selectedLeave.startDate} → {selectedLeave.endDate} ({selectedLeave.days} {t('hr.daysLabel')})</Descriptions.Item>
+            <Descriptions.Item label={t('common.status')}>
               <Tag color={statusColors[selectedLeave.status]}>{selectedLeave.status.toUpperCase()}</Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Reason">{selectedLeave.reason}</Descriptions.Item>
-            <Descriptions.Item label="Applied On">{selectedLeave.appliedOn}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.reasonLabel')}>{selectedLeave.reason}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.appliedOnLabel')}>{selectedLeave.appliedOn}</Descriptions.Item>
           </Descriptions>
         )}
       </Modal>

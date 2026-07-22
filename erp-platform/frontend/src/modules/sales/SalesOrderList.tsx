@@ -1,4 +1,5 @@
 import { Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
@@ -9,21 +10,23 @@ const data = [
   { id: '4', number: 'SO-2026-004', customer: 'ABC Corporation', date: '2026-07-20', total: 22300.00, status: 'draft' },
 ];
 
-const columns = [
-  { title: 'Order #', dataIndex: 'number', key: 'number' },
-  { title: 'Customer', dataIndex: 'customer', key: 'customer' },
-  { title: 'Date', dataIndex: 'date', key: 'date' },
-  { title: 'Total', dataIndex: 'total', key: 'total', render: (v: number) => `$${v.toLocaleString()}`, sorter: (a: any, b: any) => a.total - b.total },
-  { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => {
-    const colors: Record<string, string> = { draft: 'default', pending: 'orange', confirmed: 'blue', shipped: 'purple', delivered: 'green', cancelled: 'red' };
-    return <Tag color={colors[s] || 'default'}>{s}</Tag>;
-  }},
-];
-
 export default function SalesOrderList() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('sales.orderNumber'), dataIndex: 'number', key: 'number' },
+    { title: t('sales.customer'), dataIndex: 'customer', key: 'customer' },
+    { title: t('sales.date'), dataIndex: 'date', key: 'date' },
+    { title: t('sales.total'), dataIndex: 'total', key: 'total', render: (v: number) => `$${v.toLocaleString()}`, sorter: (a: any, b: any) => a.total - b.total },
+    { title: t('sales.status'), dataIndex: 'status', key: 'status', render: (s: string) => {
+      const colors: Record<string, string> = { draft: 'default', pending: 'orange', confirmed: 'blue', shipped: 'purple', delivered: 'green', cancelled: 'red' };
+      return <Tag color={colors[s] || 'default'}>{s}</Tag>;
+    }},
+  ];
+
   return (
     <div>
-      <PageHeader title="Sales Orders" subtitle="Manage customer orders" onAdd={() => {}} addLabel="New Order" />
+      <PageHeader title={t('sales.salesOrderList')} subtitle={t('sales.salesOrdersSubtitle')} onAdd={() => {}} addLabel={t('sales.newOrder')} />
       <DataTable columns={columns} dataSource={data} rowKey="id" />
     </div>
   );

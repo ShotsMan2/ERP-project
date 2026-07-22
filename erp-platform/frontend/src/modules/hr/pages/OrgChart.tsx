@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, Typography, Space, Modal, Descriptions, Tag, Avatar } from 'antd';
 import { TeamOutlined, UserOutlined } from '@ant-design/icons';
 import PageHeader from '@/components/ui/PageHeader';
@@ -74,6 +75,7 @@ const TreeNode: React.FC<{ node: OrgNode; onSelect: (n: OrgNode) => void; level?
 };
 
 const OrgChart: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedNode, setSelectedNode] = useState<OrgNode | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -84,7 +86,7 @@ const OrgChart: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Organization Chart" subtitle="Company hierarchy and reporting structure" />
+      <PageHeader title={t('hr.orgChartTitle')} subtitle={t('hr.companyHierarchy')} />
 
       <Card>
         <div className="overflow-x-auto py-8">
@@ -102,18 +104,18 @@ const OrgChart: React.FC = () => {
       >
         {selectedNode && (
           <Descriptions column={1} size="small" bordered>
-            <Descriptions.Item label="Name">{selectedNode.name}</Descriptions.Item>
-            <Descriptions.Item label="Title">{selectedNode.title}</Descriptions.Item>
-            <Descriptions.Item label="Department">
+            <Descriptions.Item label={t('hr.name')}>{selectedNode.name}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.titleLabel')}>{selectedNode.title}</Descriptions.Item>
+            <Descriptions.Item label={t('hr.department')}>
               <Tag>Engineering</Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Status">
-              <Tag color="green">Active</Tag>
+            <Descriptions.Item label={t('hr.status')}>
+              <Tag color="green">{t('hr.activeLabel')}</Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Email">
+            <Descriptions.Item label={t('hr.email')}>
               {selectedNode.name.toLowerCase().replace(' ', '.')}@company.com
             </Descriptions.Item>
-            <Descriptions.Item label="Direct Reports">
+            <Descriptions.Item label={t('hr.directReportsLabel')}>
               {selectedNode.children?.length || 0}
             </Descriptions.Item>
           </Descriptions>

@@ -1,0 +1,24 @@
+{
+  "name": "erp-platform",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Unified Enterprise ERP Platform - Orchestrator",
+  "scripts": {
+    "dev": "npm run dev:frontend",
+    "dev:frontend": "cd erp-platform/frontend && npm run dev",
+    "dev:frontend:port": "cd erp-platform/frontend && set VITE_PORT=&& npm run dev -- --port",
+    "dev:backend": "cd erp-platform/backend && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd erp-platform/frontend && npm run build",
+    "lint": "npm run lint:frontend",
+    "lint:frontend": "cd erp-platform/frontend && npm run lint",
+    "typecheck": "cd erp-platform/frontend && npm run typecheck",
+    "preview": "cd erp-platform/frontend && npm run preview",
+    "install:all": "npm install && cd erp-platform/frontend && npm install",
+    "docker:up": "cd erp-platform && docker-compose up -d",
+    "docker:down": "cd erp-platform && docker-compose down",
+    "test:backend": "cd erp-platform/backend && python -m pytest tests/ -v"
+  },
+  "keywords": ["erp", "enterprise", "react", "fastapi", "postgresql"],
+  "license": "UNLICENSED"
+}

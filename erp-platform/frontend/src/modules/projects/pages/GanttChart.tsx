@@ -1,6 +1,7 @@
 import { Card, Typography } from 'antd';
 import ReactECharts from 'echarts-for-react';
 import PageHeader from '@/components/ui/PageHeader';
+import { useTranslation } from 'react-i18next';
 const { Text } = Typography;
 
 const tasks = [
@@ -29,13 +30,14 @@ const option = {
 };
 
 const GanttChart: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <div className="p-6">
-      <PageHeader title="Gantt Chart" subtitle="Project timeline and task dependencies" />
+      <PageHeader title={t('projects.ganttChartPage.title')} subtitle={t('projects.ganttChartPage.subtitle')} />
       <Card>
         <ReactECharts option={option} style={{ height: 400 }} />
         <div className="mt-4">
-          <Text type="secondary">Tip: Hover over bars to see task details. Drag to adjust timeline.</Text>
+          <Text type="secondary">{t('projects.ganttChartPage.tip')}</Text>
         </div>
       </Card>
     </div>

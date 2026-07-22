@@ -1,6 +1,7 @@
 import { Card, Descriptions, Tag, Table, Row, Col, Statistic, Typography, Space, Button, Tabs } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 const { Text } = Typography;
 
@@ -13,42 +14,43 @@ const lineItems = [
 const payments = [{ id: 'p1', date: '-', amount: 0, method: '-', reference: '-', status: '-' }];
 
 const InvoiceDetail: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return (
     <div className="p-6">
-      <PageHeader title={'Invoice ' + mockInvoice.invoiceNumber} subtitle={mockInvoice.customer} onBack={() => navigate('/accounting/invoices')}>
-        <Space><Button icon={<DownloadOutlined />}>Download PDF</Button>{mockInvoice.status === 'unpaid' && <Button type="primary">Record Payment</Button>}</Space>
+      <PageHeader title={t('accounting.invoiceDetail.title') + ' ' + mockInvoice.invoiceNumber} subtitle={mockInvoice.customer} onBack={() => navigate('/accounting/invoices')}>
+        <Space><Button icon={<DownloadOutlined />}>{t('accounting.invoiceDetail.downloadPdf')}</Button>{mockInvoice.status === 'unpaid' && <Button type="primary">{t('accounting.invoiceDetail.recordPayment')}</Button>}</Space>
       </PageHeader>
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={6}><Card><Statistic title="Total" value={mockInvoice.total} prefix="$" precision={2} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Subtotal" value={mockInvoice.subtotal} prefix="$" precision={2} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Tax" value={mockInvoice.taxAmount} prefix="$" precision={2} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Status" value={mockInvoice.status.toUpperCase()} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('accounting.invoiceDetail.total')} value={mockInvoice.total} prefix="$" precision={2} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('accounting.invoiceDetail.subtotal')} value={mockInvoice.subtotal} prefix="$" precision={2} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('accounting.invoiceDetail.tax')} value={mockInvoice.taxAmount} prefix="$" precision={2} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('accounting.invoiceDetail.status')} value={mockInvoice.status.toUpperCase()} /></Card></Col>
       </Row>
       <Card>
         <Tabs defaultActiveKey="details" items={[
-          { key: 'details', label: 'Details', children: (
+          { key: 'details', label: t('accounting.invoiceDetail.details'), children: (
             <div>
               <Descriptions bordered column={2} size="small" className="mb-6">
-                <Descriptions.Item label="Invoice #">{mockInvoice.invoiceNumber}</Descriptions.Item>
-                <Descriptions.Item label="Type"><Tag color="blue">{mockInvoice.type.toUpperCase()}</Tag></Descriptions.Item>
-                <Descriptions.Item label="Customer">{mockInvoice.customer}</Descriptions.Item>
-                <Descriptions.Item label="Status"><Tag color="orange">{mockInvoice.status}</Tag></Descriptions.Item>
-                <Descriptions.Item label="Issue Date">{mockInvoice.issueDate}</Descriptions.Item>
-                <Descriptions.Item label="Due Date"><span className="text-orange-500">{mockInvoice.dueDate}</span></Descriptions.Item>
-                <Descriptions.Item label="Currency">{mockInvoice.currency}</Descriptions.Item>
-                <Descriptions.Item label="Notes">{mockInvoice.notes}</Descriptions.Item>
+                <Descriptions.Item label={t('accounting.invoiceDetail.invoiceNumber')}>{mockInvoice.invoiceNumber}</Descriptions.Item>
+                <Descriptions.Item label={t('accounting.invoiceDetail.type')}><Tag color="blue">{mockInvoice.type.toUpperCase()}</Tag></Descriptions.Item>
+                <Descriptions.Item label={t('accounting.invoiceDetail.customer')}>{mockInvoice.customer}</Descriptions.Item>
+                <Descriptions.Item label={t('accounting.invoiceDetail.status')}><Tag color="orange">{mockInvoice.status}</Tag></Descriptions.Item>
+                <Descriptions.Item label={t('accounting.invoiceDetail.issueDate')}>{mockInvoice.issueDate}</Descriptions.Item>
+                <Descriptions.Item label={t('accounting.invoiceDetail.dueDate')}><span className="text-orange-500">{mockInvoice.dueDate}</span></Descriptions.Item>
+                <Descriptions.Item label={t('accounting.invoiceDetail.currency')}>{mockInvoice.currency}</Descriptions.Item>
+                <Descriptions.Item label={t('accounting.invoiceDetail.notes')}>{mockInvoice.notes}</Descriptions.Item>
               </Descriptions>
-              <Text strong className="text-base block mb-3">Line Items</Text>
+              <Text strong className="text-base block mb-3">{t('accounting.invoiceDetail.lineItems')}</Text>
               <Table dataSource={lineItems} rowKey="id" pagination={false} size="small"
-                columns={[{ title: 'Product', dataIndex: 'product' }, { title: 'Qty', dataIndex: 'qty' }, { title: 'Unit Price', dataIndex: 'unitPrice', render: (v: number) => '$' + v.toFixed(2) }, { title: 'Tax', dataIndex: 'taxRate' }, { title: 'Total', dataIndex: 'total', render: (v: number) => '$' + v.toFixed(2) }]} />
+                columns={[{ title: t('accounting.invoiceDetail.product'), dataIndex: 'product' }, { title: t('accounting.invoiceDetail.qty'), dataIndex: 'qty' }, { title: t('accounting.invoiceDetail.unitPrice'), dataIndex: 'unitPrice', render: (v: number) => '$' + v.toFixed(2) }, { title: t('accounting.invoiceDetail.tax'), dataIndex: 'taxRate' }, { title: t('accounting.invoiceDetail.total'), dataIndex: 'total', render: (v: number) => '$' + v.toFixed(2) }]} />
             </div>
           )},
-          { key: 'payments', label: 'Payment History', children: (
+          { key: 'payments', label: t('accounting.invoiceDetail.paymentHistory'), children: (
             <Table dataSource={payments} rowKey="id" pagination={false} size="small"
-              columns={[{ title: 'Date', dataIndex: 'date' }, { title: 'Amount', dataIndex: 'amount', render: (v: number) => v ? '$' + v.toFixed(2) : '-' }, { title: 'Method', dataIndex: 'method' }, { title: 'Reference', dataIndex: 'reference' }, { title: 'Status', dataIndex: 'status' }]} />
+              columns={[{ title: t('accounting.invoiceDetail.date'), dataIndex: 'date' }, { title: t('accounting.invoiceDetail.amount'), dataIndex: 'amount', render: (v: number) => v ? '$' + v.toFixed(2) : '-' }, { title: t('accounting.invoiceDetail.method'), dataIndex: 'method' }, { title: t('accounting.invoiceDetail.reference'), dataIndex: 'reference' }, { title: t('accounting.invoiceDetail.status'), dataIndex: 'status' }]} />
           )},
-          { key: 'pdf', label: 'PDF Preview', children: <div className="text-center py-12 bg-gray-50 rounded-lg"><Text type="secondary">PDF preview will be rendered here</Text></div> },
+          { key: 'pdf', label: t('accounting.invoiceDetail.pdfPreview'), children: <div className="text-center py-12 bg-gray-50 rounded-lg"><Text type="secondary">{t('accounting.invoiceDetail.pdfPreviewText')}</Text></div> },
         ]} />
       </Card>
     </div>

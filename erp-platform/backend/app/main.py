@@ -73,6 +73,12 @@ def create_app() -> FastAPI:
     from app.modules.auth.router import router as auth_router
     app.include_router(auth_router, prefix=f"{settings.API_V1_PREFIX}/auth", tags=["Authentication"])
 
+    from app.modules.integrations.router import router as integrations_router
+    app.include_router(integrations_router, prefix=f"{settings.API_V1_PREFIX}/integrations", tags=["Integrations"])
+
+    from app.modules.admin.router import router as admin_router
+    app.include_router(admin_router, prefix=f"{settings.API_V1_PREFIX}/admin", tags=["Admin"])
+
     return app
 
 

@@ -31,6 +31,19 @@ class NotificationRepository:
             await self.db.flush()
         return notif
 
+    async def mark_all_as_read(self, user_id: uuid.UUID) -> None:
+        from datetime import datetime, timezone
+        query = select(Notification).where(
+            Notification.user_id == user_id,
+            Notification.read_at.is_(None),
+            Notification.deleted_at.is_(None),
+        )
+        result = await self.db.execute(query)
+        now = datetime.now(timezone.utc)
+        for notif in result.scalars().all():
+            notif.read_at = now
+        await self.db.flush()
+
     async def create(self, **kwargs) -> Notification:
         notif = Notification(**kwargs)
         self.db.add(notif)

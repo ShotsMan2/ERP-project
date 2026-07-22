@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Tag, Button, Space, Input, Select, Image, Typography, InputNumber, message } from 'antd';
 import { PlusOutlined, SearchOutlined, EditOutlined, EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -35,6 +36,7 @@ const mockProducts: Product[] = [
 const categoryOptions = [...new Set(mockProducts.map((p) => p.category))];
 
 const ProductList: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<string>('');
@@ -47,19 +49,19 @@ const ProductList: React.FC = () => {
 
   const columns = [
     {
-      title: 'Image', key: 'image', width: 60,
+      title: t('inventory.productListPage.image'), key: 'image', width: 60,
       render: () => (
         <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
           <Text type="secondary" className="text-xs">IMG</Text>
         </div>
       ),
     },
-    { title: 'SKU', dataIndex: 'sku', key: 'sku' },
-    { title: 'Name', dataIndex: 'name', key: 'name', sorter: (a: Product, b: Product) => a.name.localeCompare(b.name) },
-    { title: 'Category', dataIndex: 'category', key: 'category', render: (c: string) => <Tag>{c}</Tag> },
-    { title: 'Price', dataIndex: 'price', key: 'price', render: (p: number) => `$${p.toFixed(2)}`, sorter: (a: Product, b: Product) => a.price - b.price },
+    { title: t('inventory.productListPage.sku'), dataIndex: 'sku', key: 'sku' },
+    { title: t('inventory.productListPage.name'), dataIndex: 'name', key: 'name', sorter: (a: Product, b: Product) => a.name.localeCompare(b.name) },
+    { title: t('inventory.productListPage.category'), dataIndex: 'category', key: 'category', render: (c: string) => <Tag>{c}</Tag> },
+    { title: t('inventory.productListPage.price'), dataIndex: 'price', key: 'price', render: (p: number) => `$${p.toFixed(2)}`, sorter: (a: Product, b: Product) => a.price - b.price },
     {
-      title: 'Stock', key: 'stock',
+      title: t('inventory.productListPage.stock'), key: 'stock',
       render: (_: unknown, record: Product) => (
         <span className={record.available <= 5 ? 'text-red-500 font-semibold' : record.available <= 20 ? 'text-orange-500' : ''}>
           {record.stock}
@@ -69,11 +71,11 @@ const ProductList: React.FC = () => {
       sorter: (a: Product, b: Product) => a.available - b.available,
     },
     {
-      title: 'Status', dataIndex: 'status', key: 'status',
+      title: t('inventory.productListPage.status'), dataIndex: 'status', key: 'status',
       render: (s: string) => <Tag color={s === 'active' ? 'green' : s === 'inactive' ? 'default' : 'red'}>{s}</Tag>,
     },
     {
-      title: 'Actions', key: 'actions',
+      title: t('inventory.productListPage.actions'), key: 'actions',
       render: (_: unknown, record: Product) => (
         <Space>
           <Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate(`/inventory/products/${record.id}`)} />
@@ -85,16 +87,16 @@ const ProductList: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Products" subtitle="Manage your product catalog">
+      <PageHeader title={t('inventory.productListPage.title')} subtitle={t('inventory.productListPage.subtitle')}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/inventory/products/new')}>
-          Add Product
+          {t('inventory.productListPage.addLabel')}
         </Button>
       </PageHeader>
 
       <Card>
         <div className="flex flex-wrap gap-4 mb-4">
           <Input
-            placeholder="Search by name or SKU..."
+            placeholder={t('inventory.productListPage.searchPlaceholder')}
             prefix={<SearchOutlined />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -102,7 +104,7 @@ const ProductList: React.FC = () => {
             allowClear
           />
           <Select
-            placeholder="Filter by category"
+            placeholder={t('inventory.productListPage.filterCategory')}
             value={category || undefined}
             onChange={(v) => setCategory(v || '')}
             allowClear
@@ -114,7 +116,7 @@ const ProductList: React.FC = () => {
           dataSource={filtered}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10, showTotal: (t: number) => `${t} products` }}
+          pagination={{ pageSize: 10, showTotal: (total: number) => t('inventory.productListPage.showingProducts', { count: total }) }}
         />
       </Card>
     </div>

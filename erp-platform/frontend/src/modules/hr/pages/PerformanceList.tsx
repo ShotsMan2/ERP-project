@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, Table, Tag, Button, Space, Rate, Select, Typography, message } from 'antd';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import DataTable from '@/components/data/DataTable';
@@ -31,26 +32,27 @@ const statusColors: Record<string, string> = {
 };
 
 const PerformanceList: React.FC = () => {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState<string>('');
 
   const periods = [...new Set(mockReviews.map((r) => r.period))];
   const filtered = period ? mockReviews.filter((r) => r.period === period) : mockReviews;
 
   const columns = [
-    { title: 'Employee', dataIndex: 'employee', key: 'employee', sorter: (a: PerformanceReview, b: PerformanceReview) => a.employee.localeCompare(b.employee) },
-    { title: 'Department', dataIndex: 'department', key: 'department' },
-    { title: 'Reviewer', dataIndex: 'reviewer', key: 'reviewer' },
-    { title: 'Period', dataIndex: 'period', key: 'period', sorter: (a: PerformanceReview, b: PerformanceReview) => b.period.localeCompare(a.period) },
+    { title: t('hr.employee'), dataIndex: 'employee', key: 'employee', sorter: (a: PerformanceReview, b: PerformanceReview) => a.employee.localeCompare(b.employee) },
+    { title: t('hr.department'), dataIndex: 'department', key: 'department' },
+    { title: t('hr.reviewerLabel'), dataIndex: 'reviewer', key: 'reviewer' },
+    { title: t('hr.periodLabel'), dataIndex: 'period', key: 'period', sorter: (a: PerformanceReview, b: PerformanceReview) => b.period.localeCompare(a.period) },
     {
-      title: 'Rating', dataIndex: 'rating', key: 'rating',
+      title: t('hr.ratingLabel'), dataIndex: 'rating', key: 'rating',
       render: (r: number) => <Rate disabled allowHalf value={r} />,
     },
     {
-      title: 'Status', dataIndex: 'status', key: 'status',
+      title: t('common.status'), dataIndex: 'status', key: 'status',
       render: (s: string) => <Tag color={statusColors[s]}>{s.toUpperCase()}</Tag>,
     },
     {
-      title: 'Actions', key: 'actions',
+      title: t('common.actions'), key: 'actions',
       render: (_: unknown, record: PerformanceReview) => (
         <Space>
           <Button type="link" size="small" icon={<EyeOutlined />} />
@@ -62,17 +64,17 @@ const PerformanceList: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Performance Reviews" subtitle="Employee performance evaluations">
+      <PageHeader title={t('hr.performanceReviewsTitle')} subtitle={t('hr.employeePerformanceEvals')}>
         <Space>
           <Select
-            placeholder="Filter by period"
+            placeholder={t('hr.filterByPeriod')}
             value={period || undefined}
             onChange={(v) => setPeriod(v || '')}
             allowClear
             className="w-40"
             options={periods.map((p) => ({ value: p, label: p }))}
           />
-          <Button type="primary">New Review</Button>
+          <Button type="primary">{t('hr.newReviewBtn')}</Button>
         </Space>
       </PageHeader>
 
@@ -81,7 +83,7 @@ const PerformanceList: React.FC = () => {
           dataSource={filtered}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10, showTotal: (t: number) => `${t} reviews` }}
+          pagination={{ pageSize: 10, showTotal: (count: number) => t('hr.reviewsCount', { count }) }}
         />
       </Card>
     </div>

@@ -1,6 +1,7 @@
 import { Card, Descriptions, Tag, Table, Tabs, Row, Col, Statistic, Typography, Space, Button, Timeline } from 'antd';
 import { EditOutlined, MailOutlined, PhoneOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 const { Text } = Typography;
 
@@ -26,38 +27,39 @@ const activityTimeline = [
 
 const CustomerDetail: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   return (
     <div className="p-6">
-      <PageHeader title={mockCustomer.name} subtitle={'Code: ' + mockCustomer.code} onBack={() => navigate('/sales/customers')}>
-        <Button type="primary" icon={<EditOutlined />} onClick={() => navigate('/sales/customers/' + mockCustomer.id + '/edit')}>Edit Customer</Button>
+      <PageHeader title={mockCustomer.name} subtitle={t('sales.customerDetail.subtitle', { code: mockCustomer.code })} onBack={() => navigate('/sales/customers')}>
+        <Button type="primary" icon={<EditOutlined />} onClick={() => navigate('/sales/customers/' + mockCustomer.id + '/edit')}>{t('sales.customerDetail.editCustomer')}</Button>
       </PageHeader>
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={6}><Card><Statistic title="Credit Limit" value={mockCustomer.creditLimit} prefix="$" precision={0} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Balance" value={mockCustomer.balance} prefix="$" precision={0} valueStyle={{ color: mockCustomer.balance > 0 ? '#faad14' : undefined }} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Total Orders" value={recentOrders.length} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Open Tickets" value={tickets.filter((t) => t.status === 'open').length} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.customerDetail.creditLimit')} value={mockCustomer.creditLimit} prefix="$" precision={0} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.customerDetail.balance')} value={mockCustomer.balance} prefix="$" precision={0} valueStyle={{ color: mockCustomer.balance > 0 ? '#faad14' : undefined }} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.customerDetail.totalOrders')} value={recentOrders.length} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('sales.customerDetail.openTickets')} value={tickets.filter((t) => t.status === 'open').length} /></Card></Col>
       </Row>
       <Card>
         <Tabs defaultActiveKey="profile" items={[
-          { key: 'profile', label: 'Profile', children: (
+          { key: 'profile', label: t('sales.customerDetail.profile'), children: (
             <Descriptions bordered column={2} size="small">
-              <Descriptions.Item label="Name">{mockCustomer.name}</Descriptions.Item>
-              <Descriptions.Item label="Code">{mockCustomer.code}</Descriptions.Item>
-              <Descriptions.Item label="Segment"><Tag color="blue">{mockCustomer.segment}</Tag></Descriptions.Item>
-              <Descriptions.Item label="Status"><Tag color="green">{mockCustomer.status}</Tag></Descriptions.Item>
-              <Descriptions.Item label="Payment Terms">{mockCustomer.paymentTerms}</Descriptions.Item>
-              <Descriptions.Item label="Currency">{mockCustomer.currency}</Descriptions.Item>
-              <Descriptions.Item label="Tax ID">{mockCustomer.taxId}</Descriptions.Item>
-              <Descriptions.Item label="Credit Limit">${mockCustomer.creditLimit.toLocaleString()}</Descriptions.Item>
-              <Descriptions.Item label="Email"><Space><MailOutlined />{mockCustomer.email}</Space></Descriptions.Item>
-              <Descriptions.Item label="Phone"><Space><PhoneOutlined />{mockCustomer.phone}</Space></Descriptions.Item>
-              <Descriptions.Item label="Address" span={2}><Space><EnvironmentOutlined />{mockCustomer.address}</Space></Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.name')}>{mockCustomer.name}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.code')}>{mockCustomer.code}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.segment')}><Tag color="blue">{mockCustomer.segment}</Tag></Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.status')}><Tag color="green">{mockCustomer.status}</Tag></Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.paymentTerms')}>{mockCustomer.paymentTerms}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.currency')}>{mockCustomer.currency}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.taxId')}>{mockCustomer.taxId}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.creditLimit')}>${mockCustomer.creditLimit.toLocaleString()}</Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.email')}><Space><MailOutlined />{mockCustomer.email}</Space></Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.phone')}><Space><PhoneOutlined />{mockCustomer.phone}</Space></Descriptions.Item>
+              <Descriptions.Item label={t('sales.customerDetail.address')} span={2}><Space><EnvironmentOutlined />{mockCustomer.address}</Space></Descriptions.Item>
             </Descriptions>
           )},
-          { key: 'orders', label: 'Orders', children: <Table dataSource={recentOrders} rowKey="so" pagination={false} size="small" columns={[{ title: 'Order #', dataIndex: 'so', render: (v: string) => <a onClick={() => navigate('/sales/orders/' + v)}>{v}</a> }, { title: 'Date', dataIndex: 'date' }, { title: 'Total', dataIndex: 'total', render: (v: number) => '$' + v.toLocaleString() }, { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color={s === 'delivered' ? 'green' : s === 'invoiced' ? 'purple' : 'orange'}>{s}</Tag> }]} /> },
-          { key: 'invoices', label: 'Invoices', children: <Table dataSource={invoices} rowKey="inv" pagination={false} size="small" columns={[{ title: 'Invoice', dataIndex: 'inv' }, { title: 'Date', dataIndex: 'date' }, { title: 'Amount', dataIndex: 'amount', render: (v: number) => '$' + v.toLocaleString() }, { title: 'Due Date', dataIndex: 'dueDate' }, { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color={s === 'paid' ? 'green' : 'red'}>{s}</Tag> }]} /> },
-          { key: 'tickets', label: 'Support Tickets', children: <Table dataSource={tickets} rowKey="id" pagination={false} size="small" columns={[{ title: 'Subject', dataIndex: 'subject' }, { title: 'Priority', dataIndex: 'priority', render: (p: string) => <Tag color={p === 'High' ? 'red' : 'orange'}>{p}</Tag> }, { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color={s === 'open' ? 'blue' : 'green'}>{s}</Tag> }, { title: 'Created', dataIndex: 'created' }]} /> },
-          { key: 'activity', label: 'Activity', children: <Timeline items={activityTimeline.map((a) => ({ children: <><Text strong>{a.action}</Text><br /><Text type="secondary">{a.detail} · {a.time}</Text></> }))} /> },
+          { key: 'orders', label: t('sales.customerDetail.orders'), children: <Table dataSource={recentOrders} rowKey="so" pagination={false} size="small" columns={[{ title: t('sales.customerDetail.orderNumber'), dataIndex: 'so', render: (v: string) => <a onClick={() => navigate('/sales/orders/' + v)}>{v}</a> }, { title: t('sales.customerDetail.date'), dataIndex: 'date' }, { title: t('sales.customerDetail.total'), dataIndex: 'total', render: (v: number) => '$' + v.toLocaleString() }, { title: t('sales.customerDetail.status'), dataIndex: 'status', render: (s: string) => <Tag color={s === 'delivered' ? 'green' : s === 'invoiced' ? 'purple' : 'orange'}>{s}</Tag> }]} /> },
+          { key: 'invoices', label: t('sales.customerDetail.invoices'), children: <Table dataSource={invoices} rowKey="inv" pagination={false} size="small" columns={[{ title: t('sales.customerDetail.invoice'), dataIndex: 'inv' }, { title: t('sales.customerDetail.date'), dataIndex: 'date' }, { title: t('sales.customerDetail.amount'), dataIndex: 'amount', render: (v: number) => '$' + v.toLocaleString() }, { title: t('sales.customerDetail.dueDate'), dataIndex: 'dueDate' }, { title: t('sales.customerDetail.status'), dataIndex: 'status', render: (s: string) => <Tag color={s === 'paid' ? 'green' : 'red'}>{s}</Tag> }]} /> },
+          { key: 'tickets', label: t('sales.customerDetail.supportTickets'), children: <Table dataSource={tickets} rowKey="id" pagination={false} size="small" columns={[{ title: t('sales.customerDetail.subject'), dataIndex: 'subject' }, { title: t('sales.customerDetail.priority'), dataIndex: 'priority', render: (p: string) => <Tag color={p === 'High' ? 'red' : 'orange'}>{p}</Tag> }, { title: t('sales.customerDetail.status'), dataIndex: 'status', render: (s: string) => <Tag color={s === 'open' ? 'blue' : 'green'}>{s}</Tag> }, { title: t('sales.customerDetail.created'), dataIndex: 'created' }]} /> },
+          { key: 'activity', label: t('sales.customerDetail.activity'), children: <Timeline items={activityTimeline.map((a) => ({ children: <><Text strong>{a.action}</Text><br /><Text type="secondary">{a.detail} â€¢ {a.time}</Text></> }))} /> },
         ]} />
       </Card>
     </div>

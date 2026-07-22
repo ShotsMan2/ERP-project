@@ -1,4 +1,5 @@
 import { Card, Table, Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 const data = [
@@ -8,18 +9,20 @@ const data = [
   { key: '4', name: 'Annual Financial Report', format: 'PDF', generatedAt: '2026-07-17', size: '5.8 MB', status: 'generating' },
 ];
 
-const columns = [
-  { title: 'Report', dataIndex: 'name', key: 'name' },
-  { title: 'Format', dataIndex: 'format', key: 'format' },
-  { title: 'Generated', dataIndex: 'generatedAt', key: 'generatedAt' },
-  { title: 'Size', dataIndex: 'size', key: 'size' },
-  { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'ready' ? 'green' : 'orange'}>{s}</Tag> },
-];
-
 export default function ExportCenter() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('reports.exportCenterPage.report'), dataIndex: 'name', key: 'name' },
+    { title: t('reports.exportCenterPage.format'), dataIndex: 'format', key: 'format' },
+    { title: t('reports.exportCenterPage.generated'), dataIndex: 'generatedAt', key: 'generatedAt' },
+    { title: t('reports.exportCenterPage.size'), dataIndex: 'size', key: 'size' },
+    { title: t('reports.exportCenterPage.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'ready' ? 'green' : 'orange'}>{s}</Tag> },
+  ];
+
   return (
     <div>
-      <PageHeader title="Export Center" subtitle="Download exported reports" />
+      <PageHeader title={t('reports.exportCenterPage.title')} subtitle={t('reports.exportCenterPage.subtitle')} />
       <Card><Table columns={columns} dataSource={data} /></Card>
     </div>
   );

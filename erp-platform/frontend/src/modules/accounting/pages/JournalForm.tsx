@@ -3,6 +3,7 @@ import { Card, Form, Select, Input, Button, Row, Col, Table, Typography, InputNu
 import { PlusOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -15,6 +16,7 @@ const accountOptions = [
 ];
 
 const JournalForm: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const [lines, setLines] = useState<JournalLine[]>([]);
@@ -29,49 +31,49 @@ const JournalForm: React.FC = () => {
   const isBalanced = Math.abs(totalDebit - totalCredit) < 0.01;
 
   const lineColumns = [
-    { title: 'Account', dataIndex: 'account', width: 200, render: (v: string, r: JournalLine) => (
-      <Select value={v || undefined} onChange={(val) => { const acct = accountOptions.find((a) => a.value === val); updateLine(r.key, 'account', val); updateLine(r.key, 'accountName', acct?.label || ''); }} showSearch placeholder="Select account" style={{ width: '100%' }}
+    { title: t('accounting.journalForm.account'), dataIndex: 'account', width: 200, render: (v: string, r: JournalLine) => (
+      <Select value={v || undefined} onChange={(val) => { const acct = accountOptions.find((a) => a.value === val); updateLine(r.key, 'account', val); updateLine(r.key, 'accountName', acct?.label || ''); }} showSearch placeholder={t('accounting.journalForm.selectAccount')} style={{ width: '100%' }}
         options={accountOptions.map((a) => ({ value: a.value, label: a.label }))} />
     )},
-    { title: 'Debit', dataIndex: 'debit', width: 120, render: (v: number, r: JournalLine) => <InputNumber min={0} prefix="$" value={v} onChange={(val) => updateLine(r.key, 'debit', val)} className="w-full" /> },
-    { title: 'Credit', dataIndex: 'credit', width: 120, render: (v: number, r: JournalLine) => <InputNumber min={0} prefix="$" value={v} onChange={(val) => updateLine(r.key, 'credit', val)} className="w-full" /> },
-    { title: 'Description', dataIndex: 'description', render: (v: string, r: JournalLine) => <Input value={v} onChange={(e) => updateLine(r.key, 'description', e.target.value)} /> },
+    { title: t('accounting.journalForm.debit'), dataIndex: 'debit', width: 120, render: (v: number, r: JournalLine) => <InputNumber min={0} prefix="$" value={v} onChange={(val) => updateLine(r.key, 'debit', val)} className="w-full" /> },
+    { title: t('accounting.journalForm.credit'), dataIndex: 'credit', width: 120, render: (v: number, r: JournalLine) => <InputNumber min={0} prefix="$" value={v} onChange={(val) => updateLine(r.key, 'credit', val)} className="w-full" /> },
+    { title: t('accounting.journalForm.description'), dataIndex: 'description', render: (v: string, r: JournalLine) => <Input value={v} onChange={(e) => updateLine(r.key, 'description', e.target.value)} /> },
     { title: '', key: 'action', width: 50, render: (_: unknown, r: JournalLine) => <Button type="text" danger icon={<DeleteOutlined />} onClick={() => removeLine(r.key)} /> },
   ];
 
   const onFinish = async () => {
-    if (lines.length < 2) { message.error('Journal must have at least 2 lines'); return; }
-    if (!isBalanced) { message.error('Debits must equal credits'); return; }
+    if (lines.length < 2) { message.error(t('accounting.journalForm.journalMustHaveAtLeast2Lines')); return; }
+    if (!isBalanced) { message.error(t('accounting.journalForm.debitsMustEqualCredits')); return; }
     setSubmitting(true);
-    try { await new Promise((r) => setTimeout(r, 1500)); message.success('Journal created'); navigate('/accounting/journals'); }
-    catch { message.error('Failed to create journal'); } finally { setSubmitting(false); }
+    try { await new Promise((r) => setTimeout(r, 1500)); message.success(t('accounting.journalForm.journalCreated')); navigate('/accounting/journals'); }
+    catch { message.error(t('accounting.journalForm.failed')); } finally { setSubmitting(false); }
   };
 
   return (
     <div className="p-6">
-      <PageHeader title="New Journal Entry" subtitle="Create a general ledger journal entry" onBack={() => navigate('/accounting/journals')}>
-        <Button type="primary" icon={<SaveOutlined />} loading={submitting} onClick={onFinish}>Save Journal</Button>
+      <PageHeader title={t('accounting.journalForm.newJournalEntry')} subtitle={t('accounting.journalForm.subtitle')} onBack={() => navigate('/accounting/journals')}>
+        <Button type="primary" icon={<SaveOutlined />} loading={submitting} onClick={onFinish}>{t('accounting.journalForm.saveJournal')}</Button>
       </PageHeader>
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <Card>
             <Form form={form} layout="vertical">
               <Row gutter={16}>
-                <Col span={8}><Form.Item label="Journal Type" name="journalType" rules={[{ required: true }]}><Select><Select.Option value="general">General</Select.Option><Select.Option value="sales">Sales</Select.Option><Select.Option value="purchase">Purchase</Select.Option><Select.Option value="payroll">Payroll</Select.Option></Select></Form.Item></Col>
-                <Col span={8}><Form.Item label="Date" name="date" initialValue={dayjs()}><DatePicker className="w-full" /></Form.Item></Col>
-                <Col span={8}><Form.Item label="Reference" name="reference"><Input placeholder="Auto-generated if empty" /></Form.Item></Col>
+                <Col span={8}><Form.Item label={t('accounting.journalForm.journalType')} name="journalType" rules={[{ required: true }]}><Select><Select.Option value="general">{t('accounting.journalForm.general')}</Select.Option><Select.Option value="sales">{t('accounting.journalForm.sales')}</Select.Option><Select.Option value="purchase">{t('accounting.journalForm.purchase')}</Select.Option><Select.Option value="payroll">{t('accounting.journalForm.payroll')}</Select.Option></Select></Form.Item></Col>
+                <Col span={8}><Form.Item label={t('accounting.journalForm.date')} name="date" initialValue={dayjs()}><DatePicker className="w-full" /></Form.Item></Col>
+                <Col span={8}><Form.Item label={t('accounting.journalForm.reference')} name="reference"><Input placeholder={t('accounting.journalForm.autoGeneratedIfEmpty')} /></Form.Item></Col>
               </Row>
-              <Form.Item label="Description" name="description" rules={[{ required: true }]}><TextArea rows={2} /></Form.Item>
+              <Form.Item label={t('accounting.journalForm.description')} name="description" rules={[{ required: true }]}><TextArea rows={2} /></Form.Item>
             </Form>
           </Card>
         </Col>
         <Col span={24}>
-          <Card title="Journal Lines" extra={<Button type="dashed" icon={<PlusOutlined />} onClick={addLine}>Add Line</Button>}>
+          <Card title={t('accounting.journalForm.journalLines')} extra={<Button type="dashed" icon={<PlusOutlined />} onClick={addLine}>{t('accounting.journalForm.addLine')}</Button>}>
             <Table dataSource={lines} columns={lineColumns} pagination={false} rowKey="key" />
             <Divider />
             <div className="flex justify-between items-center">
-              <div><Text>Total Debit: <strong>${totalDebit.toFixed(2)}</strong></Text> | <Text>Total Credit: <strong>${totalCredit.toFixed(2)}</strong></Text></div>
-              {lines.length > 1 && <Alert type={isBalanced ? 'success' : 'error'} message={isBalanced ? 'Balanced' : 'Not Balanced'} showIcon className="py-1" />}
+              <div><Text>{t('accounting.journalForm.totalDebit')}: <strong>${totalDebit.toFixed(2)}</strong></Text> | <Text>{t('accounting.journalForm.totalCredit')}: <strong>${totalCredit.toFixed(2)}</strong></Text></div>
+              {lines.length > 1 && <Alert type={isBalanced ? 'success' : 'error'} message={isBalanced ? t('accounting.journalForm.balanced') : t('accounting.journalForm.notBalanced')} showIcon className="py-1" />}
             </div>
           </Card>
         </Col>

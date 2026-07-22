@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Typography, Form, Input, Button, Result, message } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const { Title, Text } = Typography;
 
@@ -9,6 +10,7 @@ const ForgotPasswordPage: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
+  const { t } = useTranslation();
 
   const onFinish = async (values: { email: string }) => {
     setLoading(true);
@@ -16,9 +18,9 @@ const ForgotPasswordPage: React.FC = () => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setEmail(values.email);
       setSubmitted(true);
-      message.success('Reset link sent to your email');
+      message.success(t('auth.forgotPasswordPage.resetLinkSentMessage'));
     } catch {
-      message.error('Failed to send reset email. Please try again.');
+      message.error(t('auth.forgotPasswordPage.sendFailed'));
     } finally {
       setLoading(false);
     }
@@ -30,30 +32,30 @@ const ForgotPasswordPage: React.FC = () => {
         <Card className="w-full max-w-md shadow-xl rounded-xl">
           <Result
             status="success"
-            title="Check Your Email"
+            title={t('auth.forgotPasswordPage.checkEmailTitle')}
             subTitle={
               <span>
-                We&apos;ve sent a password reset link to <strong>{email}</strong>.
-                Please check your inbox and follow the instructions.
+                {t('auth.forgotPasswordPage.sentTo')} <strong>{email}</strong>.
+                {t('auth.forgotPasswordPage.checkInbox')}
               </span>
             }
             extra={[
               <Link to="/login" key="login">
-                <Button type="primary" size="large">Back to Login</Button>
+                <Button type="primary" size="large">{t('auth.forgotPasswordPage.backToLogin')}</Button>
               </Link>,
               <Button
                 key="resend"
                 type="link"
                 onClick={() => setSubmitted(false)}
               >
-                Resend email
+                {t('auth.forgotPasswordPage.resendEmail')}
               </Button>,
             ]}
           />
           <div className="text-center mt-4">
             <Text type="secondary" className="text-sm">
-              Didn&apos;t receive the email? Check your spam folder or{' '}
-              <Link to="/contact-support" className="text-blue-600">contact support</Link>
+              {t('auth.forgotPasswordPage.noEmailHint')}{' '}
+              <Link to="/contact-support" className="text-blue-600">{t('auth.forgotPasswordPage.contactSupport')}</Link>
             </Text>
           </div>
         </Card>
@@ -70,19 +72,19 @@ const ForgotPasswordPage: React.FC = () => {
               <span className="text-white text-2xl font-bold">E</span>
             </div>
           </div>
-          <Title level={3}>Forgot Password?</Title>
+          <Title level={3}>{t('auth.forgotPassword')}</Title>
           <Text type="secondary">
-            No worries! Enter your email and we&apos;ll send you a reset link.
+            {t('auth.forgotPasswordPage.noWorries')}
           </Text>
         </div>
 
         <Form layout="vertical" onFinish={onFinish} size="large">
           <Form.Item
             name="email"
-            label="Email Address"
+            label={t('auth.emailAddress')}
             rules={[
-              { required: true, message: 'Please enter your email' },
-              { type: 'email', message: 'Please enter a valid email' },
+              { required: true, message: t('auth.enterEmail') },
+              { type: 'email', message: t('validation.email') },
             ]}
           >
             <Input prefix={<MailOutlined />} placeholder="you@company.com" />
@@ -90,14 +92,14 @@ const ForgotPasswordPage: React.FC = () => {
 
           <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading} block className="h-11">
-              Send Reset Link
+              {t('auth.forgotPasswordPage.sendResetLink')}
             </Button>
           </Form.Item>
         </Form>
 
         <div className="text-center">
           <Link to="/login" className="text-blue-600 hover:text-blue-700">
-            Back to Login
+            {t('auth.forgotPasswordPage.backToLogin')}
           </Link>
         </div>
       </Card>

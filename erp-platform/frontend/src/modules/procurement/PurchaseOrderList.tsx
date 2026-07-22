@@ -1,4 +1,5 @@
 import { Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
@@ -9,21 +10,23 @@ const data = [
   { id: '4', number: 'PO-2026-004', supplier: 'Tech Supplies Inc.', date: '2026-07-19', total: 2200.00, status: 'delivered' },
 ];
 
-const columns = [
-  { title: 'PO Number', dataIndex: 'number', key: 'number' },
-  { title: 'Supplier', dataIndex: 'supplier', key: 'supplier' },
-  { title: 'Date', dataIndex: 'date', key: 'date' },
-  { title: 'Total', dataIndex: 'total', key: 'total', render: (v: number) => `$${v.toLocaleString()}`, sorter: (a: any, b: any) => a.total - b.total },
-  { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => {
-    const colors: Record<string, string> = { draft: 'default', pending: 'orange', approved: 'blue', sent: 'purple', delivered: 'green', cancelled: 'red' };
-    return <Tag color={colors[s] || 'default'}>{s}</Tag>;
-  }},
-];
-
 export default function PurchaseOrderList() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('procurement.poNumber'), dataIndex: 'number', key: 'number' },
+    { title: t('procurement.supplier'), dataIndex: 'supplier', key: 'supplier' },
+    { title: t('procurement.date'), dataIndex: 'date', key: 'date' },
+    { title: t('procurement.total'), dataIndex: 'total', key: 'total', render: (v: number) => `$${v.toLocaleString()}`, sorter: (a: any, b: any) => a.total - b.total },
+    { title: t('procurement.status'), dataIndex: 'status', key: 'status', render: (s: string) => {
+      const colors: Record<string, string> = { draft: 'default', pending: 'orange', approved: 'blue', sent: 'purple', delivered: 'green', cancelled: 'red' };
+      return <Tag color={colors[s] || 'default'}>{s}</Tag>;
+    }},
+  ];
+
   return (
     <div>
-      <PageHeader title="Purchase Orders" subtitle="Manage procurement orders" onAdd={() => {}} addLabel="New PO" />
+      <PageHeader title={t('procurement.purchaseOrderList')} subtitle={t('procurement.purchaseOrdersSubtitle')} onAdd={() => {}} addLabel={t('procurement.newPO')} />
       <DataTable columns={columns} dataSource={data} rowKey="id" />
     </div>
   );

@@ -4,6 +4,7 @@ import { PlusOutlined, EyeOutlined, EditOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
+import { useTranslation } from 'react-i18next';
 interface Project { id: string; name: string; code: string; status: string; priority: string; startDate: string; endDate: string; progress: number; budget: number; manager: string; }
 const mockProjects: Project[] = [
   { id: '1', name: 'ERP Implementation', code: 'PROJ-001', status: 'in_progress', priority: 'High', startDate: '2024-09-01', endDate: '2025-06-30', progress: 45, budget: 1500000, manager: 'Alice Johnson' },
@@ -18,28 +19,29 @@ const priorityColors: Record<string, string> = { Low: 'default', Medium: 'blue',
 
 const ProjectList: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const columns = [
-    { title: 'Code', dataIndex: 'code', key: 'code' },
-    { title: 'Project Name', dataIndex: 'name', key: 'name', render: (v: string, r: Project) => <a onClick={() => navigate('/projects/' + r.id)}>{v}</a> },
-    { title: 'Manager', dataIndex: 'manager', key: 'manager' },
-    { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.replace('_', ' ').toUpperCase()}</Tag> },
-    { title: 'Priority', dataIndex: 'priority', key: 'priority', render: (p: string) => <Tag color={priorityColors[p]}>{p}</Tag> },
-    { title: 'Progress', dataIndex: 'progress', key: 'progress', render: (p: number) => <Progress percent={p} size="small" status={p === 100 ? 'success' : undefined} /> },
-    { title: 'Start', dataIndex: 'startDate', key: 'startDate' },
-    { title: 'End', dataIndex: 'endDate', key: 'endDate' },
-    { title: 'Budget', dataIndex: 'budget', key: 'budget', render: (v: number) => '$' + v.toLocaleString() },
-    { title: 'Actions', key: 'actions', render: (_: unknown, r: Project) => (
+    { title: t('projects.projectListPage.code'), dataIndex: 'code', key: 'code' },
+    { title: t('projects.projectListPage.name'), dataIndex: 'name', key: 'name', render: (v: string, r: Project) => <a onClick={() => navigate('/projects/' + r.id)}>{v}</a> },
+    { title: t('projects.projectListPage.manager'), dataIndex: 'manager', key: 'manager' },
+    { title: t('projects.projectListPage.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={statusColors[s]}>{s.replace('_', ' ').toUpperCase()}</Tag> },
+    { title: t('projects.projectListPage.priority'), dataIndex: 'priority', key: 'priority', render: (p: string) => <Tag color={priorityColors[p]}>{p}</Tag> },
+    { title: t('projects.projectListPage.budget'), dataIndex: 'progress', key: 'progress', render: (p: number) => <Progress percent={p} size="small" status={p === 100 ? 'success' : undefined} /> },
+    { title: t('projects.projectListPage.start'), dataIndex: 'startDate', key: 'startDate' },
+    { title: t('projects.projectListPage.end'), dataIndex: 'endDate', key: 'endDate' },
+    { title: t('projects.projectListPage.budget'), dataIndex: 'budget', key: 'budget', render: (v: number) => '$' + v.toLocaleString() },
+    { title: t('projects.projectListPage.actions'), key: 'actions', render: (_: unknown, r: Project) => (
       <Space><Button type="link" size="small" icon={<EyeOutlined />} onClick={() => navigate('/projects/' + r.id)} /><Button type="link" size="small" icon={<EditOutlined />} onClick={() => navigate('/projects/' + r.id + '/edit')} /></Space>
     )},
   ];
 
   return (
     <div className="p-6">
-      <PageHeader title="Projects" subtitle="Manage projects and tasks">
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/projects/new')}>New Project</Button>
+      <PageHeader title={t('projects.projectListPage.title')} subtitle={t('projects.projectListPage.subtitle')}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/projects/new')}>{t('projects.projectListPage.newProject')}</Button>
       </PageHeader>
-      <Card><DataTable dataSource={mockProjects} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (t: number) => t + ' projects' }} /></Card>
+      <Card><DataTable dataSource={mockProjects} columns={columns} rowKey="id" pagination={{ pageSize: 10, showTotal: (t: number) => t + ' ' + t('projects.projectListPage.projects') }} /></Card>
     </div>
   );
 };

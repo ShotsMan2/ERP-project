@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card, Button, Tag, Avatar, Typography, Badge, Modal, Descriptions, Space, message, Dropdown, Progress } from 'antd';
 import { PlusOutlined, UserOutlined, MoreOutlined, DollarOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 const { Text } = Typography;
 
@@ -38,8 +39,18 @@ const initialOpps: Record<string, Opportunity[]> = {
 };
 
 const OpportunityKanban: React.FC = () => {
+  const { t } = useTranslation();
   const [opportunities, setOpportunities] = useState(initialOpps);
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null);
+
+  const stageTitles: Record<string, string> = {
+    qualification: t('sales.opportunityKanban.qualification'),
+    discovery: t('sales.opportunityKanban.discovery'),
+    proposal: t('sales.opportunityKanban.proposal'),
+    negotiation: t('sales.opportunityKanban.negotiation'),
+    closed_won: t('sales.opportunityKanban.closedWon'),
+    closed_lost: t('sales.opportunityKanban.closedLost'),
+  };
 
   const moveOpp = (opp: Opportunity, targetStage: string) => {
     const newOpps = { ...opportunities };
@@ -48,21 +59,21 @@ const OpportunityKanban: React.FC = () => {
     }
     newOpps[targetStage] = [...(newOpps[targetStage] || []), { ...opp, stage: targetStage }];
     setOpportunities(newOpps);
-    message.success(opp.name + ' moved to ' + allStages.find((s) => s.id === targetStage)?.title);
+    message.success(opp.name + ' ' + t('sales.opportunityKanban.moveTo') + stageTitles[targetStage]);
   };
 
   const stageActions = (opp: Opportunity) => {
     const currentIdx = allStages.findIndex((s) => s.id === opp.stage);
     return allStages.filter((_, idx) => idx !== currentIdx).map((s) => ({
-      key: s.id, label: (s.id === 'closed_won' || s.id === 'closed_lost' ? 'Close as ' : 'Move to ') + s.title,
+      key: s.id, label: (s.id === 'closed_won' || s.id === 'closed_lost' ? t('sales.opportunityKanban.closeAs') : t('sales.opportunityKanban.moveTo')) + stageTitles[s.id],
       onClick: () => moveOpp(opp, s.id),
     }));
   };
 
   return (
     <div className="p-6">
-      <PageHeader title="Opportunity Pipeline" subtitle="Track deals through the sales pipeline">
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Opening new opportunity form')}>Add Opportunity</Button>
+      <PageHeader title={t('sales.opportunityKanban.title')} subtitle={t('sales.opportunityKanban.subtitle')}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => message.info('Opening new opportunity form')}>{t('sales.opportunityKanban.addOpportunity')}</Button>
       </PageHeader>
 
       <div className="flex gap-4 overflow-x-auto pb-4 min-h-[500px]">
@@ -74,7 +85,7 @@ const OpportunityKanban: React.FC = () => {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Badge color={stage.color} />
-                  <Text strong>{stage.title}</Text>
+                  <Text strong>{stageTitles[stage.id]}</Text>
                   <Tag>{opps.length}</Tag>
                 </div>
                 <Text type="secondary" className="text-xs">${(totalValue / 1000).toFixed(0)}k</Text>
@@ -93,7 +104,7 @@ const OpportunityKanban: React.FC = () => {
                       </Dropdown>
                     </div>
                     <div className="mt-3">
-                      <div className="flex justify-between text-xs mb-1"><Text type="secondary">Probability</Text><Text>{opp.probability}%</Text></div>
+                      <div className="flex justify-between text-xs mb-1"><Text type="secondary">{t('sales.opportunityKanban.probability')}</Text><Text>{opp.probability}%</Text></div>
                       <Progress percent={opp.probability} size="small" showInfo={false} />
                     </div>
                     <div className="flex justify-between mt-2">
@@ -102,7 +113,7 @@ const OpportunityKanban: React.FC = () => {
                     </div>
                   </Card>
                 ))}
-                {opps.length === 0 && <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center"><Text type="secondary" className="text-sm">No opportunities</Text></div>}
+                {opps.length === 0 && <div className="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center"><Text type="secondary" className="text-sm">{t('sales.opportunityKanban.noOpportunities')}</Text></div>}
               </div>
             </div>
           );
@@ -112,13 +123,13 @@ const OpportunityKanban: React.FC = () => {
       <Modal title={selectedOpp?.name} open={!!selectedOpp} onCancel={() => setSelectedOpp(null)} footer={null} width={480}>
         {selectedOpp && (
           <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="Opportunity">{selectedOpp.name}</Descriptions.Item>
-            <Descriptions.Item label="Company">{selectedOpp.company}</Descriptions.Item>
-            <Descriptions.Item label="Value">${selectedOpp.value.toLocaleString()}</Descriptions.Item>
-            <Descriptions.Item label="Stage"><Tag color={allStages.find((s) => s.id === selectedOpp.stage)?.color}>{selectedOpp.stage}</Tag></Descriptions.Item>
-            <Descriptions.Item label="Probability"><Progress percent={selectedOpp.probability} size="small" /></Descriptions.Item>
-            <Descriptions.Item label="Assigned To">{selectedOpp.assignedTo}</Descriptions.Item>
-            <Descriptions.Item label="Expected Close">{selectedOpp.expectedClose}</Descriptions.Item>
+            <Descriptions.Item label={t('sales.opportunityKanban.opportunity')}>{selectedOpp.name}</Descriptions.Item>
+            <Descriptions.Item label={t('sales.opportunityKanban.company')}>{selectedOpp.company}</Descriptions.Item>
+            <Descriptions.Item label={t('sales.opportunityKanban.value')}>${selectedOpp.value.toLocaleString()}</Descriptions.Item>
+            <Descriptions.Item label={t('sales.opportunityKanban.stage')}><Tag color={allStages.find((s) => s.id === selectedOpp.stage)?.color}>{selectedOpp.stage}</Tag></Descriptions.Item>
+            <Descriptions.Item label={t('sales.opportunityKanban.probability')}><Progress percent={selectedOpp.probability} size="small" /></Descriptions.Item>
+            <Descriptions.Item label={t('sales.opportunityKanban.assignedTo')}>{selectedOpp.assignedTo}</Descriptions.Item>
+            <Descriptions.Item label={t('sales.opportunityKanban.expectedClose')}>{selectedOpp.expectedClose}</Descriptions.Item>
           </Descriptions>
         )}
       </Modal>

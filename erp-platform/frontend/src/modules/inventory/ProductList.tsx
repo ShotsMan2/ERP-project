@@ -1,4 +1,5 @@
-import { Tag, Space } from 'antd';
+import { Tag } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DataTable } from '@/components/data/DataTable';
 
@@ -9,19 +10,21 @@ const data = [
   { id: '4', name: 'Monitor 27"', sku: 'MON-001', category: 'Electronics', price: 399.99, stock: 0, status: 'inactive' },
 ];
 
-const columns = [
-  { title: 'Name', dataIndex: 'name', key: 'name', sorter: (a: any, b: any) => a.name.localeCompare(b.name) },
-  { title: 'SKU', dataIndex: 'sku', key: 'sku' },
-  { title: 'Category', dataIndex: 'category', key: 'category' },
-  { title: 'Price', dataIndex: 'price', key: 'price', render: (v: number) => `$${v.toFixed(2)}`, sorter: (a: any, b: any) => a.price - b.price },
-  { title: 'Stock', dataIndex: 'stock', key: 'stock', render: (v: number) => <span className={v < 10 ? 'text-error font-bold' : ''}>{v}</span> },
-  { title: 'Status', dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'red'}>{s}</Tag> },
-];
-
 export default function ProductList() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('inventory.productListPage.name'), dataIndex: 'name', key: 'name', sorter: (a: any, b: any) => a.name.localeCompare(b.name) },
+    { title: t('inventory.productListPage.sku'), dataIndex: 'sku', key: 'sku' },
+    { title: t('inventory.productListPage.category'), dataIndex: 'category', key: 'category' },
+    { title: t('inventory.productListPage.price'), dataIndex: 'price', key: 'price', render: (v: number) => `$${v.toFixed(2)}`, sorter: (a: any, b: any) => a.price - b.price },
+    { title: t('inventory.productListPage.stock'), dataIndex: 'stock', key: 'stock', render: (v: number) => <span className={v < 10 ? 'text-error font-bold' : ''}>{v}</span> },
+    { title: t('inventory.productListPage.status'), dataIndex: 'status', key: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'red'}>{s}</Tag> },
+  ];
+
   return (
     <div>
-      <PageHeader title="Products" subtitle="Manage product catalog" onAdd={() => {}} addLabel="Add Product" />
+      <PageHeader title={t('inventory.productListPage.title')} subtitle={t('inventory.productListPage.subtitle')} onAdd={() => {}} addLabel={t('inventory.productListPage.addLabel')} />
       <DataTable columns={columns} dataSource={data} rowKey="id" searchable selectable />
     </div>
   );

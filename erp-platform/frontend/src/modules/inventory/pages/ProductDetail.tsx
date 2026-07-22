@@ -1,6 +1,7 @@
 import { Card, Tabs, Descriptions, Tag, Table, Button, Space, Typography, Row, Col, Statistic, Image, List } from 'antd';
 import { EditOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 
 const { Text } = Typography;
@@ -32,93 +33,94 @@ const stockMovements = [
 ];
 
 const ProductDetail: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
   return (
     <div className="p-6">
-      <PageHeader title={mockProduct.name} subtitle={`SKU: ${mockProduct.sku}`} onBack={() => navigate('/inventory/products')}>
+      <PageHeader title={mockProduct.name} subtitle={`${t('inventory.productDetail.sku')}: ${mockProduct.sku}`} onBack={() => navigate('/inventory/products')}>
         <Button type="primary" icon={<EditOutlined />} onClick={() => navigate(`/inventory/products/${id}/edit`)}>
-          Edit Product
+          {t('inventory.productDetail.editButton')}
         </Button>
       </PageHeader>
 
       <Row gutter={[16, 16]} className="mb-6">
-        <Col xs={24} sm={6}><Card><Statistic title="Price" value={mockProduct.price} prefix="$" precision={2} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Cost" value={mockProduct.cost} prefix="$" precision={2} /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Margin" value={((mockProduct.price - mockProduct.cost) / mockProduct.price * 100).toFixed(1)} suffix="%" /></Card></Col>
-        <Col xs={24} sm={6}><Card><Statistic title="Total Stock" value={45} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('inventory.productDetail.price')} value={mockProduct.price} prefix="$" precision={2} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('inventory.productDetail.cost')} value={mockProduct.cost} prefix="$" precision={2} /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('inventory.productDetail.margin')} value={((mockProduct.price - mockProduct.cost) / mockProduct.price * 100).toFixed(1)} suffix="%" /></Card></Col>
+        <Col xs={24} sm={6}><Card><Statistic title={t('inventory.productDetail.totalStock')} value={45} /></Card></Col>
       </Row>
 
       <Card>
         <Tabs defaultActiveKey="details"
           items={[
             {
-              key: 'details', label: 'Details',
+              key: 'details', label: t('inventory.productDetail.details'),
               children: (
                 <Descriptions bordered column={2} size="small">
-                  <Descriptions.Item label="Product Name">{mockProduct.name}</Descriptions.Item>
-                  <Descriptions.Item label="SKU">{mockProduct.sku}</Descriptions.Item>
-                  <Descriptions.Item label="Category"><Tag>{mockProduct.category}</Tag></Descriptions.Item>
-                  <Descriptions.Item label="Unit">{mockProduct.unit}</Descriptions.Item>
-                  <Descriptions.Item label="Barcode">{mockProduct.barcode}</Descriptions.Item>
-                  <Descriptions.Item label="Tax Rate">{mockProduct.taxRate}</Descriptions.Item>
-                  <Descriptions.Item label="Status"><Tag color="green">{mockProduct.status}</Tag></Descriptions.Item>
-                  <Descriptions.Item label="Created">{mockProduct.createdAt}</Descriptions.Item>
-                  <Descriptions.Item label="Description" span={2}>{mockProduct.description}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.productName')}>{mockProduct.name}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.sku')}>{mockProduct.sku}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.category')}><Tag>{mockProduct.category}</Tag></Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.unit')}>{mockProduct.unit}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.barcode')}>{mockProduct.barcode}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.taxRate')}>{mockProduct.taxRate}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.status')}><Tag color="green">{mockProduct.status}</Tag></Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.created')}>{mockProduct.createdAt}</Descriptions.Item>
+                  <Descriptions.Item label={t('inventory.productDetail.description')} span={2}>{mockProduct.description}</Descriptions.Item>
                 </Descriptions>
               ),
             },
             {
-              key: 'variants', label: `Variants (${variants.length})`,
+              key: 'variants', label: `${t('inventory.productDetail.variants')} (${variants.length})`,
               children: (
                 <Table dataSource={variants} rowKey="id" pagination={false} size="small"
                   columns={[
-                    { title: 'Name', dataIndex: 'name' },
-                    { title: 'SKU', dataIndex: 'sku' },
-                    { title: 'Price', dataIndex: 'price', render: (v: number) => `$${v.toFixed(2)}` },
-                    { title: 'Stock', dataIndex: 'stock' },
-                    { title: 'Status', dataIndex: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'red'}>{s}</Tag> },
+                    { title: t('inventory.productDetail.name'), dataIndex: 'name' },
+                    { title: t('inventory.productDetail.sku'), dataIndex: 'sku' },
+                    { title: t('inventory.productDetail.price'), dataIndex: 'price', render: (v: number) => `$${v.toFixed(2)}` },
+                    { title: t('inventory.productDetail.stock'), dataIndex: 'stock' },
+                    { title: t('inventory.productDetail.status'), dataIndex: 'status', render: (s: string) => <Tag color={s === 'active' ? 'green' : 'red'}>{s}</Tag> },
                   ]}
                 />
               ),
             },
             {
-              key: 'stock', label: 'Stock Levels',
+              key: 'stock', label: t('inventory.productDetail.stockLevels'),
               children: (
                 <Table dataSource={stockLevels} rowKey={(r) => `${r.warehouse}-${r.bin}`} pagination={false} size="small"
                   columns={[
-                    { title: 'Warehouse', dataIndex: 'warehouse' },
-                    { title: 'Bin', dataIndex: 'bin' },
-                    { title: 'Quantity', dataIndex: 'quantity' },
-                    { title: 'Reserved', dataIndex: 'reserved' },
-                    { title: 'Available', dataIndex: 'available', render: (v: number) => <span className={v <= 10 ? 'text-orange-500 font-semibold' : ''}>{v}</span> },
+                    { title: t('inventory.productDetail.warehouse'), dataIndex: 'warehouse' },
+                    { title: t('inventory.productDetail.bin'), dataIndex: 'bin' },
+                    { title: t('inventory.productDetail.quantity'), dataIndex: 'quantity' },
+                    { title: t('inventory.productDetail.reserved'), dataIndex: 'reserved' },
+                    { title: t('inventory.productDetail.available'), dataIndex: 'available', render: (v: number) => <span className={v <= 10 ? 'text-orange-500 font-semibold' : ''}>{v}</span> },
                   ]}
                 />
               ),
             },
             {
-              key: 'movements', label: 'Stock Movements',
+              key: 'movements', label: t('inventory.productDetail.stockMovements'),
               children: (
                 <Table dataSource={stockMovements} rowKey={(r) => `${r.date}-${r.reference}`} pagination={false} size="small"
                   columns={[
-                    { title: 'Date', dataIndex: 'date' },
-                    { title: 'Type', dataIndex: 'type', render: (t: string) => <Tag color={t === 'in' ? 'green' : t === 'out' ? 'red' : 'blue'}>{t}</Tag> },
-                    { title: 'Reference', dataIndex: 'reference' },
-                    { title: 'Qty', dataIndex: 'quantity', render: (v: number) => <span className={v > 0 ? 'text-green-600' : 'text-red-600'}>{v > 0 ? `+${v}` : v}</span> },
-                    { title: 'From', dataIndex: 'from' },
-                    { title: 'To', dataIndex: 'to' },
+                    { title: t('inventory.productDetail.date'), dataIndex: 'date' },
+                    { title: t('inventory.productDetail.type'), dataIndex: 'type', render: (t: string) => <Tag color={t === 'in' ? 'green' : t === 'out' ? 'red' : 'blue'}>{t}</Tag> },
+                    { title: t('inventory.productDetail.reference'), dataIndex: 'reference' },
+                    { title: t('inventory.productDetail.qty'), dataIndex: 'quantity', render: (v: number) => <span className={v > 0 ? 'text-green-600' : 'text-red-600'}>{v > 0 ? `+${v}` : v}</span> },
+                    { title: t('inventory.productDetail.from'), dataIndex: 'from' },
+                    { title: t('inventory.productDetail.to'), dataIndex: 'to' },
                   ]}
                 />
               ),
             },
             {
-              key: 'images', label: 'Images',
+              key: 'images', label: t('inventory.productDetail.images'),
               children: (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[1, 2, 3].map((i) => (
                     <div key={i} className="border rounded-lg p-4 flex items-center justify-center h-40 bg-gray-50">
-                      <Text type="secondary">Image {i}</Text>
+                      <Text type="secondary">{t('inventory.productDetail.image')} {i}</Text>
                     </div>
                   ))}
                 </div>

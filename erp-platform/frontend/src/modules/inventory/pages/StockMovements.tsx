@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Table, Tag, Input, Select, Typography, Space, Button } from 'antd';
 import { SearchOutlined, LinkOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -36,6 +37,7 @@ const typeColors: Record<string, string> = {
 };
 
 const StockMovements: React.FC = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('');
 
@@ -46,31 +48,31 @@ const StockMovements: React.FC = () => {
   });
 
   const columns = [
-    { title: 'Date', dataIndex: 'date', key: 'date', sorter: (a: StockMovement, b: StockMovement) => dayjs(a.date).unix() - dayjs(b.date).unix() },
+    { title: t('inventory.stockMovementsPage.date'), dataIndex: 'date', key: 'date', sorter: (a: StockMovement, b: StockMovement) => dayjs(a.date).unix() - dayjs(b.date).unix() },
     {
-      title: 'Type', dataIndex: 'type', key: 'type',
+      title: t('inventory.stockMovementsPage.type'), dataIndex: 'type', key: 'type',
       render: (t: string) => <Tag color={typeColors[t]}>{t.toUpperCase()}</Tag>,
     },
-    { title: 'Product', dataIndex: 'product', key: 'product' },
-    { title: 'SKU', dataIndex: 'sku', key: 'sku' },
+    { title: t('inventory.stockMovementsPage.product'), dataIndex: 'product', key: 'product' },
+    { title: t('inventory.stockMovementsPage.sku'), dataIndex: 'sku', key: 'sku' },
     {
-      title: 'Qty', dataIndex: 'quantity', key: 'quantity',
+      title: t('inventory.stockMovementsPage.qty'), dataIndex: 'quantity', key: 'quantity',
       render: (v: number) => <span className={v > 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>{v > 0 ? `+${v}` : v}</span>,
     },
-    { title: 'Reference', dataIndex: 'reference', key: 'reference', render: (r: string) => <a className="text-blue-600"><Space><LinkOutlined />{r}</Space></a> },
-    { title: 'From', dataIndex: 'from', key: 'from' },
-    { title: 'To', dataIndex: 'to', key: 'to' },
-    { title: 'Reason', dataIndex: 'reason', key: 'reason' },
+    { title: t('inventory.stockMovementsPage.reference'), dataIndex: 'reference', key: 'reference', render: (r: string) => <a className="text-blue-600"><Space><LinkOutlined />{r}</Space></a> },
+    { title: t('inventory.stockMovementsPage.from'), dataIndex: 'from', key: 'from' },
+    { title: t('inventory.stockMovementsPage.to'), dataIndex: 'to', key: 'to' },
+    { title: t('inventory.stockMovementsPage.reason'), dataIndex: 'reason', key: 'reason' },
   ];
 
   return (
     <div className="p-6">
-      <PageHeader title="Stock Movements" subtitle="Complete inventory transaction history" />
+      <PageHeader title={t('inventory.stockMovementsPage.title')} subtitle={t('inventory.stockMovementsPage.subtitle')} />
 
       <Card>
         <div className="flex flex-wrap gap-4 mb-4">
           <Input
-            placeholder="Search product, SKU, or reference..."
+            placeholder={t('inventory.stockMovementsPage.searchPlaceholder')}
             prefix={<SearchOutlined />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -78,17 +80,17 @@ const StockMovements: React.FC = () => {
             allowClear
           />
           <Select
-            placeholder="Filter by type"
+            placeholder={t('inventory.stockMovementsPage.filterType')}
             value={typeFilter || undefined}
             onChange={(v) => setTypeFilter(v || '')}
             allowClear
             className="w-40"
             options={[
-              { value: 'in', label: 'Stock In' },
-              { value: 'out', label: 'Stock Out' },
-              { value: 'transfer', label: 'Transfer' },
-              { value: 'adjustment', label: 'Adjustment' },
-              { value: 'return', label: 'Return' },
+              { value: 'in', label: t('inventory.stockMovementsPage.stockIn') },
+              { value: 'out', label: t('inventory.stockMovementsPage.stockOut') },
+              { value: 'transfer', label: t('inventory.stockMovementsPage.transfer') },
+              { value: 'adjustment', label: t('inventory.stockMovementsPage.adjustment') },
+              { value: 'return', label: t('inventory.stockMovementsPage.return') },
             ]}
           />
         </div>
@@ -96,7 +98,7 @@ const StockMovements: React.FC = () => {
           dataSource={filtered}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10, showTotal: (t: number) => `${t} movements` }}
+          pagination={{ pageSize: 10, showTotal: (total: number) => t('inventory.stockMovementsPage.showingMovements', { count: total }) }}
         />
       </Card>
     </div>

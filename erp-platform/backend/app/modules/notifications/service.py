@@ -22,6 +22,9 @@ class NotificationService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
         return notif
 
+    async def mark_all_as_read(self, user_id: uuid.UUID) -> None:
+        await self.repo.mark_all_as_read(user_id)
+
     async def send_notification(self, user_id: uuid.UUID, type: str, title: str, body: str | None = None, data: dict | None = None, channel: str = "in_app") -> Notification:
         return await self.repo.create(user_id=user_id, type=type, title=title, body=body, data=data, channel=channel)
 

@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import type { UploadFile } from 'antd';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 
 const { Title, Text } = Typography;
@@ -30,6 +31,7 @@ interface PasswordFormData {
 
 const ProfilePage: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
   const [saving, setSaving] = useState(false);
@@ -40,9 +42,9 @@ const ProfilePage: React.FC = () => {
     setSaving(true);
     try {
       await new Promise((r) => setTimeout(r, 1000));
-      message.success('Profile updated successfully');
+      message.success(t('auth.profilePage.updatedSuccessfully'));
     } catch {
-      message.error('Failed to update profile');
+      message.error(t('auth.profilePage.updateFailed'));
     } finally {
       setSaving(false);
     }
@@ -52,10 +54,10 @@ const ProfilePage: React.FC = () => {
     setSaving(true);
     try {
       await new Promise((r) => setTimeout(r, 1000));
-      message.success('Password changed successfully');
+      message.success(t('auth.profilePage.passwordChanged'));
       passwordForm.resetFields();
     } catch {
-      message.error('Failed to change password');
+      message.error(t('auth.profilePage.passwordChangeFailed'));
     } finally {
       setSaving(false);
     }
@@ -64,15 +66,15 @@ const ProfilePage: React.FC = () => {
   const handleAvatarChange = (info: { file: UploadFile }) => {
     if (info.file.status === 'done') {
       setAvatarUrl(info.file.response?.url || URL.createObjectURL(info.file.originFileObj as Blob));
-      message.success('Avatar updated');
+      message.success(t('auth.profilePage.avatarUpdated'));
     }
   };
 
   return (
     <div className="p-6">
       <PageHeader
-        title="My Profile"
-        subtitle="Manage your account settings and preferences"
+        title={t('auth.profilePage.title')}
+        subtitle={t('auth.profilePage.subtitle')}
       />
 
       <Row gutter={[24, 24]}>
@@ -90,7 +92,7 @@ const ProfilePage: React.FC = () => {
                 onChange={handleAvatarChange}
                 action="/api/v1/upload/avatar"
               >
-                <Button icon={<UploadOutlined />}>Change Photo</Button>
+                <Button icon={<UploadOutlined />}>{t('auth.profilePage.changePhoto')}</Button>
               </Upload>
               <Divider />
               <Title level={5}>{user ? `${user.name} ${user.surname}` : 'User'}</Title>
@@ -109,7 +111,7 @@ const ProfilePage: React.FC = () => {
               items={[
                 {
                   key: 'profile',
-                  label: <span><UserOutlined /> Profile</span>,
+                  label: <span><UserOutlined /> {t('auth.profilePage.profile')}</span>,
                   children: (
                     <Form<ProfileFormData>
                       form={profileForm}
@@ -126,31 +128,31 @@ const ProfilePage: React.FC = () => {
                     >
                       <Row gutter={16}>
                         <Col span={12}>
-                          <Form.Item label="First Name" name="firstName" rules={[{ required: true }]}>
+                          <Form.Item label={t('auth.profilePage.firstName')} name="firstName" rules={[{ required: true }]}>
                             <Input />
                           </Form.Item>
                         </Col>
                         <Col span={12}>
-                          <Form.Item label="Last Name" name="lastName" rules={[{ required: true }]}>
+                          <Form.Item label={t('auth.profilePage.lastName')} name="lastName" rules={[{ required: true }]}>
                             <Input />
                           </Form.Item>
                         </Col>
                       </Row>
                       <Row gutter={16}>
                         <Col span={12}>
-                          <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email' }]}>
+                          <Form.Item label={t('auth.profilePage.email')} name="email" rules={[{ required: true, type: 'email' }]}>
                             <Input disabled />
                           </Form.Item>
                         </Col>
                         <Col span={12}>
-                          <Form.Item label="Phone" name="phone">
+                          <Form.Item label={t('auth.profilePage.phone')} name="phone">
                             <Input />
                           </Form.Item>
                         </Col>
                       </Row>
                       <Row gutter={16}>
                         <Col span={12}>
-                          <Form.Item label="Language" name="language">
+                          <Form.Item label={t('auth.profilePage.language')} name="language">
                             <Select>
                               <Select.Option value="en">English</Select.Option>
                               <Select.Option value="tr">Türkçe</Select.Option>
@@ -160,7 +162,7 @@ const ProfilePage: React.FC = () => {
                           </Form.Item>
                         </Col>
                         <Col span={12}>
-                          <Form.Item label="Timezone" name="timezone">
+                          <Form.Item label={t('auth.profilePage.timezone')} name="timezone">
                             <Select>
                               <Select.Option value="UTC">UTC</Select.Option>
                               <Select.Option value="US/Eastern">US/Eastern</Select.Option>
@@ -171,17 +173,17 @@ const ProfilePage: React.FC = () => {
                         </Col>
                       </Row>
                       <Button type="primary" htmlType="submit" loading={saving}>
-                        Save Changes
+                        {t('auth.profilePage.saveChanges')}
                       </Button>
                     </Form>
                   ),
                 },
                 {
                   key: 'security',
-                  label: <span><SafetyOutlined /> Security</span>,
+                  label: <span><SafetyOutlined /> {t('auth.profilePage.security')}</span>,
                   children: (
                     <div>
-                      <Title level={5}>Change Password</Title>
+                      <Title level={5}>{t('auth.profilePage.changePassword')}</Title>
                       <Form<PasswordFormData>
                         form={passwordForm}
                         layout="vertical"
@@ -189,24 +191,24 @@ const ProfilePage: React.FC = () => {
                         style={{ maxWidth: 480 }}
                       >
                         <Form.Item
-                          label="Current Password"
+                          label={t('auth.profilePage.currentPassword')}
                           name="currentPassword"
-                          rules={[{ required: true, message: 'Please enter your current password' }]}
+                          rules={[{ required: true, message: t('auth.profilePage.enterCurrentPassword') }]}
                         >
                           <Input.Password />
                         </Form.Item>
                         <Form.Item
-                          label="New Password"
+                          label={t('auth.profilePage.newPassword')}
                           name="newPassword"
                           rules={[
-                            { required: true, message: 'Please enter a new password' },
-                            { min: 8, message: 'Minimum 8 characters' },
+                            { required: true, message: t('auth.resetPasswordPage.enterPassword') },
+                            { min: 8, message: t('auth.profilePage.minimum8Characters') },
                           ]}
                         >
                           <Input.Password />
                         </Form.Item>
                         <Form.Item
-                          label="Confirm New Password"
+                          label={t('auth.profilePage.confirmNewPassword')}
                           name="confirmPassword"
                           dependencies={['newPassword']}
                           rules={[
@@ -214,7 +216,7 @@ const ProfilePage: React.FC = () => {
                             ({ getFieldValue }) => ({
                               validator(_, value) {
                                 if (!value || getFieldValue('newPassword') === value) return Promise.resolve();
-                                return Promise.reject(new Error('Passwords do not match'));
+                                return Promise.reject(new Error(t('auth.profilePage.passwordsDoNotMatch')));
                               },
                             }),
                           ]}
@@ -222,16 +224,16 @@ const ProfilePage: React.FC = () => {
                           <Input.Password />
                         </Form.Item>
                         <Button type="primary" htmlType="submit" loading={saving}>
-                          Update Password
+                          {t('auth.profilePage.updatePassword')}
                         </Button>
                       </Form>
 
                       <Divider />
-                      <Title level={5}>Multi-Factor Authentication</Title>
+                      <Title level={5}>{t('auth.profilePage.multiFactorAuth')}</Title>
                       <Descriptions column={1} size="small">
-                        <Descriptions.Item label="Status">
+                        <Descriptions.Item label={t('auth.profilePage.status')}>
                           <Tag color={'default'}>
-                            {'Disabled'}
+                            {t('auth.profilePage.disabled')}
                           </Tag>
                         </Descriptions.Item>
                       </Descriptions>
@@ -240,21 +242,21 @@ const ProfilePage: React.FC = () => {
                         className="mt-2"
                         onClick={() => setMfaModalOpen(true)}
                       >
-                        {'Set Up MFA'}
+                        {t('auth.profilePage.setUpMfa')}
                       </Button>
                     </div>
                   ),
                 },
                 {
                   key: 'preferences',
-                  label: <span><SettingOutlined /> Preferences</span>,
+                  label: <span><SettingOutlined /> {t('auth.profilePage.preferences')}</span>,
                   children: (
                     <div>
-                      <Title level={5}>Notifications</Title>
+                      <Title level={5}>{t('auth.profilePage.notifications')}</Title>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <Text>Email Notifications</Text>
+                            <Text>{t('auth.profilePage.emailNotifications')}</Text>
                             <br />
                             <Text type="secondary" className="text-sm">Receive notifications via email</Text>
                           </div>
@@ -262,7 +264,7 @@ const ProfilePage: React.FC = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Text>Push Notifications</Text>
+                            <Text>{t('auth.profilePage.pushNotifications')}</Text>
                             <br />
                             <Text type="secondary" className="text-sm">Receive notifications in browser</Text>
                           </div>
@@ -270,7 +272,7 @@ const ProfilePage: React.FC = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Text>SMS Notifications</Text>
+                            <Text>{t('auth.profilePage.smsNotifications')}</Text>
                             <br />
                             <Text type="secondary" className="text-sm">Receive notifications via SMS</Text>
                           </div>
@@ -279,11 +281,11 @@ const ProfilePage: React.FC = () => {
                       </div>
 
                       <Divider />
-                      <Title level={5}>Display</Title>
+                      <Title level={5}>{t('auth.profilePage.display')}</Title>
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <Text>Compact Mode</Text>
+                            <Text>{t('auth.profilePage.compactMode')}</Text>
                             <br />
                             <Text type="secondary" className="text-sm">Use compact layout</Text>
                           </div>
@@ -291,7 +293,7 @@ const ProfilePage: React.FC = () => {
                         </div>
                         <div className="flex items-center justify-between">
                           <div>
-                            <Text>Dark Mode</Text>
+                            <Text>{t('auth.profilePage.darkMode')}</Text>
                             <br />
                             <Text type="secondary" className="text-sm">Use dark color theme</Text>
                           </div>
@@ -300,10 +302,10 @@ const ProfilePage: React.FC = () => {
                       </div>
 
                       <Divider />
-                      <Title level={5}>Regional</Title>
+                      <Title level={5}>{t('auth.profilePage.regional')}</Title>
                       <div className="space-y-4 max-w-md">
                         <div className="flex items-center justify-between">
-                          <Text>Date Format</Text>
+                          <Text>{t('auth.profilePage.dateFormat')}</Text>
                           <Select defaultValue="MM/DD/YYYY" style={{ width: 160 }}>
                             <Select.Option value="MM/DD/YYYY">MM/DD/YYYY</Select.Option>
                             <Select.Option value="DD/MM/YYYY">DD/MM/YYYY</Select.Option>
@@ -311,17 +313,17 @@ const ProfilePage: React.FC = () => {
                           </Select>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Text>Time Format</Text>
+                          <Text>{t('auth.profilePage.timeFormat')}</Text>
                           <Select defaultValue="12h" style={{ width: 160 }}>
-                            <Select.Option value="12h">12-hour</Select.Option>
-                            <Select.Option value="24h">24-hour</Select.Option>
+                            <Select.Option value="12h">{t('auth.profilePage.hour12')}</Select.Option>
+                            <Select.Option value="24h">{t('auth.profilePage.hour24')}</Select.Option>
                           </Select>
                         </div>
                         <div className="flex items-center justify-between">
-                          <Text>First Day of Week</Text>
+                          <Text>{t('auth.profilePage.firstDayOfWeek')}</Text>
                           <Select defaultValue="monday" style={{ width: 160 }}>
-                            <Select.Option value="monday">Monday</Select.Option>
-                            <Select.Option value="sunday">Sunday</Select.Option>
+                            <Select.Option value="monday">{t('auth.profilePage.monday')}</Select.Option>
+                            <Select.Option value="sunday">{t('auth.profilePage.sunday')}</Select.Option>
                           </Select>
                         </div>
                       </div>
@@ -335,7 +337,7 @@ const ProfilePage: React.FC = () => {
       </Row>
 
       <Modal
-        title="Set Up Multi-Factor Authentication"
+        title={t('auth.profilePage.setUpMfaTitle')}
         open={mfaModalOpen}
         onCancel={() => setMfaModalOpen(false)}
         footer={null}
@@ -354,8 +356,8 @@ const ProfilePage: React.FC = () => {
             rows={2}
           />
           <div className="mt-4">
-            <Button type="primary" onClick={() => { message.success('MFA enabled'); setMfaModalOpen(false); }}>
-              Confirm Setup
+            <Button type="primary" onClick={() => { message.success(t('auth.profilePage.mfaEnabled')); setMfaModalOpen(false); }}>
+              {t('auth.profilePage.confirmSetup')}
             </Button>
           </div>
         </div>

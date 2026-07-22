@@ -1,5 +1,6 @@
 import { Card, Table, Tag } from 'antd';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { useTranslation } from 'react-i18next';
 
 const data = [
   { key: '1', code: '1000', name: 'Cash and Cash Equivalents', type: 'Asset', balance: 150000.00, active: true },
@@ -11,18 +12,20 @@ const data = [
   { key: '7', code: '6000', name: 'Operating Expenses', type: 'Expense', balance: 85000.00, active: true },
 ];
 
-const columns = [
-  { title: 'Code', dataIndex: 'code', key: 'code' },
-  { title: 'Account Name', dataIndex: 'name', key: 'name' },
-  { title: 'Type', dataIndex: 'type', key: 'type', render: (t: string) => <Tag color="blue">{t}</Tag> },
-  { title: 'Balance', dataIndex: 'balance', key: 'balance', render: (v: number) => `$${v.toLocaleString()}` },
-  { title: 'Status', dataIndex: 'active', key: 'active', render: (a: boolean) => <Tag color={a ? 'green' : 'red'}>{a ? 'Active' : 'Inactive'}</Tag> },
-];
-
 export default function ChartOfAccounts() {
+  const { t } = useTranslation();
+
+  const columns = [
+    { title: t('accounting.chartOfAccounts.code'), dataIndex: 'code', key: 'code' },
+    { title: t('accounting.chartOfAccounts.accountName'), dataIndex: 'name', key: 'name' },
+    { title: t('accounting.chartOfAccounts.type'), dataIndex: 'type', key: 'type', render: (t: string) => <Tag color="blue">{t}</Tag> },
+    { title: t('accounting.chartOfAccounts.balance'), dataIndex: 'balance', key: 'balance', render: (v: number) => `$${v.toLocaleString()}` },
+    { title: t('accounting.chartOfAccounts.status'), dataIndex: 'active', key: 'active', render: (a: boolean) => <Tag color={a ? 'green' : 'red'}>{a ? t('accounting.chartOfAccounts.active') : t('accounting.chartOfAccounts.inactive')}</Tag> },
+  ];
+
   return (
     <div>
-      <PageHeader title="Chart of Accounts" subtitle="Manage your accounting framework" onAdd={() => {}} addLabel="Add Account" />
+      <PageHeader title={t('accounting.chartOfAccounts.title')} subtitle={t('accounting.chartOfAccounts.subtitle')} onAdd={() => {}} addLabel={t('accounting.chartOfAccounts.addAccount')} />
       <Card><Table columns={columns} dataSource={data} /></Card>
     </div>
   );

@@ -10,12 +10,12 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: parseInt(process.env.VITE_PORT || '3001', 10),
+    strictPort: !!process.env.VITE_PORT,
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api/, '/api/v1'),
       },
       '/ws': {
         target: 'ws://localhost:8000',

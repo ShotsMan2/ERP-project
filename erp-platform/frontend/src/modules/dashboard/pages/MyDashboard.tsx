@@ -3,64 +3,68 @@ import {
   CheckCircleOutlined, ClockCircleOutlined, CalendarOutlined,
   TeamOutlined, TrophyOutlined, PlusOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 
 const { Text, Title } = Typography;
 
-const myKpis = [
-  { title: 'Tasks Completed', value: 12, suffix: '/ 18', icon: <CheckCircleOutlined className="text-green-500" /> },
-  { title: 'In Progress', value: 4, icon: <ClockCircleOutlined className="text-blue-500" /> },
-  { title: 'Upcoming Leaves', value: 2, icon: <CalendarOutlined className="text-orange-500" /> },
-  { title: 'Attendance Rate', value: 96, suffix: '%', icon: <TeamOutlined className="text-purple-500" /> },
-];
-
-const myTasks = [
-  { title: 'Review Q3 budget report', priority: 'High', due: '2024-12-20', status: 'In Progress' },
-  { title: 'Complete onboarding docs', priority: 'Medium', due: '2024-12-22', status: 'To Do' },
-  { title: 'Update project timeline', priority: 'Low', due: '2024-12-25', status: 'To Do' },
-  { title: 'Prepare monthly presentation', priority: 'High', due: '2024-12-18', status: 'Done' },
-  { title: 'Team feedback session', priority: 'Medium', due: '2024-12-19', status: 'In Progress' },
-];
-
-const upcomingLeaves = [
-  { type: 'Annual Leave', start: 'Dec 24', end: 'Dec 26', days: 3, status: 'approved' },
-  { type: 'Personal Day', start: 'Jan 5', end: 'Jan 5', days: 1, status: 'pending' },
-];
-
-const priorityColors: Record<string, string> = { High: 'red', Medium: 'orange', Low: 'blue' };
-const statusColors: Record<string, string> = { 'To Do': 'default', 'In Progress': 'processing', Done: 'success' };
-
-const taskColumns = [
-  { title: 'Task', dataIndex: 'title', key: 'title' },
-  {
-    title: 'Priority', dataIndex: 'priority', key: 'priority',
-    render: (p: string) => <Tag color={priorityColors[p]}>{p}</Tag>,
-  },
-  { title: 'Due Date', dataIndex: 'due', key: 'due' },
-  {
-    title: 'Status', dataIndex: 'status', key: 'status',
-    render: (s: string) => <Tag color={statusColors[s]}>{s}</Tag>,
-  },
-];
-
 const MyDashboard: React.FC = () => {
+  const { t } = useTranslation();
+
+  const kpiKeys = ['tasksCompleted', 'inProgress', 'upcomingLeaves', 'attendanceRate'] as const;
+  const kpiConfig: Record<string, { value: number; suffix?: string; icon: React.ReactNode }> = {
+    tasksCompleted: { value: 12, suffix: '/ 18', icon: <CheckCircleOutlined className="text-green-500" /> },
+    inProgress: { value: 4, icon: <ClockCircleOutlined className="text-blue-500" /> },
+    upcomingLeaves: { value: 2, icon: <CalendarOutlined className="text-orange-500" /> },
+    attendanceRate: { value: 96, suffix: '%', icon: <TeamOutlined className="text-purple-500" /> },
+  };
+
+  const taskData = [
+    { titleKey: 'reviewQ3Budget', priority: 'high', due: '2024-12-20', status: 'inProgress' },
+    { titleKey: 'completeOnboarding', priority: 'medium', due: '2024-12-22', status: 'todo' },
+    { titleKey: 'updateProjectTimeline', priority: 'low', due: '2024-12-25', status: 'todo' },
+    { titleKey: 'prepareMonthlyPresentation', priority: 'high', due: '2024-12-18', status: 'done' },
+    { titleKey: 'teamFeedbackSession', priority: 'medium', due: '2024-12-19', status: 'inProgress' },
+  ];
+
+  const leaveData = [
+    { typeKey: 'annualLeave', start: 'Dec 24', end: 'Dec 26', days: 3, statusKey: 'approved' },
+    { typeKey: 'personalDay', start: 'Jan 5', end: 'Jan 5', days: 1, statusKey: 'pendingStatus' },
+  ];
+
+  const priorityColor: Record<string, string> = { high: 'red', medium: 'orange', low: 'blue' };
+  const statusColor: Record<string, string> = { todo: 'default', inProgress: 'processing', done: 'success' };
+
+  const taskColumns = [
+    { title: t('dashboard.myDashboard.task'), dataIndex: 'title', key: 'title' },
+    {
+      title: t('dashboard.myDashboard.priority'), dataIndex: 'priority', key: 'priority',
+      render: (p: string) => <Tag color={priorityColor[p]}>{t(`dashboard.myDashboard.${p}`)}</Tag>,
+    },
+    { title: t('dashboard.myDashboard.dueDate'), dataIndex: 'due', key: 'due' },
+    {
+      title: t('dashboard.myDashboard.status'), dataIndex: 'status', key: 'status',
+      render: (s: string) => <Tag color={statusColor[s]}>{t(`dashboard.myDashboard.${s}`)}</Tag>,
+    },
+  ];
+
   return (
     <div className="p-6">
-      <PageHeader title="My Dashboard" subtitle="Your personal overview and quick actions">
+      <PageHeader title={t('dashboard.myDashboard.title')} subtitle={t('dashboard.myDashboard.subtitle')}>
         <Space>
-          <Button type="primary" icon={<PlusOutlined />}>Quick Task</Button>
-          <Button icon={<CalendarOutlined />}>My Schedule</Button>
+          <Button type="primary" icon={<PlusOutlined />}>{t('dashboard.myDashboard.quickTask')}</Button>
+          <Button icon={<CalendarOutlined />}>{t('dashboard.myDashboard.mySchedule')}</Button>
         </Space>
       </PageHeader>
 
       <Row gutter={[16, 16]} className="mb-6">
-        {myKpis.map((kpi) => (
-          <Col xs={24} sm={12} lg={6} key={kpi.title}>
+        {kpiKeys.map((key) => (
+          <Col xs={24} sm={12} lg={6} key={key}>
             <Card hoverable>
               <Statistic
-                title={<span className="flex items-center gap-2">{kpi.icon} {kpi.title}</span>}
-                value={kpi.value}
-                suffix={kpi.suffix}
+                title={<span className="flex items-center gap-2">{kpiConfig[key].icon} {t(`dashboard.myDashboard.${key}`)}</span>}
+                value={kpiConfig[key].value}
+                suffix={kpiConfig[key].suffix}
               />
             </Card>
           </Col>
@@ -69,11 +73,11 @@ const MyDashboard: React.FC = () => {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card title="My Tasks" extra={<Button type="link">View All</Button>}>
+          <Card title={t('dashboard.myDashboard.myTasks')} extra={<Button type="link">{t('dashboard.myDashboard.viewAll')}</Button>}>
             <Table
-              dataSource={myTasks}
+              dataSource={taskData.map((d) => ({ ...d, title: t(`dashboard.myDashboard.${d.titleKey}`) }))}
               columns={taskColumns}
-              rowKey="title"
+              rowKey="titleKey"
               size="small"
               pagination={false}
             />
@@ -82,21 +86,21 @@ const MyDashboard: React.FC = () => {
         <Col xs={24} lg={12}>
           <Row gutter={[16, 16]}>
             <Col span={24}>
-              <Card title="Upcoming Leaves">
+              <Card title={t('dashboard.myDashboard.upcomingLeavesTitle')}>
                 <List
-                  dataSource={upcomingLeaves}
+                  dataSource={leaveData}
                   renderItem={(item) => (
                     <List.Item>
                       <div className="w-full flex justify-between items-center">
                         <div>
-                          <Text strong>{item.type}</Text>
+                          <Text strong>{t(`dashboard.myDashboard.${item.typeKey}`)}</Text>
                           <br />
                           <Text type="secondary" className="text-sm">
-                            {item.start} - {item.end} ({item.days} day{item.days > 1 ? 's' : ''})
+                            {item.start} - {item.end} ({item.days} {item.days > 1 ? t('dashboard.myDashboard.days') : t('dashboard.myDashboard.day')})
                           </Text>
                         </div>
-                        <Tag color={item.status === 'approved' ? 'green' : 'orange'}>
-                          {item.status}
+                        <Tag color={item.statusKey === 'approved' ? 'green' : 'orange'}>
+                          {t(`dashboard.myDashboard.${item.statusKey}`)}
                         </Tag>
                       </div>
                     </List.Item>
@@ -105,24 +109,24 @@ const MyDashboard: React.FC = () => {
               </Card>
             </Col>
             <Col span={24}>
-              <Card title="Attendance Summary">
+              <Card title={t('dashboard.myDashboard.attendanceSummary')}>
                 <Space direction="vertical" className="w-full">
                   <div className="flex justify-between items-center">
-                    <Text>This Month</Text>
-                    <Text strong>22 / 22 days</Text>
+                    <Text>{t('dashboard.myDashboard.thisMonthLabel')}</Text>
+                    <Text strong>22 / 22 {t('dashboard.myDashboard.days')}</Text>
                   </div>
                   <Progress percent={100} size="small" />
                   <div className="flex justify-between items-center mt-2">
-                    <Text>On Time</Text>
-                    <Text strong>20 days</Text>
+                    <Text>{t('dashboard.myDashboard.onTime')}</Text>
+                    <Text strong>20 {t('dashboard.myDashboard.days')}</Text>
                   </div>
                   <div className="flex justify-between items-center">
-                    <Text>Late</Text>
-                    <Text strong>1 day</Text>
+                    <Text>{t('dashboard.myDashboard.late')}</Text>
+                    <Text strong>1 {t('dashboard.myDashboard.day')}</Text>
                   </div>
                   <div className="flex justify-between items-center">
-                    <Text>Early Leave</Text>
-                    <Text strong>1 day</Text>
+                    <Text>{t('dashboard.myDashboard.earlyLeave')}</Text>
+                    <Text strong>1 {t('dashboard.myDashboard.day')}</Text>
                   </div>
                 </Space>
               </Card>
@@ -133,13 +137,13 @@ const MyDashboard: React.FC = () => {
 
       <Row gutter={[16, 16]} className="mt-6">
         <Col xs={24}>
-          <Card title="Quick Actions">
+          <Card title={t('dashboard.quickActions')}>
             <Space wrap size="large">
-              <Button type="default" icon={<PlusOutlined />}>Request Leave</Button>
-              <Button type="default" icon={<ClockCircleOutlined />}>Clock In/Out</Button>
-              <Button type="default" icon={<CalendarOutlined />}>View Schedule</Button>
-              <Button type="default" icon={<TrophyOutlined />}>My Performance</Button>
-              <Button type="default" icon={<TeamOutlined />}>Team Directory</Button>
+              <Button type="default" icon={<PlusOutlined />}>{t('dashboard.myDashboard.requestLeave')}</Button>
+              <Button type="default" icon={<ClockCircleOutlined />}>{t('dashboard.myDashboard.clockInOut')}</Button>
+              <Button type="default" icon={<CalendarOutlined />}>{t('dashboard.myDashboard.viewSchedule')}</Button>
+              <Button type="default" icon={<TrophyOutlined />}>{t('dashboard.myDashboard.myPerformance')}</Button>
+              <Button type="default" icon={<TeamOutlined />}>{t('dashboard.myDashboard.teamDirectory')}</Button>
             </Space>
           </Card>
         </Col>

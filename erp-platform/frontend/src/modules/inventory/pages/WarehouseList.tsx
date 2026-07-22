@@ -1,6 +1,7 @@
 import { Card, Row, Col, Typography, Tag, Button, Space, Statistic } from 'antd';
 import { PlusOutlined, EyeOutlined, ShopOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '@/components/ui/PageHeader';
 
 const { Text } = Typography;
@@ -29,13 +30,14 @@ const typeColors: Record<string, string> = {
 };
 
 const WarehouseList: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <div className="p-6">
-      <PageHeader title="Warehouses" subtitle="Manage warehouse locations and storage">
+      <PageHeader title={t('inventory.warehousesPage.title')} subtitle={t('inventory.warehousesPage.subtitle')}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/inventory/warehouses/new')}>
-          Add Warehouse
+          {t('inventory.warehousesPage.addLabel')}
         </Button>
       </PageHeader>
 
@@ -58,7 +60,7 @@ const WarehouseList: React.FC = () => {
                     <Text type="secondary" className="text-sm">{wh.code}</Text>
                   </div>
                 </div>
-                <Tag color={wh.isActive ? 'green' : 'default'}>{wh.isActive ? 'Active' : 'Inactive'}</Tag>
+                <Tag color={wh.isActive ? 'green' : 'default'}>{wh.isActive ? t('inventory.warehouseDetailPage.active') : t('inventory.warehouseDetailPage.inactive')}</Tag>
               </div>
 
               <div className="mb-3">
@@ -69,18 +71,18 @@ const WarehouseList: React.FC = () => {
 
               <Row gutter={[8, 8]}>
                 <Col span={8}>
-                  <Statistic title="Locations" value={wh.locationCount} valueStyle={{ fontSize: 18 }} />
+                  <Statistic title={t('inventory.warehousesPage.locations')} value={wh.locationCount} valueStyle={{ fontSize: 18 }} />
                 </Col>
                 <Col span={8}>
-                  <Statistic title="Bins" value={wh.binCount} valueStyle={{ fontSize: 18 }} />
+                  <Statistic title={t('inventory.warehousesPage.bins')} value={wh.binCount} valueStyle={{ fontSize: 18 }} />
                 </Col>
                 <Col span={8}>
-                  <Statistic title="Stock Value" value={wh.stockValue} prefix="$" valueStyle={{ fontSize: 18 }} precision={0} />
+                  <Statistic title={t('inventory.warehousesPage.stockValue')} value={wh.stockValue} prefix="$" valueStyle={{ fontSize: 18 }} precision={0} />
                 </Col>
               </Row>
 
               <Button type="link" className="mt-3 p-0" icon={<EyeOutlined />}>
-                View Details
+                {t('inventory.warehousesPage.viewDetails')}
               </Button>
             </Card>
           </Col>

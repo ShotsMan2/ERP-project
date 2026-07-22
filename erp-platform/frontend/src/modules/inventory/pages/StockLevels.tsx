@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card, Table, Tag, Input, Select, Typography, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import DataTable from '@/components/data/DataTable';
 import PageHeader from '@/components/ui/PageHeader';
 
@@ -29,15 +30,16 @@ const mockStock: StockItem[] = [
   { id: '7', product: 'Wireless Mouse', sku: 'MOU-004', warehouse: 'East Warehouse', bin: 'B-02-01', quantity: 200, reserved: 10, available: 190, unit: 'pcs', lastCounted: '2024-12-13' },
 ];
 
-const getStockStatus = (available: number): { color: string; label: string } => {
-  if (available <= 0) return { color: 'red', label: 'Out of Stock' };
-  if (available <= 5) return { color: 'orange', label: 'Critical' };
-  if (available <= 20) return { color: 'gold', label: 'Low Stock' };
-  if (available <= 50) return { color: 'blue', label: 'Moderate' };
-  return { color: 'green', label: 'In Stock' };
+const getStockStatus = (available: number, t: (key: string) => string): { color: string; label: string } => {
+  if (available <= 0) return { color: 'red', label: t('inventory.stockLevelsPage.outOfStock') };
+  if (available <= 5) return { color: 'orange', label: t('inventory.stockLevelsPage.critical') };
+  if (available <= 20) return { color: 'gold', label: t('inventory.stockLevelsPage.lowStock') };
+  if (available <= 50) return { color: 'blue', label: t('inventory.stockLevelsPage.moderate') };
+  return { color: 'green', label: t('inventory.stockLevelsPage.inStock') };
 };
 
 const StockLevels: React.FC = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [warehouseFilter, setWarehouseFilter] = useState<string>('');
 
@@ -49,16 +51,16 @@ const StockLevels: React.FC = () => {
   });
 
   const columns = [
-    { title: 'Product', dataIndex: 'product', key: 'product', sorter: (a: StockItem, b: StockItem) => a.product.localeCompare(b.product) },
-    { title: 'SKU', dataIndex: 'sku', key: 'sku' },
-    { title: 'Warehouse', dataIndex: 'warehouse', key: 'warehouse' },
-    { title: 'Bin Location', dataIndex: 'bin', key: 'bin' },
-    { title: 'Quantity', dataIndex: 'quantity', key: 'quantity', sorter: (a: StockItem, b: StockItem) => a.quantity - b.quantity },
-    { title: 'Reserved', dataIndex: 'reserved', key: 'reserved' },
+    { title: t('inventory.stockLevelsPage.product'), dataIndex: 'product', key: 'product', sorter: (a: StockItem, b: StockItem) => a.product.localeCompare(b.product) },
+    { title: t('inventory.stockLevelsPage.sku'), dataIndex: 'sku', key: 'sku' },
+    { title: t('inventory.stockLevelsPage.warehouse'), dataIndex: 'warehouse', key: 'warehouse' },
+    { title: t('inventory.stockLevelsPage.binLocation'), dataIndex: 'bin', key: 'bin' },
+    { title: t('inventory.stockLevelsPage.quantity'), dataIndex: 'quantity', key: 'quantity', sorter: (a: StockItem, b: StockItem) => a.quantity - b.quantity },
+    { title: t('inventory.stockLevelsPage.reserved'), dataIndex: 'reserved', key: 'reserved' },
     {
-      title: 'Available', dataIndex: 'available', key: 'available',
+      title: t('inventory.stockLevelsPage.available'), dataIndex: 'available', key: 'available',
       render: (v: number, record: StockItem) => {
-        const status = getStockStatus(v);
+        const status = getStockStatus(v, t);
         return (
           <Space>
             <span className={status.color === 'red' || status.color === 'orange' ? 'font-bold' : ''}>{v}</span>
@@ -72,12 +74,12 @@ const StockLevels: React.FC = () => {
 
   return (
     <div className="p-6">
-      <PageHeader title="Stock Levels" subtitle="Real-time inventory across all warehouses" />
+      <PageHeader title={t('inventory.stockLevelsPage.title')} subtitle={t('inventory.stockLevelsPage.subtitle')} />
 
       <Card>
         <div className="flex flex-wrap gap-4 mb-4">
           <Input
-            placeholder="Search product or SKU..."
+            placeholder={t('inventory.stockLevelsPage.searchPlaceholder')}
             prefix={<SearchOutlined />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -85,7 +87,7 @@ const StockLevels: React.FC = () => {
             allowClear
           />
           <Select
-            placeholder="Filter by warehouse"
+            placeholder={t('inventory.stockLevelsPage.filterWarehouse')}
             value={warehouseFilter || undefined}
             onChange={(v) => setWarehouseFilter(v || '')}
             allowClear
@@ -97,7 +99,7 @@ const StockLevels: React.FC = () => {
           dataSource={filtered}
           columns={columns}
           rowKey="id"
-          pagination={{ pageSize: 10, showTotal: (t: number) => `${t} stock items` }}
+          pagination={{ pageSize: 10, showTotal: (total: number) => t('inventory.stockLevelsPage.showingStock', { count: total }) }}
         />
       </Card>
     </div>
